@@ -11,13 +11,13 @@ Code for the paper Jeremy Fox, Vitor Hadad, Stefan Hoderlein, Amil Petrin and Ro
 The setup is a linear panel data with two correlated random coefficients. 
 
 <center>
-<img src="figs/fmla1.png" height = 50>
+<img src="figs/fmla1.png" width = 50>
 </centeR>
 
 It is assumed that the coefficients follow AR(1) processes
 
 <center>
-<img src="figs/fmla2.png" height = 50>
+<img src="figs/fmla2.png" width = 50>
 </center>
 
 where the shocks are assumed to be independent of everything in the previous period.
