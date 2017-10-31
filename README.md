@@ -63,6 +63,7 @@ Next, just download the file `fhhps.py` and follow the instructions below.
 
 The easiest way to run FHHPS is via the command line application. Suppose we are working with the file `fake_data_1.csv`, which can find it in the `examples` folder above. Its first rows are:
 
+
 |    X1 |    X2 |    Y1 |    Y2 |   other_column |
 |------:|------:|------:|------:|---------------:|
 |  1.64 |  2.12 |  9.7  | 12.11 |           0.46 |
@@ -78,10 +79,12 @@ python fhhps.py -f fake_data_1.csv
 ```
 The application will run the estimation algorithm, bootstrap 100 times, and produce the figures as tables below. Total running time should be around 10 minutes. 
 
-<center>
-<image src="figs/bootstrap_shocks_150945930898.png" width = 400>
-<image src="figs/bootstrap_random_coefficients_150945930898.png" width = 400>
-<br>
+
+<image src="figs/bootstrap_shocks_150945930898.png" style="float: center; width: 80%; margin-left: 10%;">
+<image src="figs/bootstrap_random_coefficients_150945930898.png" style="float: center; width: 80%; margin-left: 10%;">
+
+
+<centeR>
 <image src="figs/output_tables.png" width = 500>
 </center>
 
