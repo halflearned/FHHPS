@@ -84,7 +84,7 @@ To have FHHPS automatically detect columns named `X1`, `X2`, `Y1`, `Y2` and run 
 ```bash
 python fhhps.py -f fake_data_1.csv
 ```
-The application will run the estimation algorithm, bootstrap 100 times, and produce the figures as tables below. Total running time should be around 10 minutes. 
+The application will run the estimation algorithm, bootstrap 100 times, and produce the figures as tables below. Also, a comma-separated file contained the bootstrapped values for all variables will be produced. For the `fake_data_1.csv` file, total running time should be around 10 minutes. 
 
 
 <image src="figs/bootstrap_shocks_150945930898.png" style="float: center; width: 80%; margin-left: 10%;">
