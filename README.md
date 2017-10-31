@@ -1,6 +1,6 @@
 # FHHPS
 
-Code for the paper Jeremy Fox, Vitor Hadad, Stefan Hoderlein, Amil Petrin and Robert Sherman (In progress). *Heterogenous Production Functions, Panel Data, and Productivity Dispersion*. Henceforth <i>FHHPS</i>, after the authors' initials.
+Code for the paper Jeremy Fox, Vitor Hadad, Stefan Hoderlein, Amil Petrin and Robert Sherman (In progress). *Heterogenous Production Functions, Panel Data, and Productivity Dispersion*. Our application is called <i>FHHPS</i>, after the authors' initials.
 
 <center>
 <img src="figs/scatter.png" width=300>
@@ -8,7 +8,7 @@ Code for the paper Jeremy Fox, Vitor Hadad, Stefan Hoderlein, Amil Petrin and Ro
 
 ## Estimation setup
 
-The setup is a linear panel data with two correlated random coefficients. 
+The setup is a **linear panel data** with **two correlated random coefficients**. 
 
 <center>
 <img src="figs/fmla1.png" height = 50>
@@ -20,13 +20,13 @@ It is assumed that the coefficients follow AR(1) processes
 <img src="figs/fmla2.png" height = 50>
 </center>
 
-where the shocks are assumed to be independent of everything in the previous period.
+where the shocks are assumed to be independent of everything in the previous periods.
 
 The application we have in mind is the identification and estimation of first and second moments of Cobb Douglas coefficients of a production function. For more details, please contact Vitor Hadad at baisihad@bc.edu.
 
 ## Installing 
 
-To run `fhhps`, you will need Python 3.5 or newer. If you have no current Python installation, the fastest way to get everything up and running is by copying-and-pasting the following commands to your Terminal or Prompt (you will likely need root privileges).
+To run `fhhps`, you will need Python 3.5 or newer. If you have no current Python installation, the fastest way to get everything up and running is by copying-and-pasting the following commands to your Terminal.
 
 **For MAC OSX**
 
@@ -38,14 +38,21 @@ source $HOME/miniconda3/bin/activate
 echo PATH="$HOME/miniconda3/bin:$PATH" >> ~/.bashrc
 pip install numpy pandas matplotlib scikit-learn tqdm
 ```
+If you don't have root privileges, add `--user` to the last line.  Everything else should work without admin permissions.
+
 
 **For Windows**
 
-```bash
----- Coming soon -----
-```
+Follow the Miniconda3 installation instructions <a href="https://conda.io/docs/user-guide/install/windows.html">here</a>. Then, in the 
 
-Make sure that everything is installed by typing
+```bash
+pip install numpy pandas matplotlib scikit-learn tqdm
+```
+Add the option `--user` if you don't have root privileges in your machine.
+
+#### Confirming
+
+Make sure that everything is installed by typing in your Terminal (Mac) or Prompt (Windows):
 
 ```bash
 python --version
@@ -125,13 +132,19 @@ Notes:
 
 ## Advanced usage
 
-
-
 ### Conditional bootstrap
 
 ```bash
 --- Coming soon. Currently available only in the Python API. --- 
 ```
+
+### Custom bootstrap functions
+
+```bash
+--- Coming soon --- 
+```
+
+
 
 ## Python API
 
