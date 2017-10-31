@@ -597,7 +597,7 @@ class FHHPS:
                 xlim = ax.get_xlim()
                 ax.set_xlim(max(-1.5, xlim[0]), min(1.5, xlim[1]))
             
-        return (shockfig, rcfig), (shockaxs, rcaxs)
+        return (shockfig, shockaxs), (rcfig, rcaxs)
             
     
     
