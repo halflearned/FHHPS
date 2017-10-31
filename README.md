@@ -134,9 +134,14 @@ Notes:
 
 ### Conditional bootstrap
 
-```bash
---- Coming soon. Currently available only in the Python API. --- 
+You can also compute conditional moments, e.g., $Std[B_1 | X_1 = x_1, X_2 = x_2]$ using the `-X1_POINT` and `-X2_POINT` options. For example, to compute estimates, bootstrap, figures and tables associated with point $(X1, X2) = (-1, 1)$, type
+
+```python
+python fhhps.py -f [file-name].csv -X1_POINT=-1 -X2_POINT=1
 ```
+
+**Remark** In our model, shock moments are assumed to be independent of $X_1$ and $X_2$, and so are not affected by conditioning. Summary figures and tables will be produced for shocks as well, but they will be the same as for the unconditional case.
+
 
 ### Custom bootstrap functions
 
@@ -193,13 +198,22 @@ For more information, read the docs (coming soon).
 The fake data above was created using the function `generate_data` that draws from the same distribution as the "Simulations" portion of the FHHPS paper. You can import it from the `data_utils.py` submodule.
 
 
-## Reproducing our simulations
+## Reproducing our results
 
-The file `simulations.py` reproduces all the simulations in our paper. Just type the following in your Terminal or Prompt.
+The file `simulations.py` reproduces all the simulations in our paper. Make sure to have `fhhps.py`, `data_utils` and `simulations.py` in the same folder. Then navigate to that folder in your Terminal or Prompt and type 
 
 ```python
 python simulations.py
 ```
+Let this run for a few hours, then type
+
+```python
+python simulations_analysis.py
+```
+to reproduce our figures and several tables associated with simulation results. Note there might be very discrepancies due to random data generation.
+
+
+
 
 
 

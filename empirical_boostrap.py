@@ -35,7 +35,7 @@ algo = fhhps.FHHPS(c_shocks = 3,
                    alpha_shocks = .2,
                    c_nw = .5,
                    alpha_nw = 0.167,
-                   poly_order = 1)
+                   poly_order = 2)
 
 algo.add_data(df["X1"], df["X2"], df["Y1"], df["Y2"])
 algo.fit()

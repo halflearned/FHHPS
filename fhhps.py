@@ -674,16 +674,16 @@ if __name__ == "__main__":
     
     
     parser.add_argument('-x1',
-                        '--x1-point',
-                        help="X1 point to condition on",
+                        '--x1_point',
+                        help="X1 point on which to condition.",
                         required=False,
                         type=float)
     parser.add_argument('-x2',
-                        '--x2-point',
-                        help="X2 point to condition on",
+                        '--x2_point',
+                        help="X2 point on which to condition.",
                         required=False,
                         type=float)
-    
+
     
     parser.add_argument('-anw','--alpha_nw',
                         help='Parameter alpha_nw',
@@ -760,6 +760,7 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
+    suffix = args.output_file_suffix or str(int(time()*100))
     
     print("\n\n#### FHHPS #####\n\n")
     columns = ["Y1" or args.Y1_column,
@@ -797,45 +798,83 @@ if __name__ == "__main__":
     print("OK! Computed these tuning parameters.")
     algo.show_tuning_parameters()
     
-    print("\n\nEstimating...", end="")
-    algo.fit()
-    print("OK!\n\n")
+        
     
+    if args.x1_point is not None and args.x2_point is not None:
+        # FIT
+        print("\n\nEstimating CONDITIONAL moments...", end="")
+        algo.conditional_fit(args.x1_point, args.x2_point)
+        print("OK!\n\n")
+        
+        # BOOTSTRAP
+        algo.bootstrap(args.x1_point, args.x2_point, n_iterations = args.bootstrap_iterations)
+        print("\nSaving bootstrapped values to CSV file...", end = "")
+        algo._conditional_bootstrapped_values.to_csv("conditional_bootstrapped_values_{}.csv".format(suffix))
+        print("OK!")
+        
+        # FIGURES
+        print("\n\nProducing figures...", end = "")
+        (shockfig, _), (rcfig, _) = algo.plot_conditional_density()
+        shockfig.savefig("bootstrap_shocks_{}.pdf".format(suffix))
+        rcfig.savefig("conditional_bootstrap_random_coefficients_{}.pdf".format(suffix))    
+        print("OK!")
+        
+        # TABLES
+        print("\n\nProducing summary tables...", end = "")
+        uselatex = args.output_table_type == "latex"
+        shock_tab, rc_tab = algo.conditional_summary(latex_names = uselatex)
+        if uselatex:
+            shock_tab.to_latex("bootstrap_shock_{}.tex".format(suffix))
+            rc_tab.to_latex("conditional_bootstrap_random_coefficients_{}.tex".format(suffix))
+        else:
+            shock_tab.to_csv("_bootstrap_shock_{}.csv".format(suffix))
+            rc_tab.to_csv("conditional_bootstrap_random_coefficients_{}.tex".format(suffix))
+        print("OK!")
+        print("\n\nDone. You should see these five new files:")
+        for f in listdir():
+            if suffix in f:
+                print(f)
+        print("\n\n")
+        
+
+
+    else: 
+        # FIT
+        print("\n\nEstimating...", end="")
+        algo.fit()
+        print("OK!\n\n")
     
-    
-    algo.bootstrap(n_iterations = args.bootstrap_iterations)
-    
-    
-    
-    suffix = args.output_file_suffix or str(int(time()*100))
-    
-    
-    
-    print("\n\nProducing figures...", end = "")
-    (shockfig, _), (rcfig, _) = algo.plot_density()
-    shockfig.savefig("bootstrap_shocks_{}.pdf".format(suffix))
-    rcfig.savefig("bootstrap_random_coefficients_{}.pdf".format(suffix))    
-    print("OK!")
-    
-    
-    
-    print("\n\nProducing summary tables...", end = "")
-    uselatex = args.output_table_type == "latex"
-    
-    shock_tab, rc_tab = algo.summary(latex_names = uselatex)
-    if uselatex:
-        shock_tab.to_latex("bootstrap_shock_{}.tex".format(suffix))
-        rc_tab.to_latex("bootstrap_random_coefficients_{}.tex".format(suffix))
-    else:
-        shock_tab.to_csv("bootstrap_shock_{}.csv".format(suffix))
-        rc_tab.to_csv("bootstrap_random_coefficients_{}.tex".format(suffix))
-    print("OK!")
-    print("\n\nDone. You should see these four new files:")
-    for f in listdir():
-        if suffix in f:
-            print(f)
-    print("\n\n")
-    
+        # BOOTSTRAP    
+        algo.bootstrap(n_iterations = args.bootstrap_iterations)
+        print("\nSaving bootstrapped values to CSV file...", end = "")
+        algo._bootstrapped_values.to_csv("bootstrapped_values_{}.csv".format(suffix))
+        print("OK!")
+        
+        # FIGURES
+        print("\n\nProducing figures...", end = "")
+        (shockfig, _), (rcfig, _) = algo.plot_density()
+        shockfig.savefig("bootstrap_shocks_{}.pdf".format(suffix))
+        rcfig.savefig("bootstrap_random_coefficients_{}.pdf".format(suffix))    
+        print("OK!")
+        
+        # TABLES
+        print("\n\nProducing summary tables...", end = "")
+        uselatex = args.output_table_type == "latex"
+        
+        shock_tab, rc_tab = algo.summary(latex_names = uselatex)
+        if uselatex:
+            shock_tab.to_latex("bootstrap_shock_{}.tex".format(suffix))
+            rc_tab.to_latex("bootstrap_random_coefficients_{}.tex".format(suffix))
+        else:
+            shock_tab.to_csv("bootstrap_shock_{}.csv".format(suffix))
+            rc_tab.to_csv("bootstrap_random_coefficients_{}.tex".format(suffix))
+        print("OK!")
+        print("\n\nDone. You should see these five new files:")
+        for f in listdir():
+            if suffix in f:
+                print(f)
+        print("\n\n")
+        
     
     
     
