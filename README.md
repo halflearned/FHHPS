@@ -134,10 +134,10 @@ Notes:
 
 ### Conditional bootstrap
 
-You can also compute conditional moments, e.g., $Std[B_1 | X_1 = x_1, X_2 = x_2]$ using the `-X1_POINT` and `-X2_POINT` options. For example, to compute estimates, bootstrap, figures and tables associated with point $(X1, X2) = (-1, 1)$, type
+You can also compute conditional moments using the `-X1_POINT` and `-X2_POINT` options. For example, to compute estimates, bootstrap, figures and tables associated with point (X_1, X_2) = (-1, 1), type
 
 ```python
-python fhhps.py -f [file-name].csv -X1_POINT=-1 -X2_POINT=1
+python fhhps.py -f [filename].csv -X1_POINT=-1 -X2_POINT=1
 ```
 
 **Remark** In our model, shock moments are assumed to be independent of $X_1$ and $X_2$, and so are not affected by conditioning. Summary figures and tables will be produced for shocks as well, but they will be the same as for the unconditional case.
