@@ -1,4 +1,0 @@
-1. We know the model is linear by construction. 
-Instead of using nonparametric reg of E[DY|X1=x1, X2=x2]. So use (local) linear regression here.
-
-2. Plug in the true values of E[U2], E[V2]
