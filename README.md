@@ -3,7 +3,7 @@
 Code for the paper Jeremy Fox, Vitor Hadad, Stefan Hoderlein, Amil Petrin and Robert Sherman (In progress). *Heterogenous Production Functions, Panel Data, and Productivity Dispersion*. Henceforth <i>FHHPS</i>, after the authors' initials.
 
 <center>
-<img src="figs/scatter.png" width = 400>
+<img src="figs/scatter.png" style="width=50%; margin-left=30%">
 </center>
 
 ## Estimation setup
