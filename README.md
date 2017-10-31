@@ -1,6 +1,6 @@
 # FHHPS
 
-Code for the paper Jeremy Fox, Vitor Hadad, Stefan Hoderlein, Amil Petrin and Robert Sherman (In progress). *Heterogenous Production Functions, Panel Data, and Productivity Dispersion*. Our application is called <i>FHHPS</i>, after the authors' initials.
+Code used in paper Jeremy Fox, Vitor Hadad, Stefan Hoderlein, Amil Petrin and Robert Sherman (In progress). *Heterogenous Production Functions, Panel Data, and Productivity Dispersion*. Our application is called <i>FHHPS</i>, after the authors' initials.
 
 <center>
 <img src="figs/scatter.png" width=300>
@@ -43,7 +43,7 @@ If you don't have root privileges, add `--user` to the last line.  Everything el
 
 **For Windows**
 
-Follow the Miniconda3 installation instructions <a href="https://conda.io/docs/user-guide/install/windows.html">here</a>. Then, in the 
+Download and run the Miniconda3 <a href=https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe">installer</a>. Then, in the Prompt, type this to install the necessary dependencies.
 
 ```bash
 pip install numpy pandas matplotlib scikit-learn tqdm
@@ -148,7 +148,7 @@ Notes:
 
 ## Python API
 
-You can also run FHHPS from within Python. Users familiar with `statsmodels` or `scikit-learn` will be familiar with the syntax. Here's an example.
+You can also run FHHPS from within Python. Users of the `statsmodels` or `scikit-learn` packages will be familiar with the syntax. Here's an example.
 
 ```python
 # Importing. Make sure fhhps.py is in the same directory!
@@ -188,12 +188,19 @@ shock_tab.to_csv("shock_tables.csv")
 
 For more information, read the docs (coming soon).
 
-
 ## Generating fake data
 
-The fake data above was created using the function `generate_data` that  draws from the same distribution as the "Simulations" portion of the FHHPS paper. You can find it in the `data_utils` submodule.
+The fake data above was created using the function `generate_data` that draws from the same distribution as the "Simulations" portion of the FHHPS paper. You can import it from the `data_utils.py` submodule.
 
-   
+
+## Reproducing our simulations
+
+The file `simulations.py` reproduces all the simulations in our paper. Just type the following in your Terminal or Prompt.
+
+```python
+python simulations.py
+```
+
 
 
 
