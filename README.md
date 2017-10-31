@@ -1,6 +1,6 @@
 # FHHPS
 
-Code for the paper Jeremy Fox, Vitor Hadad, Stefan Hoderlein, Amil Petrin and Robert Sherman (In progress) "Heterogenous Production Functions, Panel Data, and Productivity Dispersion". Henceforth <i>FHHPS</i>.
+Code for the paper Jeremy Fox, Vitor Hadad, Stefan Hoderlein, Amil Petrin and Robert Sherman (In progress). *Heterogenous Production Functions, Panel Data, and Productivity Dispersion*. Henceforth <i>FHHPS</i>, after the authors' initials.
 
 <center>
 <img src="figs/scatter.png" width = 400>
@@ -79,12 +79,10 @@ python fhhps.py -f fake_data_1.csv
 The application will run the estimation algorithm, bootstrap 100 times, and produce the figures as tables below. Total running time should be around 10 minutes. 
 
 <center>
-<image src="bootstrap_random_coefficients_150942175804.png" width = 400>
-<image src="bootstrap_shocks_150942257709.png" width = 400>
+<image src="figs/bootstrap_shocks_150945930898.png" width = 400>
+<image src="figs/bootstrap_random_coefficients_150945930898.png" width = 400>
 <br>
-<image src="table_shocks.png" width = 500>
-<br>
-<image src="table_rcs.png" width = 500>
+<image src="figs/output_tables.png" width = 500>
 </center>
 
 By default, the file names will have a timestamp as suffix, to avoid overwriting existing files. You can use a custom suffix with the option `-outs=[custom-suffix]`.
