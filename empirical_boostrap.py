@@ -12,21 +12,6 @@ import fhhps
 
 df_full = pd.read_csv("final.csv")
 
-# Create auxiliary vars
-df_full["YM_W"] = np.log(np.exp(df_full["lnY"]) - np.exp(df_full["lnM"])) - df_full["lnW"]
-df_full["K_W"]  = df_full["lnK"] - df_full["lnW"]
-
-# Pivot table
-variables = [df_full.pivot(index = "FACT_ID", 
-                           columns = "YEAR", 
-                           values = v) 
-                          for v in ["K_W", "YM_W"]]
-scheme = df_full.groupby("FACT_ID")["scheme"].first()
-
-    
-df = pd.concat(variables + [scheme], axis = 1)
-df.columns = ["X1", "X2", "Y1", "Y2", "scheme"]
-
 # Restrict sample
 df = df[df["scheme"] == "Sample"].dropna()
 

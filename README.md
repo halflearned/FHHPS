@@ -43,7 +43,7 @@ If you don't have root privileges, add `--user` to the last line.  Everything el
 
 **For Windows**
 
-Download and run the Miniconda3 <a href=https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe">installer</a>. Then, in the Prompt, type this to install the necessary dependencies.
+Download and run the Miniconda3 <a href="https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe">installer</a>. Then, in the Prompt, type this to install the necessary dependencies.
 
 ```bash
 pip install numpy pandas matplotlib scikit-learn tqdm
@@ -210,15 +210,4 @@ Let this run for a few hours, then type
 ```python
 python simulations_analysis.py
 ```
-to reproduce our figures and several tables associated with simulation results. Note there might be very discrepancies due to random data generation.
-
-
-
-
-
-
-
-
-
-
-
+to reproduce our figures and several tables associated with simulation results. 
