@@ -19,15 +19,17 @@ df = df[df["scheme"] == "Sample"]
 
 # Run fhhps and bootstrap
 algo = fhhps.FHHPS(c_shocks = 3,
-                   alpha_shocks = .01,
+                   alpha_shocks = .2,
                    poly_order = 1,
                    c_nw = .5,
+                   c1_cens = 1,
                    alpha_nw = .167)
 
 algo.add_data(df["X1"], df["X2"], df["Y1"], df["Y2"])
 algo.fit()
 
 print(algo.estimates()[algo._shock_vars])
+print(algo.estimates()[algo._rc_vars])
 
 
 #

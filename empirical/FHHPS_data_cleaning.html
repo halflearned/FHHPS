@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<!-- saved from url=(0071)file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>FHHPS_data_cleaning-Copy1</title><script src="./FHHPS_data_cleaning_files/require.min.js"></script>
-<script src="./FHHPS_data_cleaning_files/jquery.min.js"></script>
+<html>
+<head><meta charset="utf-8" />
+<title>FHHPS_data_cleaning-Copy1</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 <style type="text/css">
     /*!
@@ -11748,13 +11748,13 @@ div#notebook {
 </style>
 
 <!-- Custom stylesheet, it must be in the same directory as the html file -->
-<link rel="stylesheet" href="file:///Users/vitorhadad/Downloads/custom.css">
+<link rel="stylesheet" href="custom.css">
 
 <!-- Loading mathjax macro -->
 <!-- Load mathjax -->
-    <script src="./FHHPS_data_cleaning_files/MathJax.js" id=""></script>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
     <!-- MathJax configuration -->
-    <script type="text/x-mathjax-config;executed=true">
+    <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
         tex2jax: {
             inlineMath: [ ['$','$'], ["\\(","\\)"] ],
@@ -11771,116 +11771,21 @@ div#notebook {
         }
     });
     </script>
-    <!-- End of mathjax configuration --><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
-.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
-.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
-.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
-.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
-</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
-#MathJax_About.MathJax_MousePost {outline: none}
-.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
-.MathJax_MenuItem {padding: 1px 2em; background: transparent}
-.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
-.MathJax_MenuActive .MathJax_MenuArrow {color: white}
-.MathJax_MenuArrow.RTL {left: .5em; right: auto}
-.MathJax_MenuCheck {position: absolute; left: .7em}
-.MathJax_MenuCheck.RTL {right: .7em; left: auto}
-.MathJax_MenuRadioCheck {position: absolute; left: .7em}
-.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
-.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
-.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
-.MathJax_MenuDisabled {color: GrayText}
-.MathJax_MenuActive {background-color: #606872; color: white}
-.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
-.MathJax_ContextMenu:focus {outline: none}
-.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
-#MathJax_AboutClose {top: .2em; right: .2em}
-.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
-.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
-.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
-.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
-.MathJax_MenuClose:hover span {background-color: #CCC!important}
-.MathJax_MenuClose:hover:focus {outline: none}
-</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
-</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
-.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
-</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
-#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
-#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
-#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
-</style><style type="text/css">.MathJax_Preview {color: #888}
-#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
-#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
-.MathJax_Error {color: #CC0000; font-style: italic}
-</style><style type="text/css">.MJXp-script {font-size: .8em}
-.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
-.MJXp-bold {font-weight: bold}
-.MJXp-italic {font-style: italic}
-.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
-.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
-.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
-.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
-.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
-.MJXp-largeop {font-size: 150%}
-.MJXp-largeop.MJXp-int {vertical-align: -.2em}
-.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
-.MJXp-display {display: block; text-align: center; margin: 1em 0}
-.MJXp-math span {display: inline-block}
-.MJXp-box {display: block!important; text-align: center}
-.MJXp-box:after {content: " "}
-.MJXp-rule {display: block!important; margin-top: .1em}
-.MJXp-char {display: block!important}
-.MJXp-mo {margin: 0 .15em}
-.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
-.MJXp-denom {display: inline-table!important; width: 100%}
-.MJXp-denom > * {display: table-row!important}
-.MJXp-surd {vertical-align: top}
-.MJXp-surd > * {display: block!important}
-.MJXp-script-box > *  {display: table!important; height: 50%}
-.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
-.MJXp-script-box > *:last-child > * {vertical-align: bottom}
-.MJXp-script-box > * > * > * {display: block!important}
-.MJXp-mphantom {visibility: hidden}
-.MJXp-munderover {display: inline-table!important}
-.MJXp-over {display: inline-block!important; text-align: center}
-.MJXp-over > * {display: block!important}
-.MJXp-munderover > * {display: table-row!important}
-.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
-.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
-.MJXp-mtr {display: table-row!important}
-.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
-.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
-.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
-.MJXp-mlabeledtr {display: table-row!important}
-.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
-.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
-.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
-.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
-.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
-.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
-.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
-.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
-.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
-.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
-.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
-.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
-.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
-.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
-</style></head>
-<body style=""><div id="MathJax_Message" style="display: none;"></div>
+    <!-- End of mathjax configuration --></head>
+<body>
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">"white"</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline
 </pre></div>
 
@@ -11904,7 +11809,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="FHHPS---Data-Cleaning"><center>FHHPS - Data Cleaning</center><a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#FHHPS---Data-Cleaning">¶</a></h1>
+<h1 id="FHHPS---Data-Cleaning"><center>FHHPS - Data Cleaning</center><a class="anchor-link" href="#FHHPS---Data-Cleaning">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -11925,7 +11830,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">PATH_TO_ASI_FILES</span> <span class="o">=</span> <span class="s2">"ASI_FILES/"</span> <span class="c1"># BLx200y.dta files should be in this directory</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">PATH_TO_ASI_FILES</span> <span class="o">=</span> <span class="s2">&quot;ASI_FILES/&quot;</span> <span class="c1"># BLx200y.dta files should be in this directory</span>
 </pre></div>
 
 </div>
@@ -11948,7 +11853,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Overview">Overview<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Overview">¶</a></h2><p>Broadly, we follow these steps:</p>
+<h2 id="Overview">Overview<a class="anchor-link" href="#Overview">&#182;</a></h2><p>Broadly, we follow these steps:</p>
 <p>1) <b>Read data from ASI files.</b></p>
 <p>There are 10 files for each year, named <code>BLA2008, BLA2009, BLB2008, BLB2009</code>, and so on. (<code>BL</code> stands for <code>BLOCK</code>).</p>
 <p>The <code>BLA</code> files have firms' identification details such as factory ID, state, sampling scheme, etc.</p>
@@ -11978,7 +11883,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Step-1:-Extract-ASI-data">Step 1: Extract ASI data<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Step-1:-Extract-ASI-data">¶</a></h1>
+<h1 id="Step-1:-Extract-ASI-data">Step 1: Extract ASI data<a class="anchor-link" href="#Step-1:-Extract-ASI-data">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -11987,7 +11892,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="ASI-BLOCKS-B-J">ASI BLOCKS B-J<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#ASI-BLOCKS-B-J">¶</a></h2>
+<h2 id="ASI-BLOCKS-B-J">ASI BLOCKS B-J<a class="anchor-link" href="#ASI-BLOCKS-B-J">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -12008,21 +11913,21 @@ div#notebook {
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">letter</span><span class="p">,</span> <span class="n">condition_column</span><span class="p">,</span> <span class="n">condition_value</span><span class="p">,</span> <span class="n">columns_to_keep</span><span class="p">,</span> <span class="n">new_column_names</span><span class="p">):</span>
     
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts the data from files BLx200y, where x is a letter and y 8 and 9</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="n">columns_to_keep</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns_to_keep</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">columns_to_keep</span>
         
     <span class="c1"># Always keep FACT_ID and YEAR</span>
-    <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"FACT_ID"</span><span class="p">,</span> <span class="s2">"YEAR"</span><span class="p">]</span> <span class="o">+</span> <span class="n">columns_to_keep</span>    
+    <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;YEAR&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">columns_to_keep</span>    
     
-    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"2008"</span><span class="p">,</span> <span class="s2">"2009"</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;2008&quot;</span><span class="p">,</span> <span class="s2">&quot;2009&quot;</span><span class="p">]:</span>
         
         <span class="c1"># Read in data</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="n">PATH_TO_ASI_FILES</span> <span class="o">+</span> <span class="s2">"/BL</span><span class="si">%s%s</span><span class="s2">.dta"</span> <span class="o">%</span> <span class="p">(</span><span class="n">letter</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">PATH_TO_ASI_FILES</span> <span class="o">+</span> <span class="s2">&quot;/BL</span><span class="si">%s%s</span><span class="s2">.dta&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">letter</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         
         <span class="c1"># Set condition</span>
@@ -12039,7 +11944,7 @@ div#notebook {
         <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
     
     <span class="c1"># Put everything together after grabbing information for each year</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">"FACT_ID"</span><span class="p">,</span> <span class="s2">"YEAR"</span><span class="p">])</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;YEAR&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
     
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
         <span class="n">output</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_column_names</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_column_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">new_column_names</span><span class="p">]</span>
@@ -12060,7 +11965,7 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">pad_zeros</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="s2">"</span><span class="si">%04d</span><span class="s2">"</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%04d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12073,7 +11978,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Output">Output<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Output">¶</a></h3><p>Output is defined as the gross sales value in Rupees.</p>
+<h3 id="Output">Output<a class="anchor-link" href="#Output">&#182;</a></h3><p>Output is defined as the gross sales value in Rupees.</p>
 <p><b>Details:</b></p>
 <blockquote><p>The <b>gross sale value</b> of the products as charged from the customers will be reported here. It includes excise duty paid or sales tax realized by the factory on behalf of the Government as also all distributive expenses incurred such as (i) discount or rebate, allowances for returnable cases or other packing and any other drawback allowed to customers, (ii) charges for carriage, outward, and (iii) commission to selling agents.</p>
 </blockquote>
@@ -12090,11 +11995,11 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Y</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">letter</span> <span class="o">=</span> <span class="s2">"J"</span><span class="p">,</span> 
-            <span class="n">condition_column</span> <span class="o">=</span> <span class="s2">"J_I1"</span><span class="p">,</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Y</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">letter</span> <span class="o">=</span> <span class="s2">&quot;J&quot;</span><span class="p">,</span> 
+            <span class="n">condition_column</span> <span class="o">=</span> <span class="s2">&quot;J_I1&quot;</span><span class="p">,</span>
             <span class="n">condition_value</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
-            <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="s2">"J_I7"</span><span class="p">,</span>
-            <span class="n">new_column_names</span> <span class="o">=</span> <span class="s2">"Y"</span><span class="p">)</span>
+            <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="s2">&quot;J_I7&quot;</span><span class="p">,</span>
+            <span class="n">new_column_names</span> <span class="o">=</span> <span class="s2">&quot;Y&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12107,7 +12012,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Capital">Capital<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Capital">¶</a></h3><p>Capital is defined as the net value of fixed assets (defined below) in Rupees. There are two such variables.</p>
+<h3 id="Capital">Capital<a class="anchor-link" href="#Capital">&#182;</a></h3><p>Capital is defined as the net value of fixed assets (defined below) in Rupees. There are two such variables.</p>
 <ul>
 <li><p><code>Opening On - Net Value</code> refers to Net Value on 01-04-2008 (2007); while</p>
 </li>
@@ -12137,11 +12042,11 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">K</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">letter</span> <span class="o">=</span> <span class="s2">"C"</span><span class="p">,</span> 
-            <span class="n">condition_column</span> <span class="o">=</span> <span class="s2">"C_I1"</span><span class="p">,</span>
-            <span class="n">condition_value</span> <span class="o">=</span> <span class="s2">"Total"</span><span class="p">,</span>
-            <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"C_I12"</span><span class="p">,</span> <span class="s2">"C_I13"</span><span class="p">],</span>
-            <span class="n">new_column_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"K_open"</span><span class="p">,</span> <span class="s2">"K_close"</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">K</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">letter</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> 
+            <span class="n">condition_column</span> <span class="o">=</span> <span class="s2">&quot;C_I1&quot;</span><span class="p">,</span>
+            <span class="n">condition_value</span> <span class="o">=</span> <span class="s2">&quot;Total&quot;</span><span class="p">,</span>
+            <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;C_I12&quot;</span><span class="p">,</span> <span class="s2">&quot;C_I13&quot;</span><span class="p">],</span>
+            <span class="n">new_column_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;K_open&quot;</span><span class="p">,</span> <span class="s2">&quot;K_close&quot;</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -12231,7 +12136,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Labor--and-Wages">Labor  and Wages<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Labor--and-Wages">¶</a></h3><p>Labor is defined as the average number of persons worked.</p>
+<h3 id="Labor--and-Wages">Labor  and Wages<a class="anchor-link" href="#Labor--and-Wages">&#182;</a></h3><p>Labor is defined as the average number of persons worked.</p>
 <p>Wages are total emoluments (see below) paid to employees throughout the year, in Rupees.</p>
 <p><b>Data:</b></p>
 <ul>
@@ -12255,11 +12160,11 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">LW</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">letter</span> <span class="o">=</span> <span class="s2">"E"</span><span class="p">,</span> 
-            <span class="n">condition_column</span> <span class="o">=</span> <span class="s2">"E_I1"</span><span class="p">,</span>
-            <span class="n">condition_value</span> <span class="o">=</span> <span class="s2">"Total employees"</span><span class="p">,</span>
-            <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"E_I6"</span><span class="p">,</span> <span class="s2">"E_I8"</span><span class="p">],</span>
-            <span class="n">new_column_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"L"</span><span class="p">,</span> <span class="s2">"W"</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">LW</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">letter</span> <span class="o">=</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> 
+            <span class="n">condition_column</span> <span class="o">=</span> <span class="s2">&quot;E_I1&quot;</span><span class="p">,</span>
+            <span class="n">condition_value</span> <span class="o">=</span> <span class="s2">&quot;Total employees&quot;</span><span class="p">,</span>
+            <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;E_I6&quot;</span><span class="p">,</span> <span class="s2">&quot;E_I8&quot;</span><span class="p">],</span>
+            <span class="n">new_column_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -12349,7 +12254,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Materials">Materials<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Materials">¶</a></h3><p>Materials are the sum of the value of imported and indigenous goods (raw materials, components, chemicals, packing material, etc.) which entered into the production process of the factory during the accounting year, in Rupees.</p>
+<h3 id="Materials">Materials<a class="anchor-link" href="#Materials">&#182;</a></h3><p>Materials are the sum of the value of imported and indigenous goods (raw materials, components, chemicals, packing material, etc.) which entered into the production process of the factory during the accounting year, in Rupees.</p>
 <p><b>Data:</b></p>
 <ul>
 <li><p>Imported: Columns I_I6 (purchase value of imported inputs) where I_I1 (Field) == 7 (representing "total")</p>
@@ -12371,21 +12276,21 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Imported materials</span>
-<span class="n">M1</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">letter</span> <span class="o">=</span> <span class="s2">"I"</span><span class="p">,</span> 
-             <span class="n">condition_column</span> <span class="o">=</span> <span class="s2">"I_I1"</span><span class="p">,</span>
+<span class="n">M1</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">letter</span> <span class="o">=</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span> 
+             <span class="n">condition_column</span> <span class="o">=</span> <span class="s2">&quot;I_I1&quot;</span><span class="p">,</span>
              <span class="n">condition_value</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
-             <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"I_I6"</span><span class="p">],</span>
-             <span class="n">new_column_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"M1"</span><span class="p">])</span>
+             <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;I_I6&quot;</span><span class="p">],</span>
+             <span class="n">new_column_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;M1&quot;</span><span class="p">])</span>
 
 <span class="c1"># Indigenous_materials</span>
-<span class="n">M2</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">letter</span> <span class="o">=</span> <span class="s2">"H"</span><span class="p">,</span> 
-             <span class="n">condition_column</span> <span class="o">=</span> <span class="s2">"H_I1"</span><span class="p">,</span>
-             <span class="n">condition_value</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\\</span><span class="s2">bTotal</span><span class="se">\\</span><span class="s2">b"</span><span class="p">,</span> <span class="c1"># Make sure not to match TotalBasic, etc</span>
-             <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"H_I6"</span><span class="p">],</span>
-             <span class="n">new_column_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"M2"</span><span class="p">])</span>
+<span class="n">M2</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">letter</span> <span class="o">=</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> 
+             <span class="n">condition_column</span> <span class="o">=</span> <span class="s2">&quot;H_I1&quot;</span><span class="p">,</span>
+             <span class="n">condition_value</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">bTotal</span><span class="se">\\</span><span class="s2">b&quot;</span><span class="p">,</span> <span class="c1"># Make sure not to match TotalBasic, etc</span>
+             <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;H_I6&quot;</span><span class="p">],</span>
+             <span class="n">new_column_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;M2&quot;</span><span class="p">])</span>
 
 <span class="n">M</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">M1</span><span class="p">,</span> <span class="n">M2</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">M</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"M"</span><span class="p">]</span>
+<span class="n">M</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -12478,7 +12383,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">LW</span><span class="p">,</span> <span class="n">M</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">join</span> <span class="o">=</span> <span class="s2">"outer"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">LW</span><span class="p">,</span> <span class="n">M</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">join</span> <span class="o">=</span> <span class="s2">&quot;outer&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12491,7 +12396,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"blocks_B-J.csv"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;blocks_B-J.csv&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12514,7 +12419,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Factory-information-(ASI-BLOCK-A)">Factory information (ASI BLOCK A)<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Factory-information-(ASI-BLOCK-A)">¶</a></h2>
+<h2 id="Factory-information-(ASI-BLOCK-A)">Factory information (ASI BLOCK A)<a class="anchor-link" href="#Factory-information-(ASI-BLOCK-A)">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -12544,13 +12449,13 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"2008"</span><span class="p">,</span> <span class="s2">"2009"</span><span class="p">]:</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="s2">"Allcott Intermediate Files/BLA</span><span class="si">%s</span><span class="s2">.dta"</span> <span class="o">%</span> <span class="n">year</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"FACT_ID"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">7</span><span class="p">])</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span> <span class="o">=</span> <span class="s2">"FACT_ID"</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">"FACT_ID"</span><span class="p">,</span> <span class="s2">"YEAR"</span><span class="p">])</span>
-    <span class="n">open_factory</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"A12"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"Open"</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">open_factory</span><span class="p">,</span> <span class="p">[</span><span class="s2">"state"</span><span class="p">,</span> <span class="s2">"A3"</span><span class="p">,</span> <span class="s2">"A5"</span><span class="p">,</span> <span class="s2">"A9"</span><span class="p">]]</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">"A9"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"A9"</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"Rural"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"Urban"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;2008&quot;</span><span class="p">,</span> <span class="s2">&quot;2009&quot;</span><span class="p">]:</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="s2">&quot;Allcott Intermediate Files/BLA</span><span class="si">%s</span><span class="s2">.dta&quot;</span> <span class="o">%</span> <span class="n">year</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">7</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span> <span class="o">=</span> <span class="s2">&quot;FACT_ID&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;YEAR&quot;</span><span class="p">])</span>
+    <span class="n">open_factory</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;A12&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Open&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">open_factory</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="s2">&quot;A3&quot;</span><span class="p">,</span> <span class="s2">&quot;A5&quot;</span><span class="p">,</span> <span class="s2">&quot;A9&quot;</span><span class="p">]]</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;A9&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;A9&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Rural&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Urban&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 
@@ -12565,7 +12470,7 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">info</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
-<span class="n">info</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"state"</span><span class="p">,</span> <span class="s2">"scheme"</span><span class="p">,</span> <span class="s2">"nic5"</span><span class="p">,</span> <span class="s2">"urban"</span><span class="p">]</span>
+<span class="n">info</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="s2">&quot;scheme&quot;</span><span class="p">,</span> <span class="s2">&quot;nic5&quot;</span><span class="p">,</span> <span class="s2">&quot;urban&quot;</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -12578,7 +12483,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"info.csv"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;info.csv&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12601,7 +12506,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Step-2:-Merge-in-ISIC-and-Deflators">Step 2: Merge in ISIC and Deflators<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Step-2:-Merge-in-ISIC-and-Deflators">¶</a></h1>
+<h1 id="Step-2:-Merge-in-ISIC-and-Deflators">Step 2: Merge in ISIC and Deflators<a class="anchor-link" href="#Step-2:-Merge-in-ISIC-and-Deflators">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -12610,7 +12515,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="ISIC">ISIC<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#ISIC">¶</a></h2><p>In order to revert NIC2004 and NIC2008 codes back to 1987, we use correspondence tables provided in the <a href="http://unstats.un.org/unsd/cr/registry/regdnld.asp?Lg=1">UN Statistics Division</a> website</p>
+<h2 id="ISIC">ISIC<a class="anchor-link" href="#ISIC">&#182;</a></h2><p>In order to revert NIC2004 and NIC2008 codes back to 1987, we use correspondence tables provided in the <a href="http://unstats.un.org/unsd/cr/registry/regdnld.asp?Lg=1">UN Statistics Division</a> website</p>
 <ul>
 <li>ISIC3.1-ISIC4.zip <a href="http://unstats.un.org/unsd/cr/registry/regdntransfer.asp?f=121">link</a> (Equivalent to NIC2004 - NIC2008)</li>
 <li>ISIC3-ISIC3.1.zip <a href="http://unstats.un.org/unsd/cr/registry/regdntransfer.asp?f=39">link</a> (Equivalent to NIC 1998 - NIC2004)</li>
@@ -12625,14 +12530,14 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">isic2_3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s2">"ISIC/ISIC3-ISIC2.txt"</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s2">","</span><span class="p">)[[</span><span class="s2">"ISIC3"</span><span class="p">,</span> <span class="s2">"ISIC2"</span><span class="p">]]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">pad_zeros</span><span class="p">)</span>
-<span class="n">isic3_31</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s2">"ISIC/ISIC3-ISIC31.txt"</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s2">","</span><span class="p">,</span> <span class="n">na_values</span> <span class="o">=</span> <span class="s2">"n/a"</span><span class="p">)[[</span><span class="s2">"Rev3"</span><span class="p">,</span> <span class="s2">"Rev31"</span><span class="p">]]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">pad_zeros</span><span class="p">)</span>
-<span class="n">isic3_31</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ISIC3"</span><span class="p">,</span> <span class="s2">"ISIC31"</span><span class="p">]</span>
-<span class="n">isic31_4</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s2">"ISIC/ISIC4-ISIC31.txt"</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s2">","</span><span class="p">,</span> <span class="n">na_values</span> <span class="o">=</span> <span class="s2">"n/a"</span><span class="p">)[[</span><span class="s2">"ISIC31code"</span><span class="p">,</span><span class="s2">"ISIC4code"</span><span class="p">]]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">pad_zeros</span><span class="p">)</span>
-<span class="n">isic31_4</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ISIC31"</span><span class="p">,</span> <span class="s2">"ISIC4"</span><span class="p">]</span>
-<span class="n">isic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">isic2_3</span><span class="p">,</span> <span class="n">isic3_31</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span> <span class="s2">"ISIC3"</span><span class="p">)</span>
-<span class="n">isic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">isic</span><span class="p">,</span> <span class="n">isic31_4</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span> <span class="s2">"ISIC31"</span><span class="p">)</span>
-<span class="n">isic</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"isic_correspondences.csv"</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">isic2_3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s2">&quot;ISIC/ISIC3-ISIC2.txt&quot;</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">)[[</span><span class="s2">&quot;ISIC3&quot;</span><span class="p">,</span> <span class="s2">&quot;ISIC2&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">pad_zeros</span><span class="p">)</span>
+<span class="n">isic3_31</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s2">&quot;ISIC/ISIC3-ISIC31.txt&quot;</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">na_values</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)[[</span><span class="s2">&quot;Rev3&quot;</span><span class="p">,</span> <span class="s2">&quot;Rev31&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">pad_zeros</span><span class="p">)</span>
+<span class="n">isic3_31</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ISIC3&quot;</span><span class="p">,</span> <span class="s2">&quot;ISIC31&quot;</span><span class="p">]</span>
+<span class="n">isic31_4</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s2">&quot;ISIC/ISIC4-ISIC31.txt&quot;</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">na_values</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)[[</span><span class="s2">&quot;ISIC31code&quot;</span><span class="p">,</span><span class="s2">&quot;ISIC4code&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">pad_zeros</span><span class="p">)</span>
+<span class="n">isic31_4</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ISIC31&quot;</span><span class="p">,</span> <span class="s2">&quot;ISIC4&quot;</span><span class="p">]</span>
+<span class="n">isic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">isic2_3</span><span class="p">,</span> <span class="n">isic3_31</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span> <span class="s2">&quot;ISIC3&quot;</span><span class="p">)</span>
+<span class="n">isic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">isic</span><span class="p">,</span> <span class="n">isic31_4</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span> <span class="s2">&quot;ISIC31&quot;</span><span class="p">)</span>
+<span class="n">isic</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;isic_correspondences.csv&quot;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12655,7 +12560,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Deflators"><b>Deflators</b><a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Deflators">¶</a></h2>
+<h2 id="Deflators"><b>Deflators</b><a class="anchor-link" href="#Deflators">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -12678,9 +12583,9 @@ div#notebook {
 <p>From Allcott's appendix</p>
 <blockquote><p>All financial amounts are deflated to constant 2004-05 Rupees. <b>Revenue</b> (gross sales) is deflated by a three-digit commodity price deflators as available in the commodity-based table “Index Numbers Of Wholesale Prices In India – By Groups And Sub-Groups (Yearly Averages)” produced by the Office of the Economic Adviser-Ministry of Commerce &amp; Industry.2 Each three-digit NIC-1987 code is assigned to a commodity listed in this table. The corresponding commodity de- flator is used to deflate revenues. To deflate <b>material inputs</b>, we construct the average output deflator of a given industry’s supplier industries based on India’s 1993-94 input-output table, available from the Central Statistical Organization. (...) <b>Capital</b> is deflated by an implied national deflator calculated from “Table 13: Sector-wise Gross Capital Formation” from the Reserve Bank of India’s Handbook of Statistics on the Indian Economy.3 Electricity costs are deflated using a national GDP deflator.</p>
 </blockquote>
-<h4 id="Comments">Comments<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Comments">¶</a></h4><p>1) For future reference, the relevant input-output table for the years 2007-2008 can be found <a href="http://mospi.nic.in/sites/default/files/reports_and_publication/cso_national_accounts/input_output_transactions_table/2007_08/Binder1%201.pdf">here</a>.</p>
+<h4 id="Comments">Comments<a class="anchor-link" href="#Comments">&#182;</a></h4><p>1) For future reference, the relevant input-output table for the years 2007-2008 can be found <a href="http://mospi.nic.in/sites/default/files/reports_and_publication/cso_national_accounts/input_output_transactions_table/2007_08/Binder1%201.pdf">here</a>.</p>
 <p>2) Allcott has a "state gdp deflator" in his code. It's not clear how it's used, and it's not among the available files in this website.</p>
-<h3 id="&lt;font-size-=-3,-color-=&quot;red&quot;&gt;-☠-IMPORTANT&lt;/font&gt;-No-NIC-specific-deflators-for-non-manufacturing-firms">&lt;font size = 3, color ="red"&gt; ☠ IMPORTANT&lt;/font&gt; No NIC-specific deflators for non-manufacturing firms<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#&lt;font-size-=-3,-color-=&quot;red&quot;&gt;-☠-IMPORTANT&lt;/font&gt;-No-NIC-specific-deflators-for-non-manufacturing-firms">¶</a></h3><p>Allcott only has input and output deflators for manufacturing firms. For other kinds of firms, we impute the overall average for that year.</p>
+<h3 id="&#9760;-IMPORTANT:-No-NIC-specific-deflators-for-non-manufacturing-firms">&#9760; IMPORTANT: No NIC-specific deflators for non-manufacturing firms<a class="anchor-link" href="#&#9760;-IMPORTANT:-No-NIC-specific-deflators-for-non-manufacturing-firms">&#182;</a></h3><p>Allcott only has input and output deflators for manufacturing firms. For other kinds of firms, we impute the overall average for that year.</p>
 
 </div>
 </div>
@@ -12713,9 +12618,9 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">input_deflator</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="s2">"Deflators/final input deflator.dta"</span><span class="p">)</span>
-<span class="n">input_deflator</span> <span class="o">=</span> <span class="n">input_deflator</span><span class="p">[</span><span class="n">input_deflator</span><span class="p">[</span><span class="s2">"year"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">deflator_years</span><span class="p">)]</span>
-<span class="n">input_deflator</span><span class="p">[</span><span class="s2">"input_deflator"</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">100</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">input_deflator</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="s2">&quot;Deflators/final input deflator.dta&quot;</span><span class="p">)</span>
+<span class="n">input_deflator</span> <span class="o">=</span> <span class="n">input_deflator</span><span class="p">[</span><span class="n">input_deflator</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">deflator_years</span><span class="p">)]</span>
+<span class="n">input_deflator</span><span class="p">[</span><span class="s2">&quot;input_deflator&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">100</span> 
 </pre></div>
 
 </div>
@@ -12728,10 +12633,10 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">output_deflator</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="s2">"Deflators/final output deflator.dta"</span><span class="p">)</span>
-<span class="n">output_deflator</span> <span class="o">=</span> <span class="n">output_deflator</span><span class="p">[</span><span class="n">output_deflator</span><span class="p">[</span><span class="s2">"year"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">deflator_years</span><span class="p">)]</span>
-<span class="n">output_deflator</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"deflator"</span><span class="p">:</span> <span class="s2">"output_deflator"</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">output_deflator</span><span class="p">[</span><span class="s2">"output_deflator"</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">100</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">output_deflator</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="s2">&quot;Deflators/final output deflator.dta&quot;</span><span class="p">)</span>
+<span class="n">output_deflator</span> <span class="o">=</span> <span class="n">output_deflator</span><span class="p">[</span><span class="n">output_deflator</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">deflator_years</span><span class="p">)]</span>
+<span class="n">output_deflator</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;deflator&quot;</span><span class="p">:</span> <span class="s2">&quot;output_deflator&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">output_deflator</span><span class="p">[</span><span class="s2">&quot;output_deflator&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">100</span> 
 </pre></div>
 
 </div>
@@ -12744,10 +12649,10 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">national_deflator</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"Deflators/gdp deflator national.csv"</span><span class="p">)</span>
-<span class="n">national_deflator</span> <span class="o">=</span> <span class="n">national_deflator</span><span class="p">[</span><span class="n">national_deflator</span><span class="p">[</span><span class="s2">"year"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">deflator_years</span><span class="p">)]</span>
-<span class="n">national_deflator</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span> <span class="p">{</span><span class="s2">"gdp_defl_natl"</span><span class="p">:</span><span class="s2">"national_deflator"</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">national_deflator</span><span class="p">[</span><span class="s2">"national_deflator"</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">100</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">national_deflator</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;Deflators/gdp deflator national.csv&quot;</span><span class="p">)</span>
+<span class="n">national_deflator</span> <span class="o">=</span> <span class="n">national_deflator</span><span class="p">[</span><span class="n">national_deflator</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">deflator_years</span><span class="p">)]</span>
+<span class="n">national_deflator</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span> <span class="p">{</span><span class="s2">&quot;gdp_defl_natl&quot;</span><span class="p">:</span><span class="s2">&quot;national_deflator&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">national_deflator</span><span class="p">[</span><span class="s2">&quot;national_deflator&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">100</span>
 </pre></div>
 
 </div>
@@ -12760,10 +12665,10 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">capital_deflator</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"Deflators/RBI Capital Formation Accounts.csv"</span><span class="p">)</span>
-<span class="n">capital_deflator</span><span class="p">[</span><span class="s2">"Year"</span><span class="p">]</span> <span class="o">=</span> <span class="n">capital_deflator</span><span class="p">[</span><span class="s2">"Year"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)[:</span><span class="mi">4</span><span class="p">]))</span>
-<span class="n">capital_deflator</span> <span class="o">=</span> <span class="n">capital_deflator</span><span class="p">[</span><span class="n">capital_deflator</span><span class="p">[</span><span class="s2">"Year"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">deflator_years</span><span class="p">)][[</span><span class="s2">"Year"</span><span class="p">,</span><span class="s2">"Capital_Deflator"</span><span class="p">]]</span>
-<span class="n">capital_deflator</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"year"</span><span class="p">,</span> <span class="s2">"capital_deflator"</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">capital_deflator</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;Deflators/RBI Capital Formation Accounts.csv&quot;</span><span class="p">)</span>
+<span class="n">capital_deflator</span><span class="p">[</span><span class="s2">&quot;Year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">capital_deflator</span><span class="p">[</span><span class="s2">&quot;Year&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)[:</span><span class="mi">4</span><span class="p">]))</span>
+<span class="n">capital_deflator</span> <span class="o">=</span> <span class="n">capital_deflator</span><span class="p">[</span><span class="n">capital_deflator</span><span class="p">[</span><span class="s2">&quot;Year&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">deflator_years</span><span class="p">)][[</span><span class="s2">&quot;Year&quot;</span><span class="p">,</span><span class="s2">&quot;Capital_Deflator&quot;</span><span class="p">]]</span>
+<span class="n">capital_deflator</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;capital_deflator&quot;</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -12791,7 +12696,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">deflator</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"nic3digit"</span><span class="p">:</span> <span class="s2">"NIC1987"</span><span class="p">,</span> <span class="s2">"year"</span><span class="p">:</span><span class="s2">"YEAR"</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">deflator</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;nic3digit&quot;</span><span class="p">:</span> <span class="s2">&quot;NIC1987&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">:</span><span class="s2">&quot;YEAR&quot;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12804,7 +12709,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">deflator</span><span class="p">[</span><span class="s2">"YEAR"</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># To agree with main data set </span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">deflator</span><span class="p">[</span><span class="s2">&quot;YEAR&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># To agree with main data set </span>
 </pre></div>
 
 </div>
@@ -12817,7 +12722,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">deflator</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"deflators.csv"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">deflator</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;deflators.csv&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12913,7 +12818,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Merging">Merging<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Merging">¶</a></h2>
+<h2 id="Merging">Merging<a class="anchor-link" href="#Merging">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -12922,10 +12827,10 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"info.csv"</span><span class="p">)</span>                <span class="c1"># Extracted from ASI dataset block A</span>
-<span class="n">blocks_bj</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"blocks_B-J.csv"</span><span class="p">)</span>     <span class="c1"># Extracted from ASI dataset blocks B-J</span>
-<span class="n">deflator</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"deflators.csv"</span><span class="p">)</span>       <span class="c1"># Allcott's deflator files</span>
-<span class="n">isic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"isic_correspondences.csv"</span><span class="p">)</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;info.csv&quot;</span><span class="p">)</span>                <span class="c1"># Extracted from ASI dataset block A</span>
+<span class="n">blocks_bj</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;blocks_B-J.csv&quot;</span><span class="p">)</span>     <span class="c1"># Extracted from ASI dataset blocks B-J</span>
+<span class="n">deflator</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;deflators.csv&quot;</span><span class="p">)</span>       <span class="c1"># Allcott&#39;s deflator files</span>
+<span class="n">isic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;isic_correspondences.csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12948,7 +12853,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info</span><span class="p">[</span><span class="s2">"nic4"</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"nic5"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)[:</span><span class="mi">4</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;nic4&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;nic5&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)[:</span><span class="mi">4</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -12961,11 +12866,11 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info8</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s2">"YEAR"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2008</span><span class="p">],</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info8</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;YEAR&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2008</span><span class="p">],</span> 
                  <span class="n">isic</span><span class="p">,</span> 
-                 <span class="n">left_on</span> <span class="o">=</span> <span class="s2">"nic4"</span><span class="p">,</span> 
-                 <span class="n">right_on</span> <span class="o">=</span> <span class="s2">"ISIC31"</span><span class="p">,</span>
-                 <span class="n">how</span> <span class="o">=</span> <span class="s2">"left"</span><span class="p">)</span>
+                 <span class="n">left_on</span> <span class="o">=</span> <span class="s2">&quot;nic4&quot;</span><span class="p">,</span> 
+                 <span class="n">right_on</span> <span class="o">=</span> <span class="s2">&quot;ISIC31&quot;</span><span class="p">,</span>
+                 <span class="n">how</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12978,11 +12883,11 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info9</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s2">"YEAR"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2009</span><span class="p">],</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info9</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;YEAR&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2009</span><span class="p">],</span> 
                  <span class="n">isic</span><span class="p">,</span> 
-                 <span class="n">left_on</span> <span class="o">=</span> <span class="s2">"nic4"</span><span class="p">,</span> 
-                 <span class="n">right_on</span> <span class="o">=</span> <span class="s2">"ISIC4"</span><span class="p">,</span>
-                 <span class="n">how</span> <span class="o">=</span> <span class="s2">"left"</span><span class="p">)</span>
+                 <span class="n">left_on</span> <span class="o">=</span> <span class="s2">&quot;nic4&quot;</span><span class="p">,</span> 
+                 <span class="n">right_on</span> <span class="o">=</span> <span class="s2">&quot;ISIC4&quot;</span><span class="p">,</span>
+                 <span class="n">how</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12995,7 +12900,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="&lt;font-size-=-3,-color-=&quot;red&quot;&gt;-☠-IMPORTANT&lt;/font&gt;-NIC-concordance-information-is-insufficient">&lt;font size = 3, color ="red"&gt; ☠ IMPORTANT&lt;/font&gt; NIC concordance information is insufficient<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#&lt;font-size-=-3,-color-=&quot;red&quot;&gt;-☠-IMPORTANT&lt;/font&gt;-NIC-concordance-information-is-insufficient">¶</a></h3><p>We are trying to replicate this from Allcott's appendix:</p>
+<h3 id="&#9760;-IMPORTANT--NIC-concordance-information-is-insufficient">&#9760; IMPORTANT  NIC concordance information is insufficient<a class="anchor-link" href="#&#9760;-IMPORTANT--NIC-concordance-information-is-insufficient">&#182;</a></h3><p>We are trying to replicate this from Allcott's appendix:</p>
 <blockquote><p>[NIC] classifications were revised in 1987, 1988, 2004 and 2008. We convert all industry classifications to the NIC-1987 scheme using concordances provided by MOSPI [India Ministry of Statistics and Programme Implementation]</p>
 </blockquote>
 <p>(Note: we would not need to bother with this, if it weren't for the fact that Allcott's input and output deflators use NIC1987 information.)</p>
@@ -13048,8 +12953,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info8</span> <span class="o">=</span> <span class="n">info8</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s2">"FACT_ID"</span><span class="p">)</span> 
-<span class="n">info9</span> <span class="o">=</span> <span class="n">info9</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s2">"FACT_ID"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info8</span> <span class="o">=</span> <span class="n">info8</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">)</span> 
+<span class="n">info9</span> <span class="o">=</span> <span class="n">info9</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -13063,7 +12968,7 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">info</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">info8</span><span class="p">,</span> <span class="n">info9</span><span class="p">])</span>
-<span class="n">info</span><span class="p">[</span><span class="s2">"NIC1987"</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"ISIC2"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)[:</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">info</span><span class="p">[</span><span class="s2">&quot;NIC1987&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;ISIC2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)[:</span><span class="mi">3</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -13076,7 +12981,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nans</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"ISIC4"</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nans</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;ISIC4&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -13089,8 +12994,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info</span><span class="p">[[</span><span class="s2">"ISIC3"</span><span class="p">,</span><span class="s2">"ISIC2"</span><span class="p">,</span><span class="s2">"ISIC31"</span><span class="p">,</span><span class="s2">"ISIC4"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[[</span><span class="s2">"ISIC3"</span><span class="p">,</span><span class="s2">"ISIC2"</span><span class="p">,</span><span class="s2">"ISIC31"</span><span class="p">,</span><span class="s2">"ISIC4"</span><span class="p">]]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">"9999"</span><span class="p">)</span>
-<span class="n">info</span><span class="p">[</span><span class="s2">"NIC1987"</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"NIC1987"</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">"9999"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">info</span><span class="p">[[</span><span class="s2">&quot;ISIC3&quot;</span><span class="p">,</span><span class="s2">&quot;ISIC2&quot;</span><span class="p">,</span><span class="s2">&quot;ISIC31&quot;</span><span class="p">,</span><span class="s2">&quot;ISIC4&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[[</span><span class="s2">&quot;ISIC3&quot;</span><span class="p">,</span><span class="s2">&quot;ISIC2&quot;</span><span class="p">,</span><span class="s2">&quot;ISIC31&quot;</span><span class="p">,</span><span class="s2">&quot;ISIC4&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;9999&quot;</span><span class="p">)</span>
+<span class="n">info</span><span class="p">[</span><span class="s2">&quot;NIC1987&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;NIC1987&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;9999&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -13103,7 +13008,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Filled"</span><span class="p">,</span> <span class="n">nans</span><span class="p">,</span> <span class="s2">"missing industry codes with 9999."</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Filled&quot;</span><span class="p">,</span> <span class="n">nans</span><span class="p">,</span> <span class="s2">&quot;missing industry codes with 9999.&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -13142,7 +13047,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">blocks_bj</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span> <span class="p">[</span><span class="s2">"FACT_ID"</span><span class="p">,</span> <span class="s2">"YEAR"</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">blocks_bj</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span> <span class="p">[</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;YEAR&quot;</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -13155,7 +13060,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Merge-deflators">Merge deflators<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Merge-deflators">¶</a></h4><p>Recall that deflators only exist for manufacturing NICs.</p>
+<h4 id="Merge-deflators">Merge deflators<a class="anchor-link" href="#Merge-deflators">&#182;</a></h4><p>Recall that deflators only exist for manufacturing NICs.</p>
 
 </div>
 </div>
@@ -13165,8 +13070,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">deflator</span><span class="p">[</span><span class="s2">"NIC1987"</span><span class="p">]</span> <span class="o">=</span> <span class="n">deflator</span><span class="p">[</span><span class="s2">"NIC1987"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deflator</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span> <span class="p">[</span><span class="s2">"YEAR"</span><span class="p">,</span> <span class="s2">"NIC1987"</span><span class="p">],</span> <span class="n">how</span> <span class="o">=</span> <span class="s2">"left"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">deflator</span><span class="p">[</span><span class="s2">&quot;NIC1987&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deflator</span><span class="p">[</span><span class="s2">&quot;NIC1987&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deflator</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span> <span class="p">[</span><span class="s2">&quot;YEAR&quot;</span><span class="p">,</span> <span class="s2">&quot;NIC1987&quot;</span><span class="p">],</span> <span class="n">how</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
@@ -13208,9 +13113,9 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">defl</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"input_deflator"</span><span class="p">,</span> <span class="s2">"national_deflator"</span><span class="p">,</span> <span class="s2">"output_deflator"</span><span class="p">,</span> <span class="s2">"capital_deflator"</span><span class="p">]:</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">defl</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;input_deflator&quot;</span><span class="p">,</span> <span class="s2">&quot;national_deflator&quot;</span><span class="p">,</span> <span class="s2">&quot;output_deflator&quot;</span><span class="p">,</span> <span class="s2">&quot;capital_deflator&quot;</span><span class="p">]:</span>
     <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2008</span><span class="p">,</span> <span class="mi">2009</span><span class="p">]:</span>
-        <span class="n">avg_defl</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"YEAR"</span><span class="p">]</span> <span class="o">==</span> <span class="n">year</span><span class="p">,</span> <span class="n">defl</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">avg_defl</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;YEAR&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">year</span><span class="p">,</span> <span class="n">defl</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="n">df</span><span class="p">[</span><span class="n">defl</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">defl</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">avg_defl</span><span class="p">)</span>
 </pre></div>
 
@@ -13224,7 +13129,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"merged.csv"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;merged.csv&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 
@@ -13398,7 +13303,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Step-3)-Clean-and-produce-intermediate-sample">Step 3) Clean and produce intermediate sample<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Step-3)-Clean-and-produce-intermediate-sample">¶</a></h1>
+<h1 id="Step-3)-Clean-and-produce-intermediate-sample">Step 3) Clean and produce intermediate sample<a class="anchor-link" href="#Step-3)-Clean-and-produce-intermediate-sample">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -13407,7 +13312,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"merged.csv"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;merged.csv&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -13421,7 +13326,7 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Initial number of observations: "</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial number of observations: &quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -13450,7 +13355,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>&lt;font color = "red"&gt;Drop&lt;/font&gt; if no information on output</p>
+<p><font color="red">Drop</font> if no information on output</p>
 
 </div>
 </div>
@@ -13460,8 +13365,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[43]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Y"</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Dropped observations:"</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dropped observations:&quot;</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 
@@ -13491,7 +13396,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>&lt;font color = "red"&gt;Drop&lt;/font&gt; if unrealistic count of workers</p>
+<p><font color="red">Drop</font> if unrealistic count of workers</p>
 
 </div>
 </div>
@@ -13501,7 +13406,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[44]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"L"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">100000</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">100000</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -13514,7 +13419,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[45]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Dropped observations:"</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dropped observations:&quot;</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 
@@ -13544,7 +13449,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>&lt;font color = "red"&gt;Drop&lt;/font&gt; materials, capital or wages are more than twice the output</p>
+<p><font color="red">Drop</font> materials, capital or wages are more than twice the output</p>
 
 </div>
 </div>
@@ -13554,10 +13459,10 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[46]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"M"</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"K_close"</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"K_open"</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"W"</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;K_close&quot;</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;K_open&quot;</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;W&quot;</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -13570,7 +13475,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[47]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Dropped observations:"</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dropped observations:&quot;</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 
@@ -13600,7 +13505,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>&lt;font color = "red"&gt;Drop&lt;/font&gt; if not there for both years.</p>
+<p><font color="red">Drop</font> if not there for both years.</p>
 
 </div>
 </div>
@@ -13610,10 +13515,10 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[48]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">both_years</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"FACT_ID"</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">both_years</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> 
 <span class="n">both_years</span> <span class="o">=</span> <span class="n">both_years</span><span class="p">[</span><span class="n">both_years</span> <span class="o">==</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"FACT_ID"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">both_years</span><span class="p">)]</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">"FACT_ID"</span><span class="p">,</span> <span class="s2">"YEAR"</span><span class="p">])</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">both_years</span><span class="p">)]</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;YEAR&quot;</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -13626,7 +13531,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[49]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Dropped observations:"</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dropped observations:&quot;</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 
@@ -13666,7 +13571,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[50]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">regressors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"M"</span><span class="p">,</span><span class="s2">"K_close"</span><span class="p">,</span><span class="s2">"K_open"</span><span class="p">,</span><span class="s2">"Y"</span><span class="p">,</span><span class="s2">"W"</span><span class="p">,</span><span class="s2">"L"</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">regressors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span><span class="s2">&quot;K_close&quot;</span><span class="p">,</span><span class="s2">&quot;K_open&quot;</span><span class="p">,</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span><span class="s2">&quot;W&quot;</span><span class="p">,</span><span class="s2">&quot;L&quot;</span><span class="p">]</span>
 <span class="n">n_negs</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">regressors</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </pre></div>
 
@@ -13694,7 +13599,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[52]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Changed values"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Changed values&quot;</span><span class="p">)</span>
 <span class="n">n_negs</span>
 </pre></div>
 
@@ -13751,7 +13656,7 @@ dtype: int64</pre>
 <div class="prompt input_prompt">In&nbsp;[53]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Changed values"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Changed values&quot;</span><span class="p">)</span>
 <span class="n">df</span><span class="p">[</span><span class="n">regressors</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </pre></div>
 
@@ -13821,8 +13726,8 @@ dtype: int64</pre>
 <div class="prompt input_prompt">In&nbsp;[55]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Changing"</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">"NIC1987"</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="s2">"values"</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="s2">"NIC1987"</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">"999"</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Changing&quot;</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;NIC1987&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="s2">&quot;values&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;NIC1987&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;999&quot;</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -13851,7 +13756,7 @@ dtype: int64</pre>
 <div class="prompt input_prompt">In&nbsp;[56]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"clean.csv"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;clean.csv&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -13874,16 +13779,16 @@ dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Deflating">Deflating<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Deflating">¶</a></h3>
+<h3 id="Deflating">Deflating<a class="anchor-link" href="#Deflating">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"clean.csv"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;clean.csv&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -13903,14 +13808,14 @@ dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">]</span> <span class="o">/=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"output_deflator"</span><span class="p">]</span>
-<span class="n">df</span><span class="p">[</span><span class="s2">"M"</span><span class="p">]</span> <span class="o">/=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"input_deflator"</span><span class="p">]</span>
-<span class="n">df</span><span class="p">[</span><span class="s2">"K_open"</span><span class="p">]</span> <span class="o">/=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"capital_deflator"</span><span class="p">]</span>
-<span class="n">df</span><span class="p">[</span><span class="s2">"K_close"</span><span class="p">]</span> <span class="o">/=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"capital_deflator"</span><span class="p">]</span>
-<span class="n">df</span><span class="p">[</span><span class="s2">"W"</span><span class="p">]</span> <span class="o">/=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"national_deflator"</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;output_deflator&quot;</span><span class="p">]</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;input_deflator&quot;</span><span class="p">]</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;K_open&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;capital_deflator&quot;</span><span class="p">]</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;K_close&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;capital_deflator&quot;</span><span class="p">]</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;W&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;national_deflator&quot;</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -13933,17 +13838,17 @@ dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Construct-variables">Construct variables<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Construct-variables">¶</a></h3>
+<h3 id="Construct-variables">Construct variables<a class="anchor-link" href="#Construct-variables">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"K_W"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"K_open"</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="s2">"W"</span><span class="p">]</span>
-<span class="n">df</span><span class="p">[</span><span class="s2">"YM_W"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s2">"M"</span><span class="p">])</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="s2">"W"</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;K_W&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;K_open&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;W&quot;</span><span class="p">]</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;YM_W&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;W&quot;</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -13953,11 +13858,11 @@ dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"NIC1987"</span><span class="p">,</span> <span class="s2">"state"</span><span class="p">,</span> <span class="s2">"scheme"</span><span class="p">,</span><span class="s2">"urban"</span><span class="p">,</span><span class="s2">"Y"</span><span class="p">,</span> <span class="s2">"K_close"</span><span class="p">,</span> <span class="s2">"L"</span><span class="p">,</span> <span class="s2">"M"</span><span class="p">,</span> <span class="s2">"W"</span><span class="p">,</span> <span class="s2">"K_W"</span><span class="p">,</span> <span class="s2">"YM_W"</span><span class="p">]</span>
-<span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"FACT_ID"</span><span class="p">,</span> <span class="s2">"YEAR"</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">keep</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NIC1987&quot;</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="s2">&quot;scheme&quot;</span><span class="p">,</span><span class="s2">&quot;urban&quot;</span><span class="p">,</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;K_close&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;K_W&quot;</span><span class="p">,</span> <span class="s2">&quot;YM_W&quot;</span><span class="p">]</span>
+<span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;YEAR&quot;</span><span class="p">]</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">index</span><span class="p">)[</span><span class="n">keep</span><span class="p">]</span> 
 </pre></div>
 
@@ -13979,10 +13884,10 @@ dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"panelgroup"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"NIC1987"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;panelgroup&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;NIC1987&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -14005,7 +13910,7 @@ dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Continue-here-if-NOT-dropping-obs-with-extreme-TFP">Continue here if NOT dropping obs with extreme TFP<a class="anchor-link" href="file:///Users/vitorhadad/Downloads/FHHPS_data_cleaning-Copy1%20(1).html#Continue-here-if-NOT-dropping-obs-with-extreme-TFP">¶</a></h2>
+<h2 id="Continue-here-if-NOT-dropping-obs-with-extreme-TFP">Continue here if NOT dropping obs with extreme TFP<a class="anchor-link" href="#Continue-here-if-NOT-dropping-obs-with-extreme-TFP">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -14021,10 +13926,10 @@ dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"YM_W"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;YM_W&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -14044,10 +13949,10 @@ dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[[</span><span class="s2">"YM_W"</span><span class="p">,</span> <span class="s2">"K_W"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"YM_W"</span><span class="p">,</span> <span class="s2">"K_W"</span><span class="p">]]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;YM_W&quot;</span><span class="p">,</span> <span class="s2">&quot;K_W&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;YM_W&quot;</span><span class="p">,</span> <span class="s2">&quot;K_W&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span> <span class="c1"># Drops 1</span>
 </pre></div>
 
@@ -14064,7 +13969,7 @@ dtype: int64</pre>
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>/Users/vitorhadad/anaconda/lib/python3.5/site-packages/ipykernel/__main__.py:1: RuntimeWarning: divide by zero encountered in log
-  if __name__ == '__main__':
+  if __name__ == &#39;__main__&#39;:
 </pre>
 </div>
 </div>
@@ -14075,7 +13980,7 @@ dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
@@ -14091,7 +13996,7 @@ dtype: int64</pre>
 
 
 <div class="output_area">
-<div class="prompt output_prompt">Out[13]:</div>
+<div class="prompt output_prompt">Out[9]:</div>
 
 
 <div class="output_html rendered_html output_subarea output_execute_result">
@@ -14228,19 +14133,19 @@ dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Pivot table</span>
-<span class="n">variables</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span> <span class="o">=</span> <span class="s2">"FACT_ID"</span><span class="p">,</span> 
-                           <span class="n">columns</span> <span class="o">=</span> <span class="s2">"YEAR"</span><span class="p">,</span> 
+<span class="n">variables</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span> <span class="o">=</span> <span class="s2">&quot;FACT_ID&quot;</span><span class="p">,</span> 
+                           <span class="n">columns</span> <span class="o">=</span> <span class="s2">&quot;YEAR&quot;</span><span class="p">,</span> 
                            <span class="n">values</span> <span class="o">=</span> <span class="n">v</span><span class="p">)</span> 
-                          <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"K_W"</span><span class="p">,</span> <span class="s2">"YM_W"</span><span class="p">]]</span>
-<span class="n">scheme</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"FACT_ID"</span><span class="p">)[</span><span class="s2">"scheme"</span><span class="p">]</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+                          <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;K_W&quot;</span><span class="p">,</span> <span class="s2">&quot;YM_W&quot;</span><span class="p">]]</span>
+<span class="n">scheme</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;FACT_ID&quot;</span><span class="p">)[</span><span class="s2">&quot;scheme&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
 
     
 <span class="n">df_clean</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">variables</span> <span class="o">+</span> <span class="p">[</span><span class="n">scheme</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-<span class="n">df_clean</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"X1"</span><span class="p">,</span> <span class="s2">"X2"</span><span class="p">,</span> <span class="s2">"Y1"</span><span class="p">,</span> <span class="s2">"Y2"</span><span class="p">,</span> <span class="s2">"scheme"</span><span class="p">]</span>
+<span class="n">df_clean</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;X1&quot;</span><span class="p">,</span> <span class="s2">&quot;X2&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y2&quot;</span><span class="p">,</span> <span class="s2">&quot;scheme&quot;</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -14250,10 +14155,10 @@ dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">option_context</span><span class="p">(</span><span class="s1">'mode.use_inf_as_null'</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">option_context</span><span class="p">(</span><span class="s1">&#39;mode.use_inf_as_null&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
     <span class="n">df_clean</span> <span class="o">=</span> <span class="n">df_clean</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 </pre></div>
 
@@ -14264,7 +14169,7 @@ dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_clean</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
@@ -14279,7 +14184,7 @@ dtype: int64</pre>
 
 
 <div class="output_area">
-<div class="prompt output_prompt">Out[31]:</div>
+<div class="prompt output_prompt">Out[12]:</div>
 
 
 <div class="output_html rendered_html output_subarea output_execute_result">
@@ -14377,10 +14282,10 @@ dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_clean</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">"indian_data.csv"</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_clean</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;indian_data.csv&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -14390,10 +14295,9 @@ dtype: int64</pre>
 </div>
     </div>
   </div>
-
+</body>
 
  
 
 
-
-</body></html>
+</html>

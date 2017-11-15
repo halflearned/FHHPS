@@ -8,13 +8,14 @@ Created on Mon Sep 18 09:03:26 2017
 
 import numpy as np
 from sklearn.metrics.pairwise import pairwise_kernels
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 import pandas as pd
 from scipy.stats import norm
 from sklearn.preprocessing import PolynomialFeatures
 from warnings import warn
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+import cvxpy
 import warnings
 
 
@@ -85,9 +86,11 @@ class FHHPS:
                 alpha_cens_1 = 0.24,
                 alpha_cens_2 = 0.12,
                 kernel = "epanechnikov",
-                poly_order = 2):
+                poly_order = 2,
+                r = .1):
                 
         
+        self.r = r
         self.csh     = c_shocks
         self.cnw     = c_nw
         self.c1cens  = c1_cens
@@ -296,12 +299,12 @@ class FHHPS:
         DY   = (self._data["Y2"] - self._data["Y1"]).flatten()
         
         poly = PolynomialFeatures(degree = self.poly_order,
-                                  include_bias = False)
-        #XX1 = poly.fit_transform(np.hstack([X2])) #DX2.reshape(-1, 1)]))
-        #XX2 = poly.fit_transform(np.hstack([2*X2, X2**2]))#, DX2.reshape(-1, 1)**2]))
-        XX1 = poly.fit_transform(np.hstack([X2, DX2.reshape(-1, 1)]))
-        XX2 = poly.fit_transform(np.hstack([2*X2, X2**2, DX2.reshape(-1, 1)**2]))
-        
+                                  include_bias = True)
+        XX1 = poly.fit_transform(np.hstack([X2])) #DX2.reshape(-1, 1)]))
+        XX2 = poly.fit_transform(np.hstack([2*X2, X2**2]))#, DX2.reshape(-1, 1)**2]))
+        #XX1 = poly.fit_transform(np.hstack([X2, DX2.reshape(-1, 1)]))
+        #XX2 = poly.fit_transform(np.hstack([2*X2, X2**2, DX2.reshape(-1, 1)**2]))
+        #DYsq = DY**2
         w    = self.kernel(DX2, self.bw_shocks).flatten()
         
         ols1 = LinearRegression()
@@ -309,12 +312,19 @@ class FHHPS:
         EU = ols1.intercept_
         EV = ols1.coef_[0]
         
-        ols2 = LinearRegression()
-        DYsq = DY**2
-        ols2.fit(XX2, DYsq, w)
-        EUsq = ols2.intercept_
-        EUV, EVsq = ols2.coef_.flatten()[:2]
-        VU, VV, CUV = EUsq - EU**2, EVsq - EV**2, EUV  - EU*EV
+        DYsq = (DY - np.mean(DY))**2
+        B = cvxpy.Semidef(2)
+        E = DYsq - XX2[:,0]*B[0,0] + XX2[:,1]*B[0,1] + XX2[:,2]*B[1,1]
+        obj = cvxpy.Minimize(cvxpy.sum_squares(w*E))
+        prob = cvxpy.Problem(obj)
+        prob.solve()
+    
+        VU, VV, CUV = B[0,0].value, B[1,1].value, B[1,0].value
+        
+        #import pdb; pdb.set_trace()
+        EUsq = VU + EU**2
+        EVsq = VV + EV**2
+        EUV = CUV + EU*EV
         CorrUV = CUV/(np.sqrt(VU)*np.sqrt(VV))
         
         if VU < 0 or VV < 0:
@@ -422,8 +432,28 @@ class FHHPS:
         for k, (x1, x2, cy) in enumerate(zip(X1.ravel(), 
                                              X2.ravel(),
                                              CY)):
-            sab[:, k] = g2inv(x1, x2) @ cy.reshape(-1, 1)
-        
+            #sab[:, k] = g2inv(x1, x2) @ cy.reshape(-1, 1)
+            try:
+                EAsqx = cvxpy.Variable()
+                EBsqx = cvxpy.Variable()
+                EABx = cvxpy.Variable()
+                constrs = [EAsqx > EA1[k]**2,
+                           EBsqx > EB1[k]**2,
+                           EABx > EA1[k]*EB1[k]]
+                G = g2inv(x1, x2)
+                Y = cy.flatten()
+                E = Y - G[:,0] * EAsqx + \
+                        G[:,1] * EBsqx + \
+                        G[:,2] * EABx
+                obj = cvxpy.Minimize(cvxpy.sum_squares(E))
+                prob = cvxpy.Problem(obj, constrs)
+                prob.solve()
+                sab[:, k] = np.array([EAsqx.value,
+                                      EBsqx.value,
+                                      EABx.value]).reshape(-1,1)
+            except:        
+                pass
+                
 
         self._ab_cmoms.update({"EAsqx": sab[0],
                                "EBsqx": sab[1],

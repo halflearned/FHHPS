@@ -64,11 +64,16 @@ You should see:
 Python 3.x.y :: Anaconda custom (x86_64)  # where x >= 5
 ```
 
-Next, just download the file `fhhps.py` and follow the instructions below.
+Next, just download the file `fhhps.py` and follow the instructions below. Alternatively, if you have `git` installed, then just type
+
+```bash
+git clone https://github.com/halflearned/FHHPS
+```
+to grab all files in this repository.
 
 ## Getting started
 
-The easiest way to run FHHPS is via the command line application. Suppose we are working with the file `fake_data_1.csv`, which can find it in the `examples` folder above. Its first rows are:
+The easiest way to run FHHPS is via the command line application. Suppose we are working with a file `fake_data_1.csv`, whose first rows are:
 
 
 |    X1 |    X2 |    Y1 |    Y2 |   other_column |
@@ -79,12 +84,20 @@ The easiest way to run FHHPS is via the command line application. Suppose we are
 |  2.84 |  1.63 |  8.56 |  9.02 |           0.99 |
 | -0.26 | -0.36 |  0.73 |  1.18 |           0.96 |
 
-To have FHHPS automatically detect columns named `X1`, `X2`, `Y1`, `Y2` and run with default parameters, simply use:
+To have FHHPS automatically detect columns named `X1`, `X2`, `Y1`, `Y2` and run with default parameters, type the following command on your Terminal or Prompt.
 
 ```bash
 python fhhps.py -f fake_data_1.csv
 ```
-The application will run the estimation algorithm, bootstrap 100 times, and produce the figures as tables below. Also, a comma-separated file contained the bootstrapped values for all variables will be produced. For the `fake_data_1.csv` file, total running time should be around 10 minutes. 
+The application will:
+
++ Run the estimation algorithm once
++ Bootstrap 100 times
++ Produce two pdf files containing bootstrap densities
++ Tabulate their descriptive statistics in LaTeX table
++ Create a comma-separated file containing the bootstrapped values for all variables
+
+If our `fake_data_1.csv` file contains 5000 observations, total running time should be around 10 minutes. After that the following is produced.
 
 
 <image src="figs/bootstrap_shocks_150945930898.png" style="float: center; width: 80%; margin-left: 10%;">
