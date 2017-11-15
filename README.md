@@ -195,7 +195,15 @@ For more information, read the docs (coming soon).
 
 ## Generating fake data
 
-The fake data above was created using the function `generate_data` that draws from the same distribution as the "Simulations" portion of the FHHPS paper. You can import it from the `data_utils.py` submodule.
+Use the file `make_data.py`. Observations will be drawn jointly Normally with same default parameters as our simulations in the paper, but modifying the original setup is easy. 
+
+For example, to generate 4000 observations with intercept variance equal to 16 and overall correlation 0.3, and save it to the file `myfakedata.py`, simply type
+
+```bash
+python make_data.py -n=4000 -out=myfakedata
+```
+
+Note any existing files with the same name will be overwritten.
 
 
 ## Reproducing our results
