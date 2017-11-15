@@ -132,7 +132,7 @@ Notes:
 
 ## Advanced usage
 
-### Conditional bootstrap
+### Bootstrapping conditional moments
 
 You can also compute conditional moments using the `-X1_POINT` and `-X2_POINT` options. For example, to compute estimates, bootstrap, figures and tables associated with point (X_1, X_2) = (-1, 1), type
 
