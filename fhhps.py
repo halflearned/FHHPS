@@ -76,7 +76,7 @@ def g2inv(x1, x2):
 class FHHPS:
     
     def __init__(self,
-                c_shocks = 1,
+                c_shocks = 4,
                 c_nw    = 0.1, 
                 c1_cens  = 1,
                 c2_cens = 1, 
@@ -703,7 +703,7 @@ if __name__ == "__main__":
     parser.add_argument('-csh','--c_shocks',
                         help='Parameter c_shocks',
                         required=False,
-                        default = 3.0,
+                        default = 4.0,
                         type=float)
 #    parser.add_argument('-kernel','--kernel',
 #                        help='Kernel to use in Nadaraya-Watson step.',
