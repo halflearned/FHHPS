@@ -80,14 +80,15 @@ class FHHPS:
                 c_nw    = 0.1, 
                 c1_cens  = 1,
                 c2_cens = 1, 
-                alpha_shocks = 0.21,
+                alpha_shocks = 0.20,
                 alpha_nw     = 1/2, 
-                alpha_cens_1 = 0.24,
-                alpha_cens_2 = 0.12,
+                alpha_cens_1 = 0.25,
+                alpha_cens_2 = 0.125,
                 kernel = "epanechnikov",
                 poly_order = 2):
                 
         
+        # Setup
         self.csh     = c_shocks
         self.cnw     = c_nw
         self.c1cens  = c1_cens
@@ -97,34 +98,48 @@ class FHHPS:
         self.acens1 = alpha_cens_1
         self.acens2 = alpha_cens_2
         self.poly_order = poly_order
+        self.kernel = epanechnikov
+        
+        # To be populated later
         self._data = None
         self._n = None
         self._fitted = False
         self._conditional = None
-        self._shock_vars = ["EU", "EV", "SU", "SV", "CUV", "CorrUV"]
-        self._rc_vars = ["EA", "EB", "SA", "SB", "CAB", "CorrAB"]
-        self._conditional_rc_vars = ["EAx", "EBx", "SAx", "SBx", "CABx", "CorrABx"]
         self._bootstrapped_values = None
         self._conditional_bootstrapped_values = None
-        self.kernel = epanechnikov
+        
+        # Convenient variable groupings 
+        self._shock_vars = ["EU", "EV", "SU", "SV", "CUV", "CorrUV"]
+        self._rc1_vars = ["EA1", "EB1", "SA1", "SB1", "CA1B1", "CorrA1B1"]
+        self._rc2_vars = ["EA2", "EB2", "SA2", "SB2", "CA2B2", "CorrA2B2"]
+        self._conditional_rc_vars = ["EA1x", "EB1x", "SA1x", "SB1x", "CA1B1x", "CorrA1B1x"]
         self._latex_names = {"EU": "$E[U_2]$",
                              "EV": "$E[V_2]$",
                              "SU": "$Std[U_2]$",
                              "SV": "$Std[V_2]$",
                              "CUV": "$Cov[U_2, V_2]$",
                              "CorrUV": "$Corr[U_2, V_2]$",
-                             "EA": "$E[A_1]$",
-                             "EB": "$E[B_1]$",
-                             "SA": "$Std[A_1]$",
-                             "SB": "$Std[B_1]$",
-                             "CAB": "$Cov[A_1, B_1]$",
-                             "CorrAB": "$Corr[A_1, B_1]$",
-                             "EAx": "$E[A_1|X]$",
-                             "EBx": "$E[B_1|X]$",
-                             "SAx": "$Std[A_1|X]$",
-                             "SBx": "$Std[B_1|X]$",
-                             "CABx": "$Cov[A_1, B_1|X]$",
-                             "CorrABx": "$Corr[A_1, B_1|X]$"}
+                             "EA1": "$E[A_1]$",
+                             "EB1": "$E[B_1]$",
+                             "SA1": "$Std[A_1]$",
+                             "SB1": "$Std[B_1]$",
+                             "CA1B1": "$Cov[A_1, B_1]$",
+                             "CorrA1B1": "$Corr[A_1, B_1]$",
+                             "EA1x": "$E[A_1|X]$",
+                             "EB1x": "$E[B_1|X]$",
+                             "EA1sqx": "$E[A_1^2|X]$",
+                             "EB1sqx": "$E[B_1^2|X]$",
+                             "EA1B1x": "$E[AB|X]$",
+                             "SA1x": "$Std[A_1|X]$",
+                             "SB1x": "$Std[B_1|X]$",
+                             "CA1B1x": "$Cov[A_1, B_1|X]$",
+                             "CorrA1B1x": "$Corr[A_1, B_1|X]$",
+                             "EA2": "$E[A_2]$",
+                             "EB2": "$E[B_2]$",
+                             "SA2": "$Std[A_2]$",
+                             "SB2": "$Std[B_2]$",
+                             "CA2B2": "$Cov[A_2, B_2]$",
+                             "CorrA2B2": "$Corr[A_2, B_2]$"}
         
 
         
@@ -263,11 +278,11 @@ class FHHPS:
         #if self._ab_first_cmoms is None:
         #    raise ModelNotYetFitError("Please use the conditional_fit method first."
         
-        EAx = self._ab_cmoms["EAx"][0,0]
-        EBx = self._ab_cmoms["EBx"][0,0]
-        EAsqx = self._ab_cmoms["EAsqx"][0,0]
-        EBsqx = self._ab_cmoms["EBsqx"][0,0]
-        EABx = self._ab_cmoms["EABx"][0,0]
+        EAx = self._ab_cmoms["EA1x"][0,0]
+        EBx = self._ab_cmoms["EB1x"][0,0]
+        EAsqx = self._ab_cmoms["EA1sqx"][0,0]
+        EBsqx = self._ab_cmoms["EB1sqx"][0,0]
+        EABx = self._ab_cmoms["EA1B1x"][0,0]
         
         out = pd.DataFrame(index = [self._n],
                            data = {"EU": self._shocks["EU"],
@@ -276,13 +291,13 @@ class FHHPS:
                                    "SV": self._shocks["SV"],
                                    "CUV": self._shocks["CUV"],
                                    "CorrUV": self._shocks["CorrUV"],
-                                   "EAx": EAx,
-                                   "EBx": EBx,
-                                   "SAx": np.sqrt(EAsqx - EAx**2),
-                                   "SBx": np.sqrt(EBsqx - EBx**2),
-                                   "CABx": EABx - EAx*EBx})
+                                   "EA1x": EAx,
+                                   "EB1x": EBx,
+                                   "SA1x": np.sqrt(EAsqx - EAx**2),
+                                   "SB1x": np.sqrt(EBsqx - EBx**2),
+                                   "CA1B1x": EABx - EAx*EBx})
             
-        out["CorrABx"] = out["CABx"]/(out["SAx"]*out["SBx"])
+        out["CorrA1B1x"] = out["CA1B1x"]/(out["SA1x"]*out["SB1x"])
         return out
     
    
@@ -386,8 +401,8 @@ class FHHPS:
             mab[:, k] = g1inv(x1, x2) @ ey.reshape(-1, 1)
                         
         
-        self._ab_cmoms = {"EAx": mab[0,:],
-                          "EBx": mab[1,:]}            
+        self._ab_cmoms = {"EA1x": mab[0,:],
+                          "EB1x": mab[1,:]}            
         
         return self._ab_cmoms 
     
@@ -403,8 +418,8 @@ class FHHPS:
         EUV  = self._shocks["EUV"]
         X1 = np.array([x1]) if x1 is not None else self._data["X1"]
         X2 = np.array([x2]) if x2 is not None else self._data["X2"]
-        EA1 = self._ab_cmoms["EAx"]
-        EB1 = self._ab_cmoms["EBx"]
+        EA1 = self._ab_cmoms["EA1x"]
+        EB1 = self._ab_cmoms["EB1x"]
         EY1sq = self._ycmoms["EY1sq"]
         EY2sq = self._ycmoms["EY2sq"]
         EY1Y2 = self._ycmoms["EY1Y2"]
@@ -424,9 +439,9 @@ class FHHPS:
             sab[:, k] = g2inv(x1, x2) @ cy.reshape(-1, 1)
         
 
-        self._ab_cmoms.update({"EAsqx": sab[0],
-                               "EBsqx": sab[1],
-                                "EABx": sab[2]})
+        self._ab_cmoms.update({"EA1sqx": sab[0],
+                               "EB1sqx": sab[1],
+                                "EA1B1x": sab[2]})
     
         
         
@@ -441,20 +456,31 @@ class FHHPS:
         valid1 = absDX > self.t1
         valid2 = absDX > self.t2
         
-        mom =  {"EA":   np.mean(self._ab_cmoms["EAx"][valid1]),
-                "EB":   np.mean(self._ab_cmoms["EBx"][valid1]),
-                "EAsq": np.mean(self._ab_cmoms["EAsqx"][valid2]),
-                "EBsq": np.mean(self._ab_cmoms["EBsqx"][valid2]),
-                "EAB":  np.mean(self._ab_cmoms["EABx"][valid2])}
+        s = self._shocks
+        
+        mom =  {"EA1":   np.mean(self._ab_cmoms["EA1x"][valid1]),
+                "EB1":   np.mean(self._ab_cmoms["EB1x"][valid1]),
+                "EA1sq": np.mean(self._ab_cmoms["EA1sqx"][valid2]),
+                "EB1sq": np.mean(self._ab_cmoms["EB1sqx"][valid2]),
+                "EA1B1": np.mean(self._ab_cmoms["EA1B1x"][valid2])}
     
-        mom.update({"VA":  mom["EAsq"] - mom["EA"]**2,
-                    "VB":  mom["EBsq"] - mom["EB"]**2,
-                    "CAB": mom["EAB"]  - mom["EA"]*mom["EB"]})
+        mom.update({"VA1":   mom["EA1sq"] - mom["EA1"]**2,
+                    "VB1":   mom["EB1sq"] - mom["EB1"]**2,
+                    "CA1B1": mom["EA1B1"] - mom["EA1"]*mom["EB1"]})
         
-        mom.update({"SA": np.sqrt(mom["VA"]),
-                    "SB": np.sqrt(mom["VB"])})
+        mom.update({"EA2":   mom["EA1"] + s["EU"],
+                    "EB2":   mom["EB1"] + s["EV"],
+                    "VA2":   mom["VA1"] + s["VU"],
+                    "VB2":   mom["VB1"] + s["VV"],
+                    "CA2B2": mom["VB1"] + s["CUV"]})
         
-        mom.update({"CorrAB": mom["CAB"] / (mom["SA"]*mom["SB"])})
+        mom.update({"SA1": np.sqrt(mom["VA1"]),
+                    "SB1": np.sqrt(mom["VB1"]),
+                    "SA2": np.sqrt(mom["VA2"]),
+                    "SB2": np.sqrt(mom["VB2"])})
+        
+        mom.update({"CorrA1B1": mom["CA1B1"] / (mom["SA1"]*mom["SB1"]),
+                    "CorrA2B2": mom["CA2B2"] / (mom["SA2"]*mom["SB2"])})
         
         self._ab_umoments = mom
         
@@ -463,16 +489,46 @@ class FHHPS:
 
 
 
+    def conditional_random_coefficient_moments(self):
+        try:
+            table = pd.DataFrame({k:x.flatten() for k,x 
+                                 in self._ab_cmoms.items()})
+        except KeyError:
+            raise ModelNotYetFitError("Please fit your model first.")
+
+        with np.errstate(invalid = "ignore"):
+            table["SA1x"] = np.sqrt(table["EA1sqx"] - table["EA1x"]**2)
+            table["SB1x"] = np.sqrt(table["EB1sqx"] - table["EB1x"]**2)
+            table["CA1B1x"] = table["EA1B1x"] - table["EA1x"]*table["EB1x"]
+            table["CorrA1B1x"] = table["CA1B1x"]/(table["SA1x"]*table["SB1x"])
+            table = table[["EA1x", "EB1x", "SA1x", "SB1x", "CA1B1x", "CorrA1B1x"]]
+            table.columns = [self._latex_names[c] for c in table.columns]
+        
+        return table
+        
+
+
+
     def show_tuning_parameters(self):
         if self._data is None:
             raise DataNotYetAddedError("Please use the add_data method first.")
         
-        s = "\nbw_nw: {:1.5f}".format(self.bw_nw) + \
-            "\nbw_shocks: {:1.5f}".format(self.bw_shocks) + \
-            "\nt1: {:1.5f}".format(self.t1) + \
-            "\nt2: {:1.5f}".format(self.t2)
-        print(s)
-    
+        print("Nadarawa-Watson bandwidth: "\
+              "\t\tbw_nw \t\t= c_nw * n^(-alpha_nw) = {:1.2f}*{:1.0f}^{:1.3f} = {:1.3f}"\
+            .format(self.cnw, self._n, self.anw, self.bw_nw))
+        
+        print("Local polynomial regression bandwidth: " \
+              "\tbw_shocks \t= c_shocks * n^(-alpha_shocks) = {:1.2f}*{:1.0f}^{:1.2f} = {:1.3f}"\
+            .format(self.csh, self._n, self.ash, self.bw_shocks))
+        
+        print("Censoring threshold (first moments): " \
+            "\tt1 \t\t= c1_cens * n^(-alpha_cens_1) = {:1.2f}*{:1.0f}^{:1.2f} = {:1.3f}"\
+            .format(self.c1cens, self._n, self.acens1, self.t1))
+       
+        print("Censoring threshold (second moments): " \
+            "\tt2 \t\t= c2_cens * n^(-alpha_cens_2) = {:1.2f}*{:1.0f}^{:1.2f} = {:1.3f}"\
+            .format(self.c2cens, self._n, self.acens2, self.t2))
+       
     
     
     
@@ -546,18 +602,27 @@ class FHHPS:
                         "Lower CI (2.5%)", "Median", "Upper CI (97.5%)", "Max"]
         
         est = self.estimates()
+        
         with pd.option_context("mode.chained_assignment", None):
+            
             shock_tab = bs_tab[self._shock_vars]
-            rc_tab = bs_tab[self._rc_vars]
             shock_tab.loc["Estimate"] = [est[s].values for s in self._shock_vars]
-            rc_tab.loc["Estimate"] = [est[s].values for s in self._rc_vars]
+            
+            rc1_tab = bs_tab[self._rc1_vars]
+            rc2_tab = bs_tab[self._rc2_vars]
+            
+            rc1_tab.loc["Estimate"] = [est[s].values for s in self._rc1_vars]
+            rc2_tab.loc["Estimate"] = [est[s].values for s in self._rc2_vars]
         
         
         if latex_names:
+            
             shock_tab.columns = [self._latex_names[s] for s in shock_tab.columns]
-            rc_tab.columns = [self._latex_names[s] for s in rc_tab.columns]
+            rc1_tab.columns = [self._latex_names[s] for s in rc1_tab.columns]
+            rc2_tab.columns = [self._latex_names[s] for s in rc2_tab.columns]
 
-        return shock_tab, rc_tab
+
+        return shock_tab, rc1_tab, rc2_tab
         
     
     
@@ -583,21 +648,28 @@ class FHHPS:
             ax.set_title(self._latex_names[s], fontsize = 14)
             ax.axvline(self._shocks[s], *ax.get_ylim(), linewidth = 3, color = "black")
             shockaxs.append(ax)
+        
+        handles = {"shock_figure": shockfig,
+                   "shock_axes": shockaxs}
             
-        rcfig, axs = plt.subplots(3, 2, **subplot_kwargs)
-        rcfig.subplots_adjust(hspace = .4)
-        rcfig.suptitle("Bootstrapped random coefficient moments", fontsize = 16)
-        rcaxs = []
-        for s, ax in zip(self._rc_vars, axs.flatten()):
-            ax = self._bootstrapped_values[s].plot.density(ax = ax, **density_kwargs)
-            ax.set_title(self._latex_names[s], fontsize = 14)
-            ax.axvline(self._ab_umoments[s], *ax.get_ylim(), linewidth = 3, color = "black")
-            rcaxs.append(ax)
-            if "Corr" in s:
-                xlim = ax.get_xlim()
-                ax.set_xlim(max(-1.5, xlim[0]), min(1.5, xlim[1]))
+        for k, rc_vars in enumerate([self._rc1_vars, self._rc2_vars]):
+            rcfig, axs = plt.subplots(3, 2, **subplot_kwargs)
+            rcfig.subplots_adjust(hspace = .4)
+            rcfig.suptitle("Bootstrapped random coefficient moments", fontsize = 16)
+            rcaxs = []
+            for s, ax in zip(rc_vars, axs.flatten()):
+                ax = self._bootstrapped_values[s].plot.density(ax = ax, **density_kwargs)
+                ax.set_title(self._latex_names[s], fontsize = 14)
+                ax.axvline(self._ab_umoments[s], *ax.get_ylim(), linewidth = 3, color = "black")
+                rcaxs.append(ax)
+                if "Corr" in s:
+                    xlim = ax.get_xlim()
+                    ax.set_xlim(max(-1.5, xlim[0]), min(1.5, xlim[1]))
             
-        return (shockfig, shockaxs), (rcfig, rcaxs)
+            handles.update({"rc{}_figure".format(k+1): rcfig,
+                            "rc{}_axes".format(k+1): rcaxs})
+            
+        return handles
             
     
     
@@ -640,9 +712,43 @@ class FHHPS:
                  
             
         
+    def censored_summary(self):
+                
+        if self._data is None:
+            raise DataNotYetAddedError("Please use the add_data method first.")
+            
+        df = self.data
+        absDX = np.abs(df["X2"] - df["X1"]) 
+        idx_cens1 = absDX <= self.t1
+        idx_cens2 = absDX <= self.t2
+        qs = [.025, 0.25, 0.5, 0.75, 0.975]
         
+        disc1_description = df.loc[idx_cens1, ["Y1","Y2"]].describe(qs)
+        kept1_description = df.loc[~idx_cens1, ["Y1","Y2"]].describe(qs)
+        disc2_description = df.loc[idx_cens2, ["Y1","Y2"]].describe(qs)
+        kept2_description = df.loc[~idx_cens2, ["Y1","Y2"]].describe(qs)
+        
+        table = pd.concat([disc1_description,
+                           kept1_description,
+                           disc2_description,
+                           kept2_description], axis = 1)
+        table.columns = ["Discarded $Y_1$ (1)",
+                         "Discarded $Y_2$ (1)",
+                         "Kept $Y_1$ (1)",
+                         "Kept $Y_2$ (1)",
+                         "Discarded $Y_1$ (2)",
+                         "Discarded $Y_2$ (2)",
+                         "Kept $Y_1$ (2)",
+                         "Kept $Y_2$ (2)"]
     
-    
+        table.loc["percent"] = table.loc["count"]/df.shape[0]
+
+        table = table.loc[['count','percent','mean','std',
+                          'min','2.5%','25%','50%','75%','97.5%','max']]
+
+        return table
+        
+        
 
 
 
@@ -705,12 +811,7 @@ if __name__ == "__main__":
                         required=False,
                         default = 4.0,
                         type=float)
-#    parser.add_argument('-kernel','--kernel',
-#                        help='Kernel to use in Nadaraya-Watson step.',
-#                        required=False,
-#                        default="epa",
-#                        type=str,
-#                        choices = ["epa", "gaussian", "uniform"])
+
     parser.add_argument('-cc1','--c1_cens',
                         help='Coefficient of threshold bandwidth (first moments).',
                         required=False,
@@ -743,7 +844,7 @@ if __name__ == "__main__":
                        default=100,
                        type=int)
     
-    parser.add_argument('-outs', '--output_file_suffix',
+    parser.add_argument('-suffix', '--output_file_suffix',
                        help="Suffix to add to output file names. Default is a timestamp.",
                        required=False,
                        default="",
@@ -762,23 +863,23 @@ if __name__ == "__main__":
     
     suffix = args.output_file_suffix or str(int(time()*100))
     
-    print("\n\n#### FHHPS #####\n\n")
+    print("\n#### FHHPS #####\n")
     columns = ["Y1" or args.Y1_column,
                "Y2" or args.Y2_column,
                "X1" or args.X1_column,
                "X2" or args.X2_column]
     
-    print("\nReading csv file...", end = "")
+    print("Reading csv file.")
     df = pd.read_csv(args.filename,
                      usecols = columns,
                      header = 0).dropna()  
     df.columns = ["X1", "X2", "Y1", "Y2"]
     
-    print("OK!\nRead file. First rows look like this.")
+    print("Read file. First rows look like this.")
     print(df.head())
     
     
-    print("\n\nInitializing FHHPS... OK!")
+    print("\nInitializing FHHPS.")
     algo = FHHPS(c_shocks = args.c_shocks,
                 c_nw    = args.c_nw, 
                 c1_cens  = args.c1_cens,
@@ -787,15 +888,14 @@ if __name__ == "__main__":
                 alpha_nw     = args.alpha_nw, 
                 alpha_cens_1 = args.alpha_cens_1,
                 alpha_cens_2 = args.alpha_cens_2,
-                #kernel = args.kernel,
                 poly_order = args.poly_order)
 
     print(algo)
     
-    print("\n\nAdding data...", end = "")
+    print("\nAdding data.")
     algo.add_data(df["X1"], df["X2"], df["Y1"], df["Y2"])
     
-    print("OK! Computed these tuning parameters.")
+    print("\nComputed the following additional tuning parameters:")
     algo.show_tuning_parameters()
     
         
@@ -829,52 +929,60 @@ if __name__ == "__main__":
         else:
             shock_tab.to_csv("_bootstrap_shock_{}.csv".format(suffix))
             rc_tab.to_csv("conditional_bootstrap_random_coefficients_{}.tex".format(suffix))
-        print("OK!")
-        print("\n\nDone. You should see these five new files:")
-        for f in listdir():
-            if suffix in f:
-                print(f)
-        print("\n\n")
         
 
 
     else: 
         # FIT
-        print("\n\nEstimating...", end="")
+        print("\nEstimating...", end="")
         algo.fit()
-        print("OK!\n\n")
     
         # BOOTSTRAP    
         algo.bootstrap(n_iterations = args.bootstrap_iterations)
         print("\nSaving bootstrapped values to CSV file...", end = "")
         algo._bootstrapped_values.to_csv("bootstrapped_values_{}.csv".format(suffix))
-        print("OK!")
         
         # FIGURES
-        print("\n\nProducing figures...", end = "")
-        (shockfig, _), (rcfig, _) = algo.plot_density()
-        shockfig.savefig("bootstrap_shocks_{}.pdf".format(suffix))
-        rcfig.savefig("bootstrap_random_coefficients_{}.pdf".format(suffix))    
-        print("OK!")
+        print("\n\nProducing figures and summary tables.", end = "")
+        handles = algo.plot_density()
+        handles["shock_figure"].savefig("bootstrap_shocks_{}.pdf".format(suffix))
+        handles["rc1_figure"].savefig("bootstrap_random_coefficients_1_{}.pdf".format(suffix))    
+        handles["rc2_figure"].savefig("bootstrap_random_coefficients_2_{}.pdf".format(suffix))
         
         # TABLES
-        print("\n\nProducing summary tables...", end = "")
         uselatex = args.output_table_type == "latex"
         
-        shock_tab, rc_tab = algo.summary(latex_names = uselatex)
+        shock_tab, rc1_tab, rc2_tab = algo.summary(latex_names = uselatex)
+        cens_tab = algo.censored_summary()
+        condrc_tab = algo.conditional_random_coefficient_moments()
+        
         if uselatex:
-            shock_tab.to_latex("bootstrap_shock_{}.tex".format(suffix))
-            rc_tab.to_latex("bootstrap_random_coefficients_{}.tex".format(suffix))
+            shock_tab.to_latex("bootstrap_shock_{}.tex".format(suffix), escape = False)
+            rc1_tab.to_latex("bootstrap_random_coefficients_1_{}.tex".format(suffix), escape = False)
+            rc2_tab.to_latex("bootstrap_random_coefficients_2_{}.tex".format(suffix), escape = False)
+            condrc_tab.to_latex("conditional_random_coefficients_{}.tex".format(suffix), escape = False)
         else:
             shock_tab.to_csv("bootstrap_shock_{}.csv".format(suffix))
-            rc_tab.to_csv("bootstrap_random_coefficients_{}.tex".format(suffix))
-        print("OK!")
-        print("\n\nDone. You should see these five new files:")
-        for f in listdir():
-            if suffix in f:
-                print(f)
-        print("\n\n")
+            rc1_tab.to_csv("bootstrap_random_coefficients_1_{}.tex".format(suffix))
+            rc2_tab.to_csv("bootstrap_random_coefficients_2_{}.tex".format(suffix))
+            condrc_tab.to_csv("conditional_random_coefficients_{}.csv".format(suffix), escape = False)
         
+            
+        
+    if uselatex:
+        cens_tab.to_latex("censored_statistics_{}.tex".format(suffix), escape = False)
+    else:
+        cens_tab.to_csv("censored_statistics_{}.csv".format(suffix))
+        
+        
+        
+    print("OK!")
+    print("\n\nDone. You should see these new files:")
+    for f in listdir():
+        if suffix in f:
+            print(f)
+    print("\n\n")
+    
     
     
     

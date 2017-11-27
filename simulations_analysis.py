@@ -10,8 +10,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("simulation_results.csv",
-                 header = 0)
+df = pd.read_csv("simulation_results.csv")
 
 #%%
 # Figures

@@ -44,7 +44,7 @@ ns = [500, 2000, 5000, 10000, 20000]
 if not exists("simulations"):
     mkdir("simulations")
     
-filename = "simulations/fhhps_simulation_results.csv"
+filename = "simulations/simulation_results.csv"
 
 # Number of sims for each n
 n_sims = 1000 
