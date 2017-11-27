@@ -13,11 +13,12 @@ import pandas as pd
 from os import mkdir
 
 
-config = dict(c_shocks = 3,
+config = dict(c_shocks = 4,
                alpha_shocks = .2,
                c_nw = .5,
-               alpha_nw = 0.33,
+               alpha_nw = 0.16,
                poly_order = 2)
+
 
 if not exists("bs_coverage"):
     mkdir("bs_coverage")
