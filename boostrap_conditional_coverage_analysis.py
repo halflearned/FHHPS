@@ -75,6 +75,3 @@ table.index = ["$E[A_1|X]$", "$E[B_1|X]$",
 
 table.round(3).to_latex("bs_coverage/bs_conditional_coverage_20000.tex",
            escape = False)
-
-print(table.round(3))
-

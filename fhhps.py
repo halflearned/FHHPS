@@ -472,7 +472,7 @@ class FHHPS:
                     "EB2":   mom["EB1"] + s["EV"],
                     "VA2":   mom["VA1"] + s["VU"],
                     "VB2":   mom["VB1"] + s["VV"],
-                    "CA2B2": mom["VB1"] + s["CUV"]})
+                    "CA2B2": mom["CA1B1"] + s["CUV"]})
         
         mom.update({"SA1": np.sqrt(mom["VA1"]),
                     "SB1": np.sqrt(mom["VB1"]),

@@ -58,7 +58,6 @@ for i_sim in range(n_sims): # This can take many hours
     # FHHPS main routine
     algo.add_data(df["X1"], df["X2"], df["Y1"], df["Y2"])
     
-    fsfsdf
     algo.fit()
     
     for xpt in x_points:
