@@ -89,14 +89,16 @@ To have FHHPS automatically detect columns named `X1`, `X2`, `Y1`, `Y2` and run 
 ```bash
 python fhhps.py -f fake_data_1.csv
 ```
+
 The application will:
 
 + Run the estimation algorithm once.
 + Bootstrap 100 times.
-+ Create a comma-separated file containing the bootstrapped values for all variables.
+
 
 It will also produce the following files.
 
++ A comma-separated file containing the bootstrapped values for all variables
 + PDF plots of the point estimates and the density of bootstrapped estimates of shocks and first- and second-period random coefficient moments.
 + LaTeX tables tables tabulating summary statistics conditional moments and bootstrap estimates of shocks, first-period and second-period random coefficient moments.
 + LaTeX table tabulating how many observations were removed during our censoring scheme, and describing how the dependent variable varies between censored and non-censored observations.
