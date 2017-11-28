@@ -13,10 +13,10 @@ import pandas as pd
 from os import mkdir
 
 
-config = dict(c_shocks = 4,
+config = dict(c_shocks = 3,
                alpha_shocks = .2,
                c_nw = .5,
-               alpha_nw = 0.16,
+               alpha_nw = 0.33,
                poly_order = 2)
 
 
@@ -26,9 +26,10 @@ if not exists("bs_coverage"):
     
 
 n_sims = 100
-filename = "bs_coverage/bs_coverage.csv"
+filename = "bs_coverage/bs_coverage_20000.csv"
 
-qs = [0.01,0.025,0.05,0.95,0.975,0.99]
+qs = [0.005,0.025,0.05,0.95,0.975,0.995]
+
 
 
 for _ in range(n_sims): # This can take many hours
@@ -38,7 +39,7 @@ for _ in range(n_sims): # This can take many hours
     
     # Fake data
     seed = clock_seed()
-    df   = generate_data(10000, 
+    df   = generate_data(20000, 
                        vA = 9, vB = .4,
                        vU = 1, vV = .1, 
                        seed = seed)
@@ -52,8 +53,8 @@ for _ in range(n_sims): # This can take many hours
     
     # Quantile table
     desc = algo._bootstrapped_values.quantile(qs)
-    cols = [v +"_"+ str(int(100*q)) for q in qs for v in desc.columns]
-    values = desc.values.reshape(1,-1)
+    cols = [v + "_"+ str(int(1000*q)) for q in qs for v in desc.columns]
+    values = desc.values.reshape(1, -1)
     table = pd.DataFrame(data=values,
                          columns=cols,
                          index=[seed])
@@ -62,6 +63,5 @@ for _ in range(n_sims): # This can take many hours
     # Append to file
     table.to_csv(filename,
                  mode = "a",
-                 header = not exists(filename))    
-    
+                 header = not exists(filename))   
     
