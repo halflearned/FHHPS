@@ -11,13 +11,13 @@ Code used in paper Jeremy Fox, Vitor Hadad, Stefan Hoderlein, Amil Petrin and Ro
 The setup is a **linear panel data** with **two correlated random coefficients**. 
 
 <center>
-<img src="figs/fmla1.png" height = 50>
+<img src="figs/fmla1.png" height = 80>
 </centeR>
 
 It is assumed that the coefficients follow AR(1) processes
 
 <center>
-<img src="figs/fmla2.png" height = 50>
+<img src="figs/fmla2.png" height = 80>
 </center>
 
 where the shocks are assumed to be independent of everything in the previous periods.
@@ -91,24 +91,17 @@ python fhhps.py -f fake_data_1.csv
 ```
 The application will:
 
-+ Run the estimation algorithm once
-+ Bootstrap 100 times
-+ Produce two pdf files containing bootstrap densities
-+ Tabulate their descriptive statistics in LaTeX table
-+ Create a comma-separated file containing the bootstrapped values for all variables
++ Run the estimation algorithm once.
++ Bootstrap 100 times.
++ Create a comma-separated file containing the bootstrapped values for all variables.
 
-If our `fake_data_1.csv` file contains 5000 observations, total running time should be around 10 minutes. After that the following is produced.
+It will also produce the following files.
 
++ PDF plots of the point estimates and the density of bootstrapped estimates of shocks and first- and second-period random coefficient moments.
++ LaTeX tables tables tabulating summary statistics conditional moments and bootstrap estimates of shocks, first-period and second-period random coefficient moments.
++ LaTeX table tabulating how many observations were removed during our censoring scheme, and describing how the dependent variable varies between censored and non-censored observations.
 
-<image src="figs/bootstrap_shocks_150945930898.png" style="float: center; width: 80%; margin-left: 10%;">
-<image src="figs/bootstrap_random_coefficients_150945930898.png" style="float: center; width: 80%; margin-left: 10%;">
-
-
-<centeR>
-<image src="figs/output_tables.png" width = 500>
-</center>
-
-By default, the file names will have a timestamp as suffix, to avoid overwriting existing files. You can use a custom suffix with the option `-outs=[custom-suffix]`.
+By default, the file names will have a timestamp as suffix, to avoid overwriting existing files. You can use a custom suffix with the option `-suffix=[custom-suffix]`.
 
 ### Column names
 
@@ -123,14 +116,14 @@ python fhhps.py -f [file-name].csv -X1=[column-name] -X2=[column-name] -Y1=[colu
 You can set the following tuning parameters:
   
 + **Shock parameters**
-  + `-csh` or `--c_shocks` (default: 3)
+  + `-csh` or `--c_shocks` (default: 4)
   + `-ash` or `--alpha_shocks` (default: 0.2)
   + `-pl` or `poly_order` (default: 2)
 
 
 + **Nadaraya-Watson parameters**
   + `-cnw` or `--c_nw` (default: 0.5)
-  + `-anw` or `--alpha_nw` (default: 1/2)
+  + `-anw` or `--alpha_nw` (default: 1/6)
 
 + **Censoring parameters**
   + `-cc1` or `--c1_cens` (default: 1)
@@ -147,20 +140,15 @@ Notes:
 
 ### Bootstrapping conditional moments
 
-You can also compute conditional moments using the `-X1_POINT` and `-X2_POINT` options. For example, to compute estimates, bootstrap, figures and tables associated with point (X_1, X_2) = (-1, 1), type
+You can also compute conditional moments using the `-X1_POINT` and `-X2_POINT` options. For example, to compute estimates, bootstrap, figures and tables associated with point (X1, X2) = (-1, 1), type
 
 ```python
 python fhhps.py -f [filename].csv -X1_POINT=-1 -X2_POINT=1
 ```
 
-**Remark** In our model, shock moments are assumed to be independent of $X_1$ and $X_2$, and so are not affected by conditioning. Summary figures and tables will be produced for shocks as well, but they will be the same as for the unconditional case.
+**Remark** In our model, shock moments are assumed to be independent of X_1 and X_2, and so are not affected by conditioning. Summary figures and tables will be produced for shocks as well, but they will be the same as for the unconditional case.
 
 
-### Custom bootstrap functions
-
-```bash
---- Coming soon --- 
-```
 
 
 
@@ -191,10 +179,11 @@ algo.fit()
 # Now bootstrap e.g. 120 times
 algo.boostrap(n_iterations = 120)
 
-# Plot bootstrap densities. Output will be matplotlib figure and axes handles
-(shockfig, shockaxes), (rcfig, rcaxes) = algo.plot_density()algo.plot_density()
-shockfig.savefig("shock_figure.pdf")
-rcfig.savefig("shock_figure.pdf")
+# Plot bootstrap densities. Output will be a dictionary of matplotlib figure and axes handles
+handles = algo.plot_density()
+handles["shock_figure"].savefig("shock_figure.pdf")
+handles["rc1_figure"].savefig("shock_figure.pdf")
+handles["rc2_figure"].savefig("shock_figure.pdf")
 
 # Grab table. Default output is csv.
 shock_tab, rc_tab = algo.summary()
@@ -221,6 +210,8 @@ Note any existing files with the same name will be overwritten.
 
 ## Reproducing our results
 
+#### Monte carlo simulations
+
 The file `simulations.py` reproduces all the simulations in our paper. Make sure to have `fhhps.py`, `data_utils` and `simulations.py` in the same folder. Then navigate to that folder in your Terminal or Prompt and type 
 
 ```python
@@ -232,3 +223,28 @@ Let this run for a few hours, then type
 python simulations_analysis.py
 ```
 to reproduce our figures and several tables associated with simulation results. 
+
+
+#### Bootstrap 
+
+The file `bootstrap_coverage.py` shows how close the bootstrap estimates are to 95% coverage in our main example setup. Similarly, the file `bootstrap_conditional_coverage.py` does the same for estimates of conditional moments.
+
+To reproduce our results, type
+
+```bash
+python bootstrap_coverage.py 
+python bootstrap_coverage_analysis.py
+```
+
+and for conditional estimates, type
+
+```bash
+python bootstrap_conditional_coverage.py 
+python bootstrap_conditional_coverage_analysis.py
+```
+
+This should produce tables similar to ours.
+
+
+
+
