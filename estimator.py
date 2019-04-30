@@ -1,5 +1,3 @@
-import numpy as np
-
 from kernel_regression import KernelRegression
 from utils import *
 
@@ -77,13 +75,15 @@ class FHHPSEstimator:
         # Construct E[Y|X,Z] minus shocks
         cond_mean_output_minus_shocks = self.output_cond_first_moments.copy()
         cond_mean_output_minus_shocks -= self.cum_shock_first_moments[0]  # Subtracting sum[t] E[Ut]
-        cond_mean_output_minus_shocks -= (X * self.cum_shock_first_moments[1])  # Subtracting sum[t] E[Vt]*X[s]
-        cond_mean_output_minus_shocks -= (Z * self.cum_shock_first_moments[2])  # Subtracting sum[t] E[Wt]*Z[s]
+        cond_mean_output_minus_shocks -= (
+                    self.X * self.cum_shock_first_moments[1])  # Subtracting sum[t] E[Vt]*X[s]
+        cond_mean_output_minus_shocks -= (
+                    self.Z * self.cum_shock_first_moments[2])  # Subtracting sum[t] E[Wt]*Z[s]
 
         # Compute conditional first moments
         for i in range(self.n):
             self.coefficient_cond_first_moments[i] = \
-                gamma_inv(X[i], Z[i]) @ cond_mean_output_minus_shocks[i]
+                gamma_inv(self.X[i], self.Z[i]) @ cond_mean_output_minus_shocks[i]
 
         # Average out to get unconditional moments
         self.coefficient_first_moments = self.coefficient_cond_first_moments.mean(0)
@@ -99,14 +99,16 @@ class FHHPSEstimator:
         # Compute conditional second moments of random coefficients
         for i in range(self.n):
             self.coefficient_cond_second_moments[i] = \
-                gamma_inv2(X[i], Z[i]) @ cond_var_output_minus_shock_terms[i]
+                gamma_inv2(self.X[i], self.Z[i]) @ cond_var_output_minus_shock_terms[i]
 
-        # Use EVVE and ECCE formulas to get unconditional moments
-        variances = \
-            self.coefficient_cond_second_moments[:, :3].mean(0) + self.coefficient_cond_first_moments.var(0)
-        covariances = \
-            self.coefficient_cond_second_moments[:, 3:].mean(0) + \
-            np.cov(self.coefficient_cond_first_moments.T)[[0, 0, 1], [1, 2, 2]]
+        # Use EVVE and ECCE (i.e. ANOVA) formulas to get unconditional moments
+        ev = self.coefficient_cond_second_moments[:, :3].mean(0)
+        ve = self.coefficient_cond_first_moments.var(0)
+        variances = ev + ve
+
+        ec = self.coefficient_cond_second_moments[:, 3:].mean(0)
+        ce = np.cov(self.coefficient_cond_first_moments.T)[[0, 0, 1], [1, 2, 2]]
+        covariances = ec + ce
         self.coefficient_second_moments = np.hstack([variances, covariances])
 
     """ Utils """
@@ -133,7 +135,12 @@ def gamma_inv(x, z):
 
 
 def gamma_inv2(x, z):
-    f = lambda i, j: [1, x[i] * x[j], z[i] * z[j], x[i] + x[j], z[i] + z[j], x[i] * z[j] + x[j] * z[i]]
+    f = lambda i, j: [1,
+                      x[i] * x[j],
+                      z[i] * z[j],
+                      x[i] + x[j],
+                      z[i] + z[j],
+                      x[i] * z[j] + x[j] * z[i]]
     g = np.array([f(0, 0), f(1, 1), f(2, 2), f(0, 1), f(0, 2), f(1, 2)])
     return np.linalg.inv(g)
 
@@ -155,24 +162,41 @@ def get_shock_first_moments(X, Z, Y, t):
 
 def get_shock_second_moments(X, Z, Y, t):
     """
-    Creates 6-vector of shock variances and covariances
-    [Var[Ut], Var[Vt], Var[Wt], Cov[Ut, Vt], Cov[Ut, Wt], Cov[Vt, Wt]]
+    Creates 6-vector of shock second moments
+    [E[Ut^2], E[Vt^2], E[Wt^2], E[Ut*Vt], E[Ut*Wt], E[Vt*Wt]]
     """
     n, _ = X.shape
     DYt = difference(Y, t=t)
     DXZ = np.hstack(difference(X, Z, t=t))
-    XZt = np.hstack(extract(X ** 2, Z ** 2, 2 * X, 2 * Z, X * Z, t=t))
+    XZt = np.hstack(extract(X ** 2, Z ** 2, 2 * X, 2 * Z, 2 * X * Z, t=t))
     kern = KernelRegression()
     w = kern.get_weights(DXZ)
-    moments = kern.fit(XZt, DYt, sample_weight=w).coefficients
+    moments = kern.fit(XZt, DYt ** 2, sample_weight=w).coefficients
     return moments
 
 
+def center_shock_second_moments(m1, m2):
+    """
+    Creates 6-vector of shock variances and covariances
+    [Var[Ut], Var[Vt], Var[Wt], Cov[Ut, Vt], Cov[Ut, Wt], Cov[Vt, Wt]]
+    """
+    VarUt = m2[0] - m1[0] ** 2
+    VarVt = m2[1] - m1[1] ** 2
+    VarWt = m2[2] - m1[2] ** 2
+    CovUVt = m2[3] - m1[0] * m1[1]
+    CovUWt = m2[4] - m1[0] * m1[1]
+    CovVWt = m2[5] - m1[1] * m1[2]
+    return np.array([VarUt, VarVt, VarWt, CovUVt, CovUWt, CovVWt])
 
 
 if __name__ == "__main__":
-    n = 500000
+    np.set_printoptions(suppress=True)
+    n = 10000000
     X, Z, Y = fake_data(n)
-    s = get_shock_first_moments(X, Z, Y, 2)
-    #est = FHHPSEstimator()
-    #est.fit(X, Z, Y)
+    truth = np.array([2, 0.1, 0.1, 0.05, 0.05, 0.05])
+    s1 = get_shock_first_moments(X, Z, Y, 1)
+    s2 = get_shock_second_moments(X, Z, Y, 1)
+    v2 = center_shock_second_moments(s1, s2)
+    print(s1)
+    print(s2)
+    print(v2)

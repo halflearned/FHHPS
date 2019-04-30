@@ -3,6 +3,7 @@ from numba import njit
 from sklearn.linear_model import Ridge
 from sklearn.utils import check_X_y
 
+
 class KernelRegression(Ridge):
 
     def __init__(self, alpha=1e-6, fit_intercept=True, normalize=False,
