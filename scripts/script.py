@@ -1,5 +1,4 @@
 import os
-from time import time
 
 from fhhps.estimator import *
 from fhhps.utils import *
@@ -37,7 +36,6 @@ if __name__ == "__main__":
         output = dict(
             n=n,
             shock_first_moments=est.shock_first_moments,
-            shock_second_moments=est.shock_second_moments,
             coefficient_first_moments=est.coefficient_first_moments)
         save_pickle(obj=output,
                     path=os.path.join(WRITE_PATH, FNAME))
