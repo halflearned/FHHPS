@@ -1,6 +1,6 @@
 from setuptools import setup
 
-setup(name='fhhpps',
+setup(name='fhhps',
       version='0.1',
       description='random coefficient models',
       url='https://github.com/halflearned/FHHPS',

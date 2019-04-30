@@ -1,6 +1,6 @@
 import numpy.testing as nt
 
-from estimator import *
+from fhhps.estimator import *
 
 
 def test_shock_first_moments():

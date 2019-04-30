@@ -1,5 +1,5 @@
-from kernel_regression import KernelRegression
-from utils import *
+from fhhps.kernel_regression import KernelRegression
+from fhhps.utils import *
 
 
 class FHHPSEstimator:
