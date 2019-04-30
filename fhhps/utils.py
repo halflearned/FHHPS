@@ -1,3 +1,5 @@
+from time import time
+
 import numpy as np
 
 
@@ -10,6 +12,24 @@ def difference(*args, t):
         return output[0]
     else:
         return output
+
+
+def clock_seed():
+    """ Simple utility to generate random file_hash based on time """
+    return int(time() * 1e8 % 1e8)
+
+
+def read_pickle(path):
+    import pickle  # Package dill fails here!
+    with open(path, "rb") as f:
+        obj = pickle.load(file=f)
+    return obj
+
+
+def save_pickle(obj, path):
+    import pickle  # Package dill fails here!
+    with open(path, "wb") as f:
+        pickle.dump(obj=obj, file=f)
 
 
 def extract(*args, t):
