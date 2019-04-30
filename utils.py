@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def difference(*args, t):
     output = []
     for x in args:

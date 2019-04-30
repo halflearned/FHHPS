@@ -1,7 +1,7 @@
 import numpy as np
-from utils import *
 
 from kernel_regression import KernelRegression
+from utils import *
 
 
 class FHHPSEstimator:
@@ -166,7 +166,6 @@ def get_shock_second_moments(X, Z, Y, t):
     w = kern.get_weights(DXZ)
     moments = kern.fit(XZt, DYt, sample_weight=w).coefficients
     return moments
-
 
 
 
