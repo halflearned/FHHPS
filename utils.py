@@ -27,9 +27,9 @@ def fake_data(n):
     X = np.random.uniform(-4, 4, size=(n, 3))
     Z = np.random.uniform(-4, 4, size=(n, 3))
     ABC1 = np.random.multivariate_normal(mean=[5, 0.5, 0.5],
-                                         cov=np.array([[5., 1., 1.],
-                                                       [1., 2., 1.],
-                                                       [1., 1., 2.]]),
+                                         cov=np.array([[5., .4, .4],
+                                                       [.4, 1, .4],
+                                                       [.4, .4, 1]]),
                                          size=n)
     UVW2 = np.random.multivariate_normal(mean=[1., 0.1, 0.1],
                                          cov=np.array([[2, .05, .05],

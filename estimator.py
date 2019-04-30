@@ -32,9 +32,10 @@ class FHHPSEstimator:
     def fit_output_cond_second_moments(self):
         output_resid = (self.Y - self.output_cond_first_moments)
         output_resid_sq = output_resid ** 2
-        output_resid_cross = np.vstack([output_resid[:, 1] * output_resid[:, 0],
-                                        output_resid[:, 2] * output_resid[:, 0],
-                                        output_resid[:, 2] * output_resid[:, 1]]).T
+        output_resid_cross = np.column_stack([
+            output_resid[:, 1] * output_resid[:, 0],
+            output_resid[:, 2] * output_resid[:, 0],
+            output_resid[:, 2] * output_resid[:, 1]])
         cond_variances = KernelRegression().fit_predict_local(self.XZ, output_resid_sq)
         cond_covariances = KernelRegression().fit_predict_local(self.XZ, output_resid_cross)
         self.output_cond_second_moments = np.hstack([cond_variances, cond_covariances])
@@ -171,7 +172,7 @@ def get_shock_second_moments(X, Z, Y, t):
     XZt = np.hstack(extract(X ** 2, Z ** 2, 2 * X, 2 * Z, 2 * X * Z, t=t))
     kern = KernelRegression()
     w = kern.get_weights(DXZ)
-    moments = kern.fit(XZt, DYt ** 2, sample_weight=w).coefficients
+    moments = kern.fit(XZt, DYt ** 2, sample_weight=0.1*w).coefficients  # TODO: Improve bw
     return moments
 
 
@@ -190,13 +191,11 @@ def center_shock_second_moments(m1, m2):
 
 
 if __name__ == "__main__":
-    np.set_printoptions(suppress=True)
-    n = 10000000
+    n = 5000
     X, Z, Y = fake_data(n)
-    truth = np.array([2, 0.1, 0.1, 0.05, 0.05, 0.05])
-    s1 = get_shock_first_moments(X, Z, Y, 1)
-    s2 = get_shock_second_moments(X, Z, Y, 1)
-    v2 = center_shock_second_moments(s1, s2)
-    print(s1)
-    print(s2)
-    print(v2)
+    est = FHHPSEstimator()
+    est.add_data(X, Z, Y)
+    est.fit_shock_first_moments()
+    est.fit_output_cond_first_moments()
+    est.fit_coefficient_first_moments()
+    print(est.coefficient_first_moments)
