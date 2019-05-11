@@ -2,11 +2,13 @@ import numpy as np
 from numba import njit
 from sklearn.linear_model import Ridge
 from sklearn.utils import check_X_y
+import logging
+from typing import *
 
 
 class KernelRegression(Ridge):
 
-    def __init__(self, alpha=1e-6, fit_intercept=True, normalize=False,
+    def __init__(self, alpha=1e-6, fit_intercept=True, normalize=True,
                  copy_X=True, max_iter=None, tol=0.001, solver="auto",
                  random_state=None, kernel="gaussian"):
         self.kernel = kernel
@@ -27,31 +29,24 @@ class KernelRegression(Ridge):
         else:
             return np.hstack([self.intercept_.reshape(-1, 1), self.coef_])
 
-    def get_weights(self, cond, method="scott"):
-        return kernel_density(cond, method=method)
+    def get_weights(self, cond, bw):
+        return kernel_density(cond, bw=bw)
 
-    def fit_predict_local(self, X, y):
+    def fit_predict_local(self, X, y, bw: Union[float, str]="scott"):
         X, y = check_X_y(X, y, ensure_2d=True, multi_output=True, ensure_min_samples=10, y_numeric=True)
         n = len(X)
         yhat = np.empty_like(y, dtype=np.float64)
-        print("Fitting and predicting")
+        if isinstance(bw, str):
+            bw = bandwidth_selector(X, method=bw)
         for i in range(n):
-            if i % 100 == 0:
-                print(i)
-            w = self.get_weights(cond=X - X[i])
+            logging.info("KernelRegression.fit_predict_local[{i}]".format(i=i))
+            w = self.get_weights(cond=X - X[i], bw=bw)
             yhat[i] = super().fit(X, y, sample_weight=w).predict(X[[i]])
-        return yhat
-
-    def fit_predict_zero(self, X, y, cond):
-        X, y = check_X_y(X, y, ensure_2d=True, multi_output=True, ensure_min_samples=10, y_numeric=True)
-        w = self.get_weights(cond=cond)
-        yhat = super().fit(X, y, sample_weight=w).predict(X[[i]])
         return yhat
 
 
 @njit()
-def kernel_density(X, method="scott"):
-    bw = bandwidth_selector(X, method=method)
+def kernel_density(X: np.ndarray, bw: float):
     p = 1 / (2 * np.pi * bw) * np.exp(-X ** 2 / (2 * bw ** 2))
     k = X.shape[1]
     out = p[:, 0]
@@ -96,7 +91,7 @@ if __name__ == "__main__":
     X = 3*np.random.normal(size=(n, 3))
     Z = np.random.normal(size=(n, 3))
     Y = np.cos(X) + np.random.normal(size=(n, 3))
-    kern = KernelRegression().fit_predict_local(X, Y)
+    kern = KernelRegression().fit_predict_local(X, Y, bw=10)
 
     import matplotlib.pyplot as plt
     plt.scatter(X[:, 0], Y[:, 0])

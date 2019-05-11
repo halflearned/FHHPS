@@ -16,7 +16,7 @@ from scipy.stats import norm
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.preprocessing import PolynomialFeatures
-from tqdm import tqdm
+# from tqdm import tqdm
 
 
 class NegativeVarianceError(Exception):
@@ -833,7 +833,7 @@ if __name__ == "__main__":
                         default=0.12,
                         type=float)
     parser.add_argument('-pl','--poly_order',
-                        help='Polynomial order to use when estimating shocks.',
+                        help='Polynomial order to use when estimating sec_shocks.',
                         required=False,
                         default=2,
                         type=int)

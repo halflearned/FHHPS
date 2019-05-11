@@ -27,7 +27,7 @@ if __name__ == "__main__":
         t1 = time()
 
         n = np.random.choice([1000, 5000, 20000])
-        X, Z, Y = fake_data(n)
+        X, Z, Y = simple_data(n)
         est = FHHPSEstimator()
         est.add_data(X, Z, Y)
         est.fit_shock_first_moments()
@@ -35,7 +35,7 @@ if __name__ == "__main__":
         est.fit_coefficient_first_moments()
         output = dict(
             n=n,
-            shock_first_moments=est.shock_first_moments,
+            shock_first_moments=est._shock_first_moments,
             coefficient_first_moments=est.coefficient_first_moments)
         save_pickle(obj=output,
                     path=os.path.join(WRITE_PATH, FNAME))
