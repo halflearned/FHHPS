@@ -297,7 +297,7 @@ if __name__ == "__main__":
         est.fit_shock_means()
         est.fit_output_cond_means()
         est.fit_coefficient_means()
-        fst_rc[i] = est._coefficient_means
+        fst_rc[i] = est.coefficient_means
 
     t2 = time()
     print(f"Finished in {t2 - t1} seconds")

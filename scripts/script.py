@@ -68,4 +68,4 @@ if __name__ == "__main__":
         results = {**config, **flatten(est.shock_means), **est.coefficient_means}
         results["time"] = t2 - t1
         output = pd.DataFrame(results, index=[0])
-        output.to_csv(os.path.join(WRITE_PATH, FNAME))
+        output.to_csv(os.path.join(WRITE_PATH + ".csv.bz2", FNAME))
