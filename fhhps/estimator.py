@@ -53,7 +53,7 @@ class FHHPSEstimator:
                             index=["E[Ut]", "E[Vt]", "E[Wt]"])
 
     @property
-    def shock_centered_second_moments(self):
+    def shock_cov(self):
         shock_mom = np.zeros((6, 3))
         for t in range(self.T):
             shock_mom[:, t] = center_shock_second_moments(
@@ -65,32 +65,36 @@ class FHHPSEstimator:
 
     @property
     def coefficient_means(self):
-        return pd.Series(self._coefficient_means, index=["E[A1]", "E[B1]", "E[C1]"])
+        return pd.Series(self._coefficient_means,
+                         index=["E[A1]", "E[B1]", "E[C1]"])
+
+    @property
+    def coefficient_cov(self):
+        return pd.Series(self._coefficient_cov,
+                         index=["Var[A1]", "Var[B1]", "Var[C1]",
+                                "Cov[A1, B1]", "Cov[A1, C1]", "Cov[B1, C1]"])
 
     """ Output moments """
 
     def fit_output_cond_means(self):
-        logging.info("Fitting output conditional first moments")
+        logging.info("--Fitting output conditional means--")
         self.output_cond_means = KernelRegression().fit_predict_local(
             self.XZ, self.Y, bw=self.coef_bw)
 
     def fit_output_cond_second_moments(self):
-        output_resid = (self.Y - self.output_cond_means)
+        logging.info("--Fitting output conditional second moments--")
 
-        # Estimate Var[Yt|X] for every t
-        output_resid_sq = output_resid ** 2
-        cond_variances = KernelRegression().fit_predict_local(
-            self.XZ, output_resid_sq, bw=self.coef_bw)
+        resid = self.Y  # (self.Y - self.output_cond_means)
+        Ytilde = np.empty((self.n, 6))
+        Ytilde[:, :3] = resid ** 2
+        Ytilde[:, 3:] = np.column_stack([
+            resid[:, 0] * resid[:, 1],  # Cov[Y1, Y2]
+            resid[:, 0] * resid[:, 2],  # Cov[Y1, Y3]
+            resid[:, 1] * resid[:, 2]])  # Cov[Y2, Y3]
 
-        # Estimate Cov[Yt, Ys|X] for every t < s
-        output_resid_cross = np.column_stack([
-            output_resid[:, 0] * output_resid[:, 1],  # Cov[Y1, Y2]
-            output_resid[:, 0] * output_resid[:, 2],  # Cov[Y1, Y3]
-            output_resid[:, 1] * output_resid[:, 2]])  # Cov[Y2, Y3]
-        cond_covariances = KernelRegression().fit_predict_local(
-            self.XZ, output_resid_cross, bw=self.coef_bw)
-
-        self.output_cond_second_moments = np.hstack([cond_variances, cond_covariances])
+        # Estimate Var[Yt|X] for every t abd Cov[Yt, Ys|X] for every t < s
+        self.output_cond_second_moments = KernelRegression().fit_predict_local(
+            self.XZ, Ytilde, bw=self.coef_bw)
 
     """ Shock moments """
 
@@ -101,7 +105,7 @@ class FHHPSEstimator:
             0, E[V2], E[V3]
             0, E[W2], E[W3]
         """
-        logging.info("Fitting shock first moments")
+        logging.info("--Fitting shock means--")
         self._shock_means = np.zeros(shape=(self.T, self.num_coef))
         for t in range(1, self.T):
             self._shock_means[:, t] = \
@@ -118,7 +122,7 @@ class FHHPSEstimator:
             0,  Cov[U2, W2],   Cov[U3, W3]
             0,  Cov[V2, W2],   Cov[V3, W3]
         """
-        logging.info("Fitting shock second moments")
+        logging.info("--Fitting shock second moments--")
         self._shock_second_moments = np.zeros(shape=(6, 3))
         for t in range(1, self.T):
             self._shock_second_moments[:, t] = \
@@ -127,6 +131,7 @@ class FHHPSEstimator:
     """ Random coefficients """
 
     def fit_coefficient_means(self):
+        logging.info("--Fitting coefficient means--")
         self.coefficient_cond_means = np.empty(shape=(self.n, self.T))
         self.valid1 = np.zeros(self.n, dtype=bool)
 
@@ -144,6 +149,7 @@ class FHHPSEstimator:
         self._coefficient_means = self.coefficient_cond_means[self.valid1].mean(0)
 
     def fit_coefficient_second_moments(self):
+        logging.info("--Fitting coefficient second moments--")
         self.coefficient_cond_second_moments = np.empty(shape=(self.n, 6))
         self.valid2 = np.zeros(self.n, dtype=bool)
 
@@ -159,13 +165,13 @@ class FHHPSEstimator:
 
         # Use EVVE and ECCE (i.e. ANOVA) formulas to get unconditional moments
         ev = self.coefficient_cond_second_moments[self.valid2, :3].mean(0)
-        ve = self.coefficient_cond_means[self.valid1].var(0)
+        ve = self.coefficient_cond_means[self.valid2].var(0)
         variances = ev + ve
 
         ec = self.coefficient_cond_second_moments[self.valid2, 3:].mean(0)
-        ce = np.cov(self.coefficient_cond_means.T)[[0, 0, 1], [1, 2, 2]]
+        ce = np.cov(self.coefficient_cond_means[self.valid2].T)[[0, 0, 1], [1, 2, 2]]
         covariances = ec + ce
-        self.coefficient_second_moments = np.hstack([variances, covariances])
+        self._coefficient_cov = np.hstack([variances, covariances])
 
     """ Utils """
 
@@ -277,10 +283,10 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     n = 2000
-    num_sims = 20
+    num_sims = 1
     fst_rc = np.zeros((num_sims, 3))
+    sec_rc = np.zeros((num_sims, 6))
     sec_shocks = np.zeros((num_sims, 6, 3))
-    csec_shocks = np.zeros((num_sims, 6, 3))
 
     t1 = time()
     for i in range(num_sims):
@@ -290,18 +296,58 @@ if __name__ == "__main__":
                              shock_alpha=0.2,
                              coef_const=0.1,
                              coef_alpha=0.5,
-                             censor1_const=0.07)
+                             censor1_const=0.07,
+                             censor2_const=2.5)
         est.add_data(X=data[["X1", "X2", "X3"]],
                      Z=data[["Z1", "Z2", "Z3"]],
                      Y=data[["Y1", "Y2", "Y3"]])
         est.fit_shock_means()
         est.fit_output_cond_means()
         est.fit_coefficient_means()
+        est.fit_output_cond_means()
+        est.fit_coefficient_means()
+        est.fit_output_cond_second_moments()
+        est.fit_shock_second_moments()
+        est.fit_coefficient_second_moments()
+
         fst_rc[i] = est.coefficient_means
+        sec_rc[i] = est.coefficient_cov
+        sec_shocks[i] = est.shock_cov
+
 
     t2 = time()
     print(f"Finished in {t2 - t1} seconds")
     print(fst_rc.mean(0))
+    print(sec_rc.mean(0))
+
+    # logging.basicConfig(level=logging.INFO)
+    #
+    # n = 2000
+    # num_sims = 20
+    # fst_rc = np.zeros((num_sims, 3))
+    # sec_shocks = np.zeros((num_sims, 6, 3))
+    # csec_shocks = np.zeros((num_sims, 6, 3))
+    #
+    # t1 = time()
+    # for i in range(num_sims):
+    #     fake = generate_data(n=n)
+    #     data = fake["df"]
+    #     est = FHHPSEstimator(shock_const=1.0,
+    #                          shock_alpha=0.2,
+    #                          coef_const=0.1,
+    #                          coef_alpha=0.5,
+    #                          censor1_const=0.07)
+    #     est.add_data(X=data[["X1", "X2", "X3"]],
+    #                  Z=data[["Z1", "Z2", "Z3"]],
+    #                  Y=data[["Y1", "Y2", "Y3"]])
+    #     est.fit_shock_means()
+    #     est.fit_output_cond_means()
+    #     est.fit_coefficient_means()
+    #     fst_rc[i] = est.coefficient_means
+    #
+    # t2 = time()
+    # print(f"Finished in {t2 - t1} seconds")
+    # print(fst_rc.mean(0))
 
     # n = 10000
     # num_sims = 1000
@@ -323,7 +369,7 @@ if __name__ == "__main__":
     #     est.fit_shock_means()
     #     fst_shocks[i] = est.shock_means
     #     est.fit_shock_second_moments()
-    #     csec_shocks[i] = est.shock_centered_second_moments
+    #     csec_shocks[i] = est.shock_cov
     #
     # t2 = time()
     # print(f"Finished in {t2 - t1} seconds")

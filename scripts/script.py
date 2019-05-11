@@ -1,7 +1,4 @@
-import logging
 import os
-
-import numpy as np
 
 from fhhps.estimator import *
 from fhhps.utils import *
@@ -41,9 +38,9 @@ if __name__ == "__main__":
 
         config = {}
         config["n"] = np.random.choice([1000, 5000, 20000])
-        config["shock_const"] = np.random.choice([1.0, 0.5])
+        config["shock_const"] = np.random.choice([1.0, 0.5, 0.1])
         config["shock_alpha"] = np.random.choice([0.2])
-        config["coef_const"] = np.random.choice([0.1, 0.5, 1.0])
+        config["coef_const"] = np.random.choice([0.1, 0.5, 1.0, 2.0])
         config["coef_alpha"] = np.random.choice([0.5])
         config["censor1_const"] = np.random.choice([0.01, 0.05, 0.075, 0.1, 0.2])
 
@@ -53,6 +50,7 @@ if __name__ == "__main__":
         t1 = time()
         fake = generate_data(n=config["n"])
         data = fake["df"]
+
         est = FHHPSEstimator(shock_const=config["shock_const"],
                              shock_alpha=config["shock_alpha"],
                              coef_const=config["coef_const"],
@@ -61,11 +59,22 @@ if __name__ == "__main__":
         est.add_data(X=data[["X1", "X2", "X3"]],
                      Z=data[["Z1", "Z2", "Z3"]],
                      Y=data[["Y1", "Y2", "Y3"]])
+
         est.fit_shock_means()
         est.fit_output_cond_means()
         est.fit_coefficient_means()
+        est.fit_output_cond_means()
+        est.fit_coefficient_means()
+        est.fit_output_cond_second_moments()
+        est.fit_shock_second_moments()
+        est.fit_coefficient_second_moments()
+
         t2 = time()
-        results = {**config, **flatten(est.shock_means), **est.coefficient_means}
+        results = {**config,
+                   **flatten(est.shock_means),
+                   **est.coefficient_means,
+                   **flatten(est.shock_cov),
+                   **est.coefficient_cov}
         results["time"] = t2 - t1
         output = pd.DataFrame(results, index=[0])
-        output.to_csv(os.path.join(WRITE_PATH + ".csv.bz2", FNAME))
+        output.to_csv(os.path.join(WRITE_PATH, FNAME + ".csv.bz2"))
