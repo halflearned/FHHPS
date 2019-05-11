@@ -1,9 +1,10 @@
+import logging
+from typing import *
+
 import numpy as np
 from numba import njit
 from sklearn.linear_model import Ridge
 from sklearn.utils import check_X_y
-import logging
-from typing import *
 
 
 class KernelRegression(Ridge):
@@ -32,14 +33,16 @@ class KernelRegression(Ridge):
     def get_weights(self, cond, bw):
         return kernel_density(cond, bw=bw)
 
-    def fit_predict_local(self, X, y, bw: Union[float, str]="scott"):
-        X, y = check_X_y(X, y, ensure_2d=True, multi_output=True, ensure_min_samples=10, y_numeric=True)
+    def fit_predict_local(self, X, y, bw: Union[float, str] = "scott"):
+        X, y = check_X_y(X, y, ensure_2d=True, multi_output=True, ensure_min_samples=10,
+                         y_numeric=True)
         n = len(X)
         yhat = np.empty_like(y, dtype=np.float64)
         if isinstance(bw, str):
             bw = bandwidth_selector(X, method=bw)
         for i in range(n):
-            logging.info("KernelRegression.fit_predict_local[{i}]".format(i=i))
+            if i % (n // 10) == 0:
+                logging.info("KernelRegression.fit_predict_local[{i}]".format(i=i))
             w = self.get_weights(cond=X - X[i], bw=bw)
             yhat[i] = super().fit(X, y, sample_weight=w).predict(X[[i]])
         return yhat
@@ -85,16 +88,16 @@ def bandwidth_selector(X, method="scott"):
         bw[i] = C * A * n ** (-0.2)
     return bw
 
-
-if __name__ == "__main__":
-    n = 1000
-    X = 3*np.random.normal(size=(n, 3))
-    Z = np.random.normal(size=(n, 3))
-    Y = np.cos(X) + np.random.normal(size=(n, 3))
-    kern = KernelRegression().fit_predict_local(X, Y, bw=10)
-
-    import matplotlib.pyplot as plt
-    plt.scatter(X[:, 0], Y[:, 0])
-    plt.scatter(X[:, 0], kern[:, 0])
-    plt.show()
-
+#
+# if __name__ == "__main__":
+#     n = 1000
+#     X = 3 * np.random.normal(size=(n, 3))
+#     Z = np.random.normal(size=(n, 3))
+#     Y = np.cos(X) + np.random.normal(size=(n, 3))
+#     kern = KernelRegression().fit_predict_local(X, Y, bw=10)
+#
+#     import matplotlib.pyplot as plt
+#
+#     plt.scatter(X[:, 0], Y[:, 0])
+#     plt.scatter(X[:, 0], kern[:, 0])
+#     plt.show()

@@ -1,9 +1,26 @@
+import logging
 import os
+
+import numpy as np
 
 from fhhps.estimator import *
 from fhhps.utils import *
 
+
+def flatten(table):
+    output = {}
+    m, n = table.shape
+    for i in range(m):
+        for j in range(n):
+            value = table.iloc[i, j]
+            key = table.index[i].replace("t", str(j))
+            output[key] = value
+    return output
+
+
 if __name__ == "__main__":
+
+    logging.basicConfig(level=logging.INFO)
 
     while True:
 
@@ -22,23 +39,33 @@ if __name__ == "__main__":
         if not os.path.exists(WRITE_PATH):
             os.makedirs(WRITE_PATH)
 
-        print(f'Saving output in: {WRITE_PATH} as {FNAME}')
+        config = {}
+        config["n"] = np.random.choice([1000, 5000, 20000])
+        config["shock_const"] = np.random.choice([1.0, 0.5])
+        config["shock_alpha"] = np.random.choice([0.2])
+        config["coef_const"] = np.random.choice([0.1, 0.5, 1.0])
+        config["coef_alpha"] = np.random.choice([0.5])
+        config["censor1_const"] = np.random.choice([0.01, 0.05, 0.075, 0.1, 0.2])
+
+        logging.info(f'Saving output in: {WRITE_PATH} as {FNAME}')
+        logging.info(config)
 
         t1 = time()
-
-        n = np.random.choice([1000, 5000, 20000])
-        X, Z, Y = simple_data(n)
-        est = FHHPSEstimator()
-        est.add_data(X, Z, Y)
-        est.fit_shock_first_moments()
-        est.fit_output_cond_first_moments()
-        est.fit_coefficient_first_moments()
-        output = dict(
-            n=n,
-            shock_first_moments=est._shock_first_moments,
-            coefficient_first_moments=est.coefficient_first_moments)
-        save_pickle(obj=output,
-                    path=os.path.join(WRITE_PATH, FNAME))
-
+        fake = generate_data(n=config["n"])
+        data = fake["df"]
+        est = FHHPSEstimator(shock_const=config["shock_const"],
+                             shock_alpha=config["shock_alpha"],
+                             coef_const=config["coef_const"],
+                             coef_alpha=config["coef_alpha"],
+                             censor1_const=config["censor1_const"])
+        est.add_data(X=data[["X1", "X2", "X3"]],
+                     Z=data[["Z1", "Z2", "Z3"]],
+                     Y=data[["Y1", "Y2", "Y3"]])
+        est.fit_shock_means()
+        est.fit_output_cond_means()
+        est.fit_coefficient_means()
         t2 = time()
-        print(f"Processed {n} obs in {t2 - t1} seconds (first coeff only).")
+        results = {**config, **flatten(est.shock_means), **est.coefficient_means}
+        results["time"] = t2 - t1
+        output = pd.DataFrame(results, index=[0])
+        output.to_csv(os.path.join(WRITE_PATH, FNAME))
