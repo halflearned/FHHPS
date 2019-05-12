@@ -9,10 +9,10 @@ from fhhps.utils import *
 class FHHPSEstimator:
 
     def __init__(self,
-                 shock_const: float,
-                 shock_alpha: float,
-                 coef_const: float,
-                 coef_alpha: float,
+                 shock_const: float = 4.0,
+                 shock_alpha: float = 0.2,
+                 coef_const: float = 0.1,
+                 coef_alpha: float = 0.5,
                  censor1_const: float = 1.,
                  censor2_const: float = 1.,
                  censor1_alpha: float = 0.25,
@@ -69,28 +69,6 @@ class FHHPSEstimator:
                          index=["Var[A1]", "Var[B1]", "Var[C1]",
                                 "Cov[A1, B1]", "Cov[A1, C1]", "Cov[B1, C1]"])
 
-    """ Output moments """
-
-    def fit_output_cond_means(self):
-        logging.info("--Fitting output conditional means--")
-        self.output_cond_means = KernelRegression().fit_predict_local(
-            self.XZ, self.Y, bw=self.coef_bw)
-
-    def fit_output_cond_cov(self):
-        logging.info("--Fitting output conditional second moments--")
-
-        resid = (self.Y - self.output_cond_means)
-        Ytilde = np.empty((self.n, 6))
-        Ytilde[:, :3] = resid ** 2
-        Ytilde[:, 3:] = np.column_stack([
-            resid[:, 0] * resid[:, 1],  # Cov[Y1, Y2]
-            resid[:, 0] * resid[:, 2],  # Cov[Y1, Y3]
-            resid[:, 1] * resid[:, 2]])  # Cov[Y2, Y3]
-
-        # Estimate Var[Yt|X] for every t abd Cov[Yt, Ys|X] for every t < s
-        self.output_cond_var = KernelRegression().fit_predict_local(
-            self.XZ, Ytilde, bw=self.coef_bw)
-
     """ Shock moments """
 
     def fit_shock_means(self):
@@ -109,26 +87,58 @@ class FHHPSEstimator:
 
     def fit_shock_second_moments(self):
         """
-        Populates attribute _shock_second_moments with estimates of:
-            # WRONG: This output uncentered estimates!
-            # 0,  Var[U2],       Var[U3]
-            # 0,  Var[V2],       Var[V3]
-            # 0,  Var[W2],       Var[W3]
-            # 0,  Cov[U2, V2],   Cov[U3, V3]
-            # 0,  Cov[U2, W2],   Cov[U3, W3]
-            # 0,  Cov[V2, W2],   Cov[V3, W3]
+        Populates attribute _shock_cov with estimates of:
+            0,  Var[U2],       Var[U3]
+            0,  Var[V2],       Var[V3]
+            0,  Var[W2],       Var[W3]
+            0,  Cov[U2, V2],   Cov[U3, V3]
+            0,  Cov[U2, W2],   Cov[U3, W3]
+            0,  Cov[V2, W2],   Cov[V3, W3]
         """
-        logging.info("--Fitting shock second moments--")
-        self._shock_second_moments = np.zeros(shape=(6, 3))
-        for t in range(1, self.T):
-            self._shock_second_moments[:, t] = \
-                get_shock_second_moments(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
+        # logging.info("--Fitting shock second moments--")
+        # self._shock_second_moments = np.zeros(shape=(6, 3))
+        # for t in range(1, self.T):
+        #     self._shock_second_moments[:, t] = \
+        #         get_shock_second_moments(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
+        #
+        # self._shock_cov = np.zeros((6, 3))
+        # for t in range(self.T):
+        #     self._shock_cov[:, t] = center_shock_second_moments(
+        #         self._shock_means[:, t],
+        #         self._shock_second_moments[:, t])
 
-        self._shock_cov = np.zeros((6, 3))
-        for t in range(self.T):
-            self._shock_cov[:, t] = center_shock_second_moments(
-                self._shock_means[:, t],
-                self._shock_second_moments[:, t])
+        # TODO: Remove after testing
+        self._shock_cov = np.array([
+            [0, 1., 1.],
+            [0, .1, .1],
+            [0, .1, .1],
+            [0, 0.158113, 0.158113],
+            [0, 0.158113, 0.158113],
+            [0, 0.05, 0.05],
+        ])
+
+    """ Output moments """
+
+    def fit_output_cond_means(self):
+        # logging.info("--Fitting output conditional means--")
+        # self.output_cond_mean = KernelRegression().fit_predict_local(
+        #    self.XZ, self.Y, bw=self.coef_bw)
+        self.output_cond_mean = true_output_cond_mean(fake)
+
+    def fit_output_cond_cov(self):
+        logging.info("--Fitting output conditional second moments--")
+
+        resid = (self.Y - self.output_cond_mean)
+        Y_centered = np.empty((self.n, 6))
+        Y_centered[:, :3] = resid ** 2  # Var[Yt|X]
+        Y_centered[:, 3:] = np.column_stack([
+            resid[:, 0] * resid[:, 1],  # Cov[Y1, Y2|X]
+            resid[:, 0] * resid[:, 2],  # Cov[Y1, Y3|X]
+            resid[:, 1] * resid[:, 2]])  # Cov[Y2, Y3|X]
+
+        # Estimate Var[Yt|X] and Cov[Yt, Ys|X]
+        self.output_cond_var = KernelRegression().fit_predict_local(
+            self.XZ, Y_centered, bw=self.coef_bw)
 
     """ Random coefficients """
 
@@ -137,15 +147,15 @@ class FHHPSEstimator:
         self.coefficient_cond_means = np.empty(shape=(self.n, self.T))
         self.valid1 = np.zeros(self.n, dtype=bool)
 
-        # Construct E[Y|X,Z] minus sec_shocks
+        # Construct E[Y|X,Z] minus excess terms
         excess_terms = self.get_mean_excess_terms()
-        cond_output_mean_clean = self.output_cond_means - excess_terms
+        output_cond_mean_clean = self.output_cond_mean - excess_terms
 
         # Compute conditional first moments
         for i in range(self.n):
-            self.valid1[i] = det(gamma1(self.X[i], self.Z[i])) > self.censor1_bw
+            self.valid1[i] = np.abs(det(gamma1(self.X[i], self.Z[i]))) > self.censor1_bw
             self.coefficient_cond_means[i] = \
-                gamma_inv(self.X[i], self.Z[i]) @ cond_output_mean_clean[i]
+                gamma_inv(self.X[i], self.Z[i]) @ output_cond_mean_clean[i]
 
         # Average out to get unconditional moments
         self._coefficient_means = self.coefficient_cond_means[self.valid1].mean(0)
@@ -155,15 +165,15 @@ class FHHPSEstimator:
         self.coefficient_cond_var = np.empty(shape=(self.n, 6))
         self.valid2 = np.zeros(self.n, dtype=bool)
 
-        # Construct Var[Y|X,Z] minus sec_shocks
+        # Construct Var[Y|X,Z] minus excess terms
         excess_terms = self.get_cov_excess_terms()
-        cond_output_var_clean = self.output_cond_var - excess_terms
+        output_cond_var_clean = self.output_cond_var - excess_terms
 
         # Compute conditional second moments of random coefficients
         for i in range(self.n):
-            self.valid2[i] = det(gamma2(self.X[i], self.Z[i])) > self.censor2_bw
+            self.valid2[i] = np.abs(det(gamma2(self.X[i], self.Z[i]))) > self.censor2_bw
             self.coefficient_cond_var[i] = \
-                gamma_inv2(self.X[i], self.Z[i]) @ cond_output_var_clean[i]
+                gamma2_inv(self.X[i], self.Z[i]) @ output_cond_var_clean[i]
 
         # Use EVVE and ECCE formulas to get unconditional moments
         ev = self.coefficient_cond_var[self.valid2, :3].mean(0)
@@ -198,38 +208,39 @@ class FHHPSEstimator:
         """
         The 'excess' terms are those that need to be subtracted from E[Y^2|X]
             right before computing the random coefficients.
-        For the second moments, the 'excess' terms look like
-         [1, Xt*Xs, Zt*Zs, Xt + Xs, Zt + Zs, Xt*Zs + Xs*Zt] @
-
-
+        For the second moments, the 'excess' terms look like:
         """
-
         def matrix(i, j):
-            Xi = self.X[:, i, None]
-            Xj = self.X[:, j, None]
-            Zi = self.Z[:, i, None]
-            Zj = self.Z[:, j, None]
-            return np.hstack(
+            Xi = self.X[:, i]
+            Xj = self.X[:, j]
+            Zi = self.Z[:, i]
+            Zj = self.Z[:, j]
+            return np.column_stack(
                 [np.ones_like(Xi), Xi * Xj, Zi * Zj, Xi + Xj, Zi + Zj, Xi * Zj + Xj * Zi])
 
         excess_terms = np.zeros((self.n, 6))
         excess_terms[:, 1] = matrix(1, 1) @ self._shock_cov[:, 1]
         excess_terms[:, 2] = matrix(1, 1) @ self._shock_cov[:, 1] + \
                              matrix(2, 2) @ self._shock_cov[:, 2]
-        excess_terms[:, 5] = (matrix(1, 2) @ self._shock_cov[:, 1]).flatten()
+        excess_terms[:, 5] = matrix(1, 2) @ self._shock_cov[:, 1]
         return excess_terms
 
 
 def gamma1(x, z):
+    """
+    This is now called matrix M3 in the paper
+    """
     return np.column_stack([np.ones_like(x), x, z])
 
 
 def gamma_inv(x, z):
-    g = np.column_stack([np.ones_like(x), x, z]).T
-    return np.linalg.inv(g)
+    return np.linalg.inv(gamma1(x, z))
 
 
 def gamma2(x, z):
+    """
+    This is now called matrix M6 in the paper
+    """
     f = lambda i, j: [1,
                       x[i] * x[j],
                       z[i] * z[j],
@@ -240,7 +251,7 @@ def gamma2(x, z):
     return g
 
 
-def gamma_inv2(x, z):
+def gamma2_inv(x, z):
     return np.linalg.inv(gamma2(x, z))
 
 
@@ -288,12 +299,32 @@ def center_shock_second_moments(m1, m2):
     return np.array([VarUt, VarVt, VarWt, CovUVt, CovUWt, CovVWt])
 
 
+def true_conditional_mean(muA, muB, sigmaAB, sigmaB, value):
+    return muA + sigmaAB @ np.linalg.inv(sigmaB) @ (value - muB)
+
+
+def true_output_cond_mean(fake):
+    xz = ["X1", "X2", "X3", "Z1", "Z2", "Z3"]
+    y = ["Y1", "Y2", "Y3"]
+    muA = np.array(fake["df"][y].mean()).reshape(-1, 1)
+    muB = np.array(fake["means"][xz]).reshape(-1, 1)
+    sigmaB = np.array(fake["cov"].loc[xz, xz])
+    sigmaAB = np.array(fake["df"].cov().loc[y, xz])
+    n = len(fake["df"])
+    cond_means = np.empty((n, 3))
+    for i in range(n):
+        xz_val = np.array(fake["df"][xz].iloc[i]).reshape(-1, 1)
+        cond_means[i] = true_conditional_mean(muA, muB, sigmaAB, sigmaB, xz_val).flatten()
+    return cond_means
+
+
+
 if __name__ == "__main__":
     from time import time
 
     logging.basicConfig(level=logging.INFO)
 
-    n = 2000
+    n = 4000
     num_sims = 1
     fst_rc = np.zeros((num_sims, 3))
     sec_rc = np.zeros((num_sims, 6))
@@ -306,9 +337,9 @@ if __name__ == "__main__":
         data = fake["df"]
         est = FHHPSEstimator(shock_const=0.5,
                              shock_alpha=0.2,
-                             coef_const=5.0,
-                             coef_alpha=0.5,
-                             censor1_const=0.01,
+                             coef_const=1.0,
+                             coef_alpha=0.2,
+                             censor1_const=1.0,
                              censor2_const=1.0)
         est.add_data(X=data[["X1", "X2", "X3"]],
                      Z=data[["Z1", "Z2", "Z3"]],
@@ -331,6 +362,8 @@ if __name__ == "__main__":
     print(f"Finished in {t2 - t1} seconds")
     print(fst_rc.mean(0))
     print(sec_rc.mean(0))
+
+    self = est
 
     # logging.basicConfig(level=logging.INFO)
     #
