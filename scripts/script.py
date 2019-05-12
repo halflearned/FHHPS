@@ -40,10 +40,10 @@ if __name__ == "__main__":
         config["n"] = np.random.choice([1000, 5000, 20000])
         config["shock_const"] = np.random.choice([1.0, 0.5, 0.1])
         config["shock_alpha"] = np.random.choice([0.2])
-        config["coef_const"] = np.random.choice([1.0, 2.0, 5.0])
-        config["coef_alpha"] = np.random.choice([0.25, 0.5])
-        config["censor1_const"] = np.random.choice([0.01, 0.1, 0.2])
-        config["censor2_const"] = np.random.choice([0.01, 0.1, 0.2])
+        config["coef_const"] = np.random.choice([1., 2., 5., 10.])
+        config["coef_alpha"] = np.random.choice([.25, .5])
+        config["censor1_const"] = np.random.choice([0.2, 1.0])
+        config["censor2_const"] = np.random.choice([0.2, 1.0])
 
         logging.info(f'Saving output in: {WRITE_PATH} as {FNAME}')
         logging.info(config)
@@ -58,7 +58,8 @@ if __name__ == "__main__":
                                  coef_const=config["coef_const"],
                                  coef_alpha=config["coef_alpha"],
                                  censor1_const=config["censor1_const"],
-                                 censor2_const=config["censor2_const"])
+                                 censor2_const=config["censor2_const"],
+                                 fake=fake)
             est.add_data(X=data[["X1", "X2", "X3"]],
                          Z=data[["Z1", "Z2", "Z3"]],
                          Y=data[["Y1", "Y2", "Y3"]])

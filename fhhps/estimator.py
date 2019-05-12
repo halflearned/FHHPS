@@ -16,7 +16,8 @@ class FHHPSEstimator:
                  censor1_const: float = 1.,
                  censor2_const: float = 1.,
                  censor1_alpha: float = 0.25,
-                 censor2_alpha: float = 0.125):
+                 censor2_alpha: float = 0.125,
+                 fake=None):
         self.shock_const = shock_const
         self.shock_alpha = shock_alpha
         self.coef_const = coef_const
@@ -25,6 +26,7 @@ class FHHPSEstimator:
         self.censor2_const = censor2_const
         self.censor1_alpha = censor1_alpha
         self.censor2_alpha = censor2_alpha
+        self.fake = fake
 
     def add_data(self, X, Z, Y):
         self.n, self.T = X.shape
@@ -123,7 +125,7 @@ class FHHPSEstimator:
         # logging.info("--Fitting output conditional means--")
         # self.output_cond_mean = KernelRegression().fit_predict_local(
         #    self.XZ, self.Y, bw=self.coef_bw)
-        self.output_cond_mean = true_output_cond_mean(fake)
+        self.output_cond_mean = true_output_cond_mean(self.fake)
 
     def fit_output_cond_cov(self):
         logging.info("--Fitting output conditional second moments--")
