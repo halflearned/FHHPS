@@ -43,8 +43,11 @@ class KernelRegression(Ridge):
         for i in range(n):
             if i % (n // 10) == 0:
                 logging.info("KernelRegression.fit_predict_local[{i}]".format(i=i))
-            w = self.get_weights(cond=X - X[i], bw=bw)
-            yhat[i] = super().fit(X, y, sample_weight=w).predict(X[[i]])
+            X_in = np.vstack([X[:i], X[i + 1:]])
+            y_in = np.vstack([y[:i], y[i + 1:]])
+            X_out = X[[i]]
+            wts = self.get_weights(cond=X_in - X_out, bw=bw)
+            yhat[i] = super().fit(X_in, y_in, sample_weight=wts).predict(X_out)
         return yhat
 
 

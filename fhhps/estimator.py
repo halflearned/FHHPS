@@ -44,7 +44,7 @@ class FHHPSEstimator:
         self.fit_output_cond_means()
         self.fit_coefficient_means()
         self.fit_shock_second_moments()
-        self.fit_output_cond_second_moments()
+        self.fit_output_cond_cov()
         self.fit_coefficient_second_moments()
 
     @property
@@ -54,12 +54,7 @@ class FHHPSEstimator:
 
     @property
     def shock_cov(self):
-        shock_mom = np.zeros((6, 3))
-        for t in range(self.T):
-            shock_mom[:, t] = center_shock_second_moments(
-                self._shock_means[:, t],
-                self._shock_second_moments[:, t])
-        return pd.DataFrame(data=shock_mom,
+        return pd.DataFrame(data=self._shock_cov,
                             index=["Var[Ut]", "Var[Vt]", "Var[Wt]",
                                    "Cov[Ut, Vt]", "Cov[Ut, Wt]", "Cov[Vt, Wt]"])
 
@@ -81,10 +76,10 @@ class FHHPSEstimator:
         self.output_cond_means = KernelRegression().fit_predict_local(
             self.XZ, self.Y, bw=self.coef_bw)
 
-    def fit_output_cond_second_moments(self):
+    def fit_output_cond_cov(self):
         logging.info("--Fitting output conditional second moments--")
 
-        resid = self.Y  # (self.Y - self.output_cond_means)
+        resid = (self.Y - self.output_cond_means)
         Ytilde = np.empty((self.n, 6))
         Ytilde[:, :3] = resid ** 2
         Ytilde[:, 3:] = np.column_stack([
@@ -93,7 +88,7 @@ class FHHPSEstimator:
             resid[:, 1] * resid[:, 2]])  # Cov[Y2, Y3]
 
         # Estimate Var[Yt|X] for every t abd Cov[Yt, Ys|X] for every t < s
-        self.output_cond_second_moments = KernelRegression().fit_predict_local(
+        self.output_cond_var = KernelRegression().fit_predict_local(
             self.XZ, Ytilde, bw=self.coef_bw)
 
     """ Shock moments """
@@ -115,18 +110,25 @@ class FHHPSEstimator:
     def fit_shock_second_moments(self):
         """
         Populates attribute _shock_second_moments with estimates of:
-            0,  Var[U2],       Var[U3]
-            0,  Var[V2],       Var[V3]
-            0,  Var[W2],       Var[W3]
-            0,  Cov[U2, V2],   Cov[U3, V3]
-            0,  Cov[U2, W2],   Cov[U3, W3]
-            0,  Cov[V2, W2],   Cov[V3, W3]
+            # WRONG: This output uncentered estimates!
+            # 0,  Var[U2],       Var[U3]
+            # 0,  Var[V2],       Var[V3]
+            # 0,  Var[W2],       Var[W3]
+            # 0,  Cov[U2, V2],   Cov[U3, V3]
+            # 0,  Cov[U2, W2],   Cov[U3, W3]
+            # 0,  Cov[V2, W2],   Cov[V3, W3]
         """
         logging.info("--Fitting shock second moments--")
         self._shock_second_moments = np.zeros(shape=(6, 3))
         for t in range(1, self.T):
             self._shock_second_moments[:, t] = \
                 get_shock_second_moments(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
+
+        self._shock_cov = np.zeros((6, 3))
+        for t in range(self.T):
+            self._shock_cov[:, t] = center_shock_second_moments(
+                self._shock_means[:, t],
+                self._shock_second_moments[:, t])
 
     """ Random coefficients """
 
@@ -150,25 +152,25 @@ class FHHPSEstimator:
 
     def fit_coefficient_second_moments(self):
         logging.info("--Fitting coefficient second moments--")
-        self.coefficient_cond_second_moments = np.empty(shape=(self.n, 6))
+        self.coefficient_cond_var = np.empty(shape=(self.n, 6))
         self.valid2 = np.zeros(self.n, dtype=bool)
 
         # Construct Var[Y|X,Z] minus sec_shocks
-        excess_terms = self.get_second_moment_excess_terms()
-        cond_output_var_clean = self.output_cond_second_moments - excess_terms
+        excess_terms = self.get_cov_excess_terms()
+        cond_output_var_clean = self.output_cond_var - excess_terms
 
         # Compute conditional second moments of random coefficients
         for i in range(self.n):
             self.valid2[i] = det(gamma2(self.X[i], self.Z[i])) > self.censor2_bw
-            self.coefficient_cond_second_moments[i] = \
+            self.coefficient_cond_var[i] = \
                 gamma_inv2(self.X[i], self.Z[i]) @ cond_output_var_clean[i]
 
-        # Use EVVE and ECCE (i.e. ANOVA) formulas to get unconditional moments
-        ev = self.coefficient_cond_second_moments[self.valid2, :3].mean(0)
+        # Use EVVE and ECCE formulas to get unconditional moments
+        ev = self.coefficient_cond_var[self.valid2, :3].mean(0)
         ve = self.coefficient_cond_means[self.valid2].var(0)
         variances = ev + ve
 
-        ec = self.coefficient_cond_second_moments[self.valid2, 3:].mean(0)
+        ec = self.coefficient_cond_var[self.valid2, 3:].mean(0)
         ce = np.cov(self.coefficient_cond_means[self.valid2].T)[[0, 0, 1], [1, 2, 2]]
         covariances = ec + ce
         self._coefficient_cov = np.hstack([variances, covariances])
@@ -192,20 +194,29 @@ class FHHPSEstimator:
             excess_terms[:, t] += XZt @ cum_shock_means[:, t]
         return excess_terms
 
-    def get_second_moment_excess_terms(self):
-        def matrix(xi, xj, zi, zj):
-            Xi = self.X[:, xi, None]
-            Xj = self.X[:, xj, None]
-            Zi = self.Z[:, zi, None]
-            Zj = self.Z[:, zj, None]
+    def get_cov_excess_terms(self):
+        """
+        The 'excess' terms are those that need to be subtracted from E[Y^2|X]
+            right before computing the random coefficients.
+        For the second moments, the 'excess' terms look like
+         [1, Xt*Xs, Zt*Zs, Xt + Xs, Zt + Zs, Xt*Zs + Xs*Zt] @
+
+
+        """
+
+        def matrix(i, j):
+            Xi = self.X[:, i, None]
+            Xj = self.X[:, j, None]
+            Zi = self.Z[:, i, None]
+            Zj = self.Z[:, j, None]
             return np.hstack(
-                [np.ones_like(Xi), Xi * Xj, Zi * Zj, Xi + Xj, Zi * Zj, Xi * Zj + Xj * Zi])
+                [np.ones_like(Xi), Xi * Xj, Zi * Zj, Xi + Xj, Zi + Zj, Xi * Zj + Xj * Zi])
 
         excess_terms = np.zeros((self.n, 6))
-        excess_terms[:, 1] = (matrix(1, 1, 1, 1) @ self._shock_second_moments[:, 1, None]).flatten()
-        excess_terms[:, 2] = (matrix(1, 1, 1, 1) @ self._shock_second_moments[:, 1, None] +
-                              matrix(2, 2, 2, 2) @ self._shock_second_moments[:, 2, None]).flatten()
-        excess_terms[:, 5] = (matrix(1, 2, 1, 2) @ self._shock_second_moments[:, 1, None]).flatten()
+        excess_terms[:, 1] = matrix(1, 1) @ self._shock_cov[:, 1]
+        excess_terms[:, 2] = matrix(1, 1) @ self._shock_cov[:, 1] + \
+                             matrix(2, 2) @ self._shock_cov[:, 2]
+        excess_terms[:, 5] = (matrix(1, 2) @ self._shock_cov[:, 1]).flatten()
         return excess_terms
 
 
@@ -286,18 +297,19 @@ if __name__ == "__main__":
     num_sims = 1
     fst_rc = np.zeros((num_sims, 3))
     sec_rc = np.zeros((num_sims, 6))
+    sec_rc = np.zeros((num_sims, 6))
     sec_shocks = np.zeros((num_sims, 6, 3))
 
     t1 = time()
     for i in range(num_sims):
         fake = generate_data(n=n)
         data = fake["df"]
-        est = FHHPSEstimator(shock_const=1.0,
+        est = FHHPSEstimator(shock_const=0.5,
                              shock_alpha=0.2,
-                             coef_const=0.1,
+                             coef_const=5.0,
                              coef_alpha=0.5,
-                             censor1_const=0.07,
-                             censor2_const=2.5)
+                             censor1_const=0.01,
+                             censor2_const=1.0)
         est.add_data(X=data[["X1", "X2", "X3"]],
                      Z=data[["Z1", "Z2", "Z3"]],
                      Y=data[["Y1", "Y2", "Y3"]])
@@ -306,7 +318,7 @@ if __name__ == "__main__":
         est.fit_coefficient_means()
         est.fit_output_cond_means()
         est.fit_coefficient_means()
-        est.fit_output_cond_second_moments()
+        est.fit_output_cond_cov()
         est.fit_shock_second_moments()
         est.fit_coefficient_second_moments()
 
