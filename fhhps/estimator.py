@@ -80,12 +80,14 @@ class FHHPSEstimator:
             0, E[V2], E[V3]
             0, E[W2], E[W3]
         """
-        logging.info("--Fitting shock means--")
-        self._shock_means = np.zeros(shape=(self.T, self.num_coef))
-        for t in range(1, self.T):
-            self._shock_means[:, t] = \
-                get_shock_means(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
-        self.cum_shock_means = self._shock_means.cumsum(axis=1)
+        # logging.info("--Fitting shock means--")
+        # self._shock_means = np.zeros(shape=(self.T, self.num_coef))
+        # for t in range(1, self.T):
+        #     self._shock_means[:, t] = \
+        #         get_shock_means(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
+        self._shock_means = np.array([
+            [0, ]
+        ])
 
     def fit_shock_second_moments(self):
         """

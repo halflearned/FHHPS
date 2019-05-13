@@ -81,6 +81,7 @@ if __name__ == "__main__":
                        **est.coefficient_cov}
             results["time"] = t2 - t1
             output = pd.DataFrame(results, index=[0])
+            print(output["Var[U2]"])
             output.to_csv(os.path.join(WRITE_PATH, FNAME + ".csv.bz2"))
         except Exception as e:
             logging.info("Found some error")
