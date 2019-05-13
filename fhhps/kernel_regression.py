@@ -90,17 +90,3 @@ def bandwidth_selector(X, method="scott"):
         A = np.minimum(A1, A2).item()
         bw[i] = C * A * n ** (-0.2)
     return bw
-
-#
-# if __name__ == "__main__":
-#     n = 1000
-#     X = 3 * np.random.normal(size=(n, 3))
-#     Z = np.random.normal(size=(n, 3))
-#     Y = np.cos(X) + np.random.normal(size=(n, 3))
-#     kern = KernelRegression().fit_predict_local(X, Y, bw=10)
-#
-#     import matplotlib.pyplot as plt
-#
-#     plt.scatter(X[:, 0], Y[:, 0])
-#     plt.scatter(X[:, 0], kern[:, 0])
-#     plt.show()

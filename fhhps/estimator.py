@@ -80,14 +80,11 @@ class FHHPSEstimator:
             0, E[V2], E[V3]
             0, E[W2], E[W3]
         """
-        # logging.info("--Fitting shock means--")
-        # self._shock_means = np.zeros(shape=(self.T, self.num_coef))
-        # for t in range(1, self.T):
-        #     self._shock_means[:, t] = \
-        #         get_shock_means(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
-        self._shock_means = np.array([
-            [0, ]
-        ])
+        logging.info("--Fitting shock means--")
+        self._shock_means = np.zeros(shape=(self.T, self.num_coef))
+        for t in range(1, self.T):
+            self._shock_means[:, t] = \
+                get_shock_means(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
 
     def fit_shock_second_moments(self):
         """
@@ -99,27 +96,17 @@ class FHHPSEstimator:
             0,  Cov[U2, W2],   Cov[U3, W3]
             0,  Cov[V2, W2],   Cov[V3, W3]
         """
-        # logging.info("--Fitting shock second moments--")
-        # self._shock_second_moments = np.zeros(shape=(6, 3))
-        # for t in range(1, self.T):
-        #     self._shock_second_moments[:, t] = \
-        #         get_shock_second_moments(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
-        #
-        # self._shock_cov = np.zeros((6, 3))
-        # for t in range(self.T):
-        #     self._shock_cov[:, t] = center_shock_second_moments(
-        #         self._shock_means[:, t],
-        #         self._shock_second_moments[:, t])
+        logging.info("--Fitting shock second moments--")
+        self._shock_second_moments = np.zeros(shape=(6, 3))
+        for t in range(1, self.T):
+            self._shock_second_moments[:, t] = \
+                get_shock_second_moments(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
 
-        # TODO: Remove after testing
-        self._shock_cov = np.array([
-            [0, 1., 1.],
-            [0, .1, .1],
-            [0, .1, .1],
-            [0, 0.158113, 0.158113],
-            [0, 0.158113, 0.158113],
-            [0, 0.05, 0.05],
-        ])
+        self._shock_cov = np.zeros((6, 3))
+        for t in range(self.T):
+            self._shock_cov[:, t] = center_shock_second_moments(
+                self._shock_means[:, t],
+                self._shock_second_moments[:, t])
 
     """ Output moments """
 
@@ -320,112 +307,3 @@ def true_output_cond_mean(fake):
         xz_val = np.array(fake["df"][xz].iloc[i]).reshape(-1, 1)
         cond_means[i] = true_conditional_mean(muA, muB, sigmaAB, sigmaB, xz_val).flatten()
     return cond_means
-
-
-
-if __name__ == "__main__":
-    from time import time
-
-    logging.basicConfig(level=logging.INFO)
-
-    n = 4000
-    num_sims = 1
-    fst_rc = np.zeros((num_sims, 3))
-    sec_rc = np.zeros((num_sims, 6))
-    sec_rc = np.zeros((num_sims, 6))
-    sec_shocks = np.zeros((num_sims, 6, 3))
-
-    t1 = time()
-    for i in range(num_sims):
-        fake = generate_data(n=n)
-        data = fake["df"]
-        est = FHHPSEstimator(shock_const=0.5,
-                             shock_alpha=0.2,
-                             coef_const=1.0,
-                             coef_alpha=0.2,
-                             censor1_const=1.0,
-                             censor2_const=1.0)
-        est.add_data(X=data[["X1", "X2", "X3"]],
-                     Z=data[["Z1", "Z2", "Z3"]],
-                     Y=data[["Y1", "Y2", "Y3"]])
-        est.fit_shock_means()
-        est.fit_output_cond_means()
-        est.fit_coefficient_means()
-        est.fit_output_cond_means()
-        est.fit_coefficient_means()
-        est.fit_output_cond_cov()
-        est.fit_shock_second_moments()
-        est.fit_coefficient_second_moments()
-
-        fst_rc[i] = est.coefficient_means
-        sec_rc[i] = est.coefficient_cov
-        sec_shocks[i] = est.shock_cov
-
-
-    t2 = time()
-    print(f"Finished in {t2 - t1} seconds")
-    print(fst_rc.mean(0))
-    print(sec_rc.mean(0))
-
-    self = est
-
-    # logging.basicConfig(level=logging.INFO)
-    #
-    # n = 2000
-    # num_sims = 20
-    # fst_rc = np.zeros((num_sims, 3))
-    # sec_shocks = np.zeros((num_sims, 6, 3))
-    # csec_shocks = np.zeros((num_sims, 6, 3))
-    #
-    # t1 = time()
-    # for i in range(num_sims):
-    #     fake = generate_data(n=n)
-    #     data = fake["df"]
-    #     est = FHHPSEstimator(shock_const=1.0,
-    #                          shock_alpha=0.2,
-    #                          coef_const=0.1,
-    #                          coef_alpha=0.5,
-    #                          censor1_const=0.07)
-    #     est.add_data(X=data[["X1", "X2", "X3"]],
-    #                  Z=data[["Z1", "Z2", "Z3"]],
-    #                  Y=data[["Y1", "Y2", "Y3"]])
-    #     est.fit_shock_means()
-    #     est.fit_output_cond_means()
-    #     est.fit_coefficient_means()
-    #     fst_rc[i] = est.coefficient_means
-    #
-    # t2 = time()
-    # print(f"Finished in {t2 - t1} seconds")
-    # print(fst_rc.mean(0))
-
-    # n = 10000
-    # num_sims = 1000
-    # fst_shocks = np.zeros((num_sims, 3, 3))
-    # sec_shocks = np.zeros((num_sims, 6, 3))
-    # csec_shocks = np.zeros((num_sims, 6, 3))
-    #
-    # t1 = time()
-    # for i in range(num_sims):
-    #     fake = generate_data(n=n)
-    #     data = fake["df"]
-    #     est = FHHPSEstimator(shock_const=1.0,
-    #                          shock_alpha=0.2,
-    #                          coef_const=.1,
-    #                          coef_alpha=0.5)
-    #     est.add_data(X=data[["X1", "X2", "X3"]],
-    #                  Z=data[["Z1", "Z2", "Z3"]],
-    #                  Y=data[["Y1", "Y2", "Y3"]])
-    #     est.fit_shock_means()
-    #     fst_shocks[i] = est.shock_means
-    #     est.fit_shock_second_moments()
-    #     csec_shocks[i] = est.shock_cov
-    #
-    # t2 = time()
-    # print(f"Finished in {t2 - t1} seconds")
-    # print(fst_shocks.mean(0))
-    # print(csec_shocks.mean(0))
-    # print(fake["cov"].loc[['U2',  'V2', 'W2'], ['U2',  'V2', 'W2']])
-
-    # est.fit_output_cond_means()
-    # est.fit_coefficient_means()
-    # print(est._coefficient_means)
