@@ -53,6 +53,9 @@ def generate_data(n,
                   VU=1, VV=.1, VW=.1,
                   rho=.5,
                   seed=None):
+    """
+    Generates jointly Normal data
+    """
     names = ["A1", "B1", "C1",
              "X1", "X2", "X3",
              "Z1", "Z2", "Z3",
