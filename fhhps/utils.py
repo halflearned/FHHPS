@@ -2,6 +2,7 @@ from time import time
 
 import numpy as np
 import pandas as pd
+from numba import njit
 from scipy.linalg import toeplitz, block_diag
 
 
@@ -106,3 +107,33 @@ def generate_data(n,
 
     return data
 
+
+@njit()
+def bandwidth_selector(X, method="scott"):
+    """
+    A = minimum of std(X, ddof=1) and normalized IQR(X)
+    C = depends on method
+
+    References
+    ----------
+    Silverman (1986) p.47
+    Scott, D.W. (1992) Multivariate Density Estimation: Theory, Practice, and
+        Visualization.
+    """
+    if method == "scott":
+        C = 1.059
+    elif method == "silverman":
+        C = 0.9
+    else:
+        C = 1
+
+    k = X.shape[1]
+    n = X.shape[0]
+    bw = np.empty(shape=k, dtype=np.float64)
+    for i in range(k):
+        x = X[:, i]
+        A1 = np.diff(np.percentile(x, q=[25, 75])) / 1.349
+        A2 = np.std(x)
+        A = np.minimum(A1, A2).item()
+        bw[i] = C * A * n ** (-0.2)
+    return bw

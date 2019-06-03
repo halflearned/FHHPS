@@ -256,7 +256,7 @@ def get_shock_means(X, Z, Y, t: int, bw: float):
     DXZt = np.hstack(difference(X, Z, t=t))
     XZt = np.hstack(extract(X, Z, t=t))
     kern = KernelRegression()
-    wts = kern.get_weights(DXZt, bw=bw)
+    wts = kern.get_weights(DXZt, param=bw)
     moments = kern.fit(XZt, DYt, sample_weight=wts).coefficients
     return moments
 
