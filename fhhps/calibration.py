@@ -131,14 +131,75 @@ def calibrate_coeff_mean_params(n, num_sims=40,
     return results
 
 
+def calibrate_coeff_cov_params(n, num_sims=40,
+                               shock_const=5.,
+                               shock_alpha=0.2,
+                               coef_alpha=0.5):
+    def obj(params):
+        coef_const, censor1_const, censor2_const = params
+        try:
+            fake = generate_data(n)
+            data = fake["df"]
+            truth = np.hstack([fake["variances"][["A1", "B1", "C1"]],
+                               fake["cov"].loc["A1", "B1"],
+                               fake["cov"].loc["A1", "C1"],
+                               fake["cov"].loc["B1", "C1"]])
+
+            est = FHHPSEstimator(shock_const=shock_const,
+                                 shock_alpha=shock_alpha,
+                                 coef_const=coef_const,
+                                 coef_alpha=coef_alpha,
+                                 censor1_const=censor1_const,
+                                 censor2_const=censor2_const)
+            est.fit(X=data[["X1", "X2", "X3"]],
+                    Y=data[["Y1", "Y2", "Y3"]],
+                    Z=data[["Z1", "Z2", "Z3"]])
+
+            mse = mean_squared_error(est.coefficient_cov, truth)
+            print(coef_const, censor1_const, mse)
+            return mse
+        except ValueError:
+            print("Too low!")
+            return np.nan
+
+    train_random_params = np.column_stack([
+        np.random.uniform(5, 50, size=num_sims),
+        np.random.uniform(0.01, 6, size=num_sims),
+        np.random.uniform(0.01, 6, size=num_sims),
+    ])
+    mse = np.empty(shape=num_sims)
+    for i, p in enumerate(train_random_params):
+        mse[i] = obj(p)
+    valid = np.isfinite(mse)
+
+    # Predict the argmin parameter
+    reg = KernelRidge(kernel="poly", degree=4).fit(train_random_params[valid], mse[valid])
+    test_random_params = np.column_stack([
+        np.random.uniform(1, 50, size=10000),
+        np.random.uniform(0.01, 5, size=10000),
+        np.random.uniform(0.01, 5, size=10000)
+    ])
+    best_idx = reg.predict(test_random_params).argmin()
+    coef_const, censor1_const, censor2_const = test_random_params[best_idx]
+    results = dict(train_random_params=train_random_params,
+                   mse=mse,
+                   valid=valid,
+                   coef_const=coef_const,
+                   censor1_const=censor1_const,
+                   censor2_const=censor2_const)
+    return results
+
+
 if __name__ == "__main__":
     # shock_const2000 = calibrate_shock_means_const(n=2000)
     # shock_const5000 = calibrate_shock_means_const(n=5000)
     import matplotlib.pyplot as plt
 
-    res = calibrate_coeff_mean_params(2000, num_sims=30)
+    res = calibrate_coeff_cov_params(1000, num_sims=10)
 
-    fig, axs = plt.subplots(1, 2, figsize=(15, 4))
-    axs[0].scatter(res["train_random_params"][:, 0], res['mse'])
-    axs[1].scatter(res["train_random_params"][:, 1], res['mse'])
+    fig, axs = plt.subplots(1, 3, figsize=(15, 4))
+    valid = res['mse'] < 3
+    axs[0].scatter(res["train_random_params"][valid, 0], res['mse'][valid])
+    axs[1].scatter(res["train_random_params"][valid, 1], res['mse'][valid])
+    axs[2].scatter(res["train_random_params"][valid, 2], res['mse'][valid])
     plt.show()
