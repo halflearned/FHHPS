@@ -4,7 +4,6 @@ import numpy as np
 from scipy.stats import norm
 from sklearn.linear_model import Ridge
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils import check_X_y
 
 
 class KernelRegression(Ridge):
@@ -65,11 +64,12 @@ class KernelRegression(Ridge):
 
     def fit_predict_local(self, X, y, bw=None):
 
-        X, y = check_X_y(X, y,
-                         ensure_2d=True,
-                         multi_output=True,
-                         ensure_min_samples=10,
-                         y_numeric=True)
+        # X, y = check_X_y(X, y,
+        #                  ensure_2d=True,
+        #                  multi_output=True,
+        #                  ensure_min_samples=10,
+        #                  y_numeric=True,
+        #                  force_all_finite=)
 
         if self.kernel == "knn":
             if bw is not None:
@@ -78,12 +78,20 @@ class KernelRegression(Ridge):
 
         n, p = X.shape
         invalid_pts = 0
-        yhat = np.empty_like(y, dtype=np.float64)
+        yhat = np.full_like(y, fill_value=np.nan, dtype=np.float64)
         for i in range(n):
+            if np.any(np.isnan(y[i])):
+                continue
+
             if i % (n // 10) == 0:
                 logging.info("KernelRegression.fit_predict_local[{i}]".format(i=i))
             X_in = np.vstack([X[:i], X[i + 1:]])
             y_in = np.vstack([y[:i], y[i + 1:]])
+
+            valid = np.isfinite(X_in).all(1) & np.isfinite(y_in).all(1)
+            X_in = X_in[valid]
+            y_in = y_in[valid]
+
             X_out = X[[i]]
             wts = self.get_weights(x_in=X_in, x_out=X_out, param=bw)
             valid = ~np.isclose(wts, 0)
@@ -91,7 +99,6 @@ class KernelRegression(Ridge):
                 model = super().fit(X_in[valid] - X_out, y_in[valid], sample_weight=wts[valid])
                 yhat[i] = model.intercept_
             else:
-                yhat[i] = np.nan
                 invalid_pts += 1
 
         if invalid_pts > 0:
@@ -109,17 +116,16 @@ def uniform_kernel(a: np.ndarray, bw: float):
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-
     n, p = 1000, 4
     X = np.random.normal(np.pi, np.pi, size=(n, p))
     mu = np.sin(X[:, 0:1])
     y = mu + 0.001 * np.random.normal(size=(n, 1))
+    y[50] = np.nan
     reg = KernelRegression(kernel="uniform")
-    yhat = reg.fit_predict_local(X, y, bw=0.5 * np.std(X))
+    yhat = reg.fit_predict_local(X, y, bw=1 * np.std(X))
 
-    # reg = KernelRegression(kernel="knn", num_neighbors=10)
-    # yhat = reg.fit_predict_local(X, y, bw=None)
-    plt.scatter(X[:, 0], mu.flatten())
-    plt.scatter(X[:, 0], yhat.flatten())
-    plt.show()
+    # # reg = KernelRegression(kernel="knn", num_neighbors=10)
+    # # yhat = reg.fit_predict_local(X, y, bw=None)
+    # plt.scatter(X[:, 0], mu.flatten())
+    # plt.scatter(X[:, 0], yhat.flatten())
+    # plt.show()

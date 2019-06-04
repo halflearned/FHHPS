@@ -125,6 +125,7 @@ class FHHPSEstimator:
             resid[:, 1] * resid[:, 2]])  # Cov[Y2, Y3|X]
 
         # Estimate Var[Yt|X] and Cov[Yt, Ys|X]
+        # TODO: Reconsider.
         self.output_cond_var = KernelRegression().fit_predict_local(
             self.XZ, Y_centered, bw=self.coef_bw)
 
@@ -141,6 +142,8 @@ class FHHPSEstimator:
 
         # Compute conditional first moments
         for i in range(self.n):
+            if not np.all(np.isfinite(output_cond_mean_clean[i])):
+                continue
             self.valid1[i] = np.abs(det(gamma1(self.X[i], self.Z[i]))) > self.censor1_bw
             self.coefficient_cond_means[i] = \
                 gamma_inv(self.X[i], self.Z[i]) @ output_cond_mean_clean[i]
@@ -159,6 +162,8 @@ class FHHPSEstimator:
 
         # Compute conditional second moments of random coefficients
         for i in range(self.n):
+            if not np.all(np.isfinite(output_cond_var_clean[i])):
+                continue
             self.valid2[i] = np.abs(det(gamma2(self.X[i], self.Z[i]))) > self.censor2_bw
             self.coefficient_cond_var[i] = \
                 gamma2_inv(self.X[i], self.Z[i]) @ output_cond_var_clean[i]
