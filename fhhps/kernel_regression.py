@@ -1,7 +1,7 @@
 import logging
 
 import numpy as np
-from numba import njit
+from scipy.stats import norm
 from sklearn.linear_model import Ridge
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_X_y
@@ -12,17 +12,16 @@ class KernelRegression(Ridge):
     def __init__(self, alpha=1e-6, fit_intercept=True, normalize=True,
                  copy_X=True, max_iter=None, tol=0.001, solver="auto",
                  random_state=None, kernel="gaussian",
-                 num_neighbors=None,
-                 bw_selection_method=None):
+                 num_neighbors=None):
+
         self.kernel = kernel
-        if kernel == "neighbors":
-            assert bw_selection_method is None
-            self._nn = NearestNeighbors(num_neighbors)
-            self.bw_selection_method = None
+
+        if kernel == "knn":
+            self._nn = NearestNeighbors(num_neighbors + 1)
+            self.num_neighbors = num_neighbors
         else:
             assert num_neighbors is None
             self._nn = None
-            self.bw_selection_method = None
 
         super().__init__(
             alpha=alpha,
@@ -36,31 +35,49 @@ class KernelRegression(Ridge):
 
     @property
     def coefficients(self):
+
         if len(self.intercept_) == 1:
             return np.hstack([self.intercept_, self.coef_.flatten()])
+
         else:
             return np.hstack([self.intercept_.reshape(-1, 1), self.coef_])
 
     def get_weights(self, x_in, x_out, param=None):
+
         if self.kernel == "gaussian":
             return gaussian_kernel(x_in - x_out, bw=param)
+
         elif self.kernel == "uniform":
             return uniform_kernel(x_in - x_out, bw=param)
+
         elif self.kernel == "knn":
-            return self._nn.kneighbors(x_out, param, return_distance=False)[0, 1:]
+            wts = np.zeros(shape=len(x_in))
+            j, *idx = self._nn.kneighbors(x_out, return_distance=False)[0]
+            for i in idx:
+                if i < j:
+                    wts[i] = 1
+                else:
+                    wts[i - 1] = 1
+            return wts
+
+        else:
+            raise ValueError(f"Unknown kernel {self.kernel}")
 
     def fit_predict_local(self, X, y, bw=None):
+
         X, y = check_X_y(X, y,
                          ensure_2d=True,
                          multi_output=True,
                          ensure_min_samples=10,
                          y_numeric=True)
-        if self.kernel == "neighbor" and bw is not None:
-            raise ValueError("Knn kernel does not accept bw.")
-        else:
+
+        if self.kernel == "knn":
+            if bw is not None:
+                raise TypeError("When kernel is knn, bw must be None")
             self._nn.fit(X)
 
-        n = len(X)
+        n, p = X.shape
+        invalid_pts = 0
         yhat = np.empty_like(y, dtype=np.float64)
         for i in range(n):
             if i % (n // 10) == 0:
@@ -69,19 +86,40 @@ class KernelRegression(Ridge):
             y_in = np.vstack([y[:i], y[i + 1:]])
             X_out = X[[i]]
             wts = self.get_weights(x_in=X_in, x_out=X_out, param=bw)
-            yhat[i] = super().fit(X_in, y_in, sample_weight=wts).predict(X_out)
+            valid = ~np.isclose(wts, 0)
+            if np.sum(valid) > p:
+                model = super().fit(X_in[valid] - X_out, y_in[valid], sample_weight=wts[valid])
+                yhat[i] = model.intercept_
+            else:
+                yhat[i] = np.nan
+                invalid_pts += 1
+
+        if invalid_pts > 0:
+            logging.warning("Number of invalid points: {}".format(invalid_pts))
+
         return yhat
 
 
-@njit()
-def gaussian_kernel(X: np.ndarray, bw: float):
-    p = 1 / (2 * np.pi * bw) * np.exp(-X ** 2 / (2 * bw ** 2))
-    k = X.shape[1]
-    out = p[:, 0]
-    for i in range(1, k):
-        out *= p[:, i]
-    return out
+def gaussian_kernel(a: np.ndarray, bw: float):
+    return norm(scale=bw).pdf(a).prod(axis=1)
 
 
-def uniform_kernel(X: np.ndarray, bw: float):
-    return (np.abs(X) < bw).astype(float)
+def uniform_kernel(a: np.ndarray, bw: float):
+    return np.all(np.abs(a) < bw, axis=1).astype(float)
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+
+    n, p = 1000, 4
+    X = np.random.normal(np.pi, np.pi, size=(n, p))
+    mu = np.sin(X[:, 0:1])
+    y = mu + 0.001 * np.random.normal(size=(n, 1))
+    reg = KernelRegression(kernel="uniform")
+    yhat = reg.fit_predict_local(X, y, bw=0.5 * np.std(X))
+
+    # reg = KernelRegression(kernel="knn", num_neighbors=10)
+    # yhat = reg.fit_predict_local(X, y, bw=None)
+    plt.scatter(X[:, 0], mu.flatten())
+    plt.scatter(X[:, 0], yhat.flatten())
+    plt.show()

@@ -2,22 +2,21 @@ import logging
 
 from numpy.linalg import det as det
 
-from fhhps.kernel_regression import KernelRegression
+from fhhps.kernel_regression import KernelRegression, uniform_kernel
 from fhhps.utils import *
 
 
 class FHHPSEstimator:
 
     def __init__(self,
-                 shock_const: float = 4.0,
+                 shock_const: float = 5.0,
                  shock_alpha: float = 0.2,
                  coef_const: float = 0.1,
                  coef_alpha: float = 0.5,
                  censor1_const: float = 1.,
                  censor2_const: float = 1.,
                  censor1_alpha: float = 0.25,
-                 censor2_alpha: float = 0.125,
-                 fake=None):
+                 censor2_alpha: float = 0.125):
         self.shock_const = shock_const
         self.shock_alpha = shock_alpha
         self.coef_const = coef_const
@@ -26,7 +25,6 @@ class FHHPSEstimator:
         self.censor2_const = censor2_const
         self.censor1_alpha = censor1_alpha
         self.censor2_alpha = censor2_alpha
-        self.fake = fake
 
     def add_data(self, X, Z, Y):
         self.n, self.T = X.shape
@@ -111,10 +109,9 @@ class FHHPSEstimator:
     """ Output moments """
 
     def fit_output_cond_means(self):
-        # logging.info("--Fitting output conditional means--")
-        # self.output_cond_mean = KernelRegression().fit_predict_local(
-        #    self.XZ, self.Y, bw=self.coef_bw)
-        self.output_cond_mean = true_output_cond_mean(self.fake)
+        logging.info("--Fitting output conditional means--")
+        self.output_cond_mean = KernelRegression().fit_predict_local(
+            self.XZ, self.Y, bw=self.coef_bw)
 
     def fit_output_cond_cov(self):
         logging.info("--Fitting output conditional second moments--")
@@ -256,7 +253,8 @@ def get_shock_means(X, Z, Y, t: int, bw: float):
     DXZt = np.hstack(difference(X, Z, t=t))
     XZt = np.hstack(extract(X, Z, t=t))
     kern = KernelRegression()
-    wts = kern.get_weights(DXZt, param=bw)
+    # wts = kern.get_weights(DXZt, param=bw)
+    wts = uniform_kernel(DXZt, bw)
     moments = kern.fit(XZt, DYt, sample_weight=wts).coefficients
     return moments
 
@@ -268,10 +266,11 @@ def get_shock_second_moments(X, Z, Y, t: int, bw: float):
     """
     n, _ = X.shape
     DYt = difference(Y, t=t)
-    DXZ = np.hstack(difference(X, Z, t=t))
+    DXZt = np.hstack(difference(X, Z, t=t))
     XZt = np.hstack(extract(X ** 2, Z ** 2, 2 * X, 2 * Z, 2 * X * Z, t=t))
     kern = KernelRegression()
-    wts = kern.get_weights(DXZ, bw)
+    # wts = kern.get_weights(DXZt, bw)
+    wts = uniform_kernel(DXZt, bw)
     moments = kern.fit(XZt, DYt ** 2, sample_weight=wts).coefficients
     return moments
 
@@ -289,21 +288,3 @@ def center_shock_second_moments(m1, m2):
     CovVWt = m2[5] - m1[1] * m1[2]
     return np.array([VarUt, VarVt, VarWt, CovUVt, CovUWt, CovVWt])
 
-
-def true_conditional_mean(muA, muB, sigmaAB, sigmaB, value):
-    return muA + sigmaAB @ np.linalg.inv(sigmaB) @ (value - muB)
-
-
-def true_output_cond_mean(fake):
-    xz = ["X1", "X2", "X3", "Z1", "Z2", "Z3"]
-    y = ["Y1", "Y2", "Y3"]
-    muA = np.array(fake["df"][y].mean()).reshape(-1, 1)
-    muB = np.array(fake["means"][xz]).reshape(-1, 1)
-    sigmaB = np.array(fake["cov"].loc[xz, xz])
-    sigmaAB = np.array(fake["df"].cov().loc[y, xz])
-    n = len(fake["df"])
-    cond_means = np.empty((n, 3))
-    for i in range(n):
-        xz_val = np.array(fake["df"][xz].iloc[i]).reshape(-1, 1)
-        cond_means[i] = true_conditional_mean(muA, muB, sigmaAB, sigmaB, xz_val).flatten()
-    return cond_means
