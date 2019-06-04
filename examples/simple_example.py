@@ -14,7 +14,7 @@ data = fake["df"]
 # Algorithm configuration
 est = FHHPSEstimator(shock_const=5.0,
                      shock_alpha=0.2,
-                     coef_const=25.,
+                     coef_const=20.,
                      coef_alpha=0.5,
                      censor1_const=3.0,
                      censor2_const=3.0)

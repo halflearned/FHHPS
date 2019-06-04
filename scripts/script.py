@@ -1,4 +1,5 @@
 import os
+from collections import OrderedDict as ODict
 
 from fhhps.estimator import *
 from fhhps.utils import *
@@ -10,9 +11,31 @@ def flatten(table):
     for i in range(m):
         for j in range(n):
             value = table.iloc[i, j]
-            key = table.index[i].replace("t", str(j))
+            key = table.index[i].replace("t", str(j + 1))
             output[key] = value
     return output
+
+
+def make_row(config, stat, value):
+    row = ODict(**config)
+    row["statistic"] = stat
+    row["value"] = value
+    return row
+
+
+def make_chunk(config, est):
+    results = {**flatten(est.shock_means),
+               **est.coefficient_means,
+               **flatten(est.shock_cov),
+               **est.coefficient_cov}
+    rows = []
+    for stat, val in results.items():
+        rows.append(make_row(config, stat, val))
+    return pd.DataFrame(rows)
+
+
+def on_sherlock():
+    return 'GROUP_SCRATCH' in os.environ
 
 
 if __name__ == "__main__":
@@ -36,14 +59,14 @@ if __name__ == "__main__":
         if not os.path.exists(WRITE_PATH):
             os.makedirs(WRITE_PATH)
 
-        config = {}
-        config["n"] = np.random.choice([1000, 5000, 20000])
-        config["shock_const"] = np.random.choice([1.0, 0.5, 0.1])
-        config["shock_alpha"] = np.random.choice([0.2])
-        config["coef_const"] = np.random.choice([1., 2., 5., 10.])
-        config["coef_alpha"] = np.random.choice([.25, .5])
-        config["censor1_const"] = np.random.choice([0.2, 1.0])
-        config["censor2_const"] = np.random.choice([0.2, 1.0])
+        config = ODict()
+        config["n"] = np.random.choice([1000, 2000, 10000])
+        config["shock_const"] = 5.0
+        config["shock_alpha"] = 0.2
+        config["coef_const"] = np.random.choice([5., 10., 25, 50])
+        config["coef_alpha"] = 0.5
+        config["censor1_const"] = 3.0
+        config["censor2_const"] = 3.0
 
         logging.info(f'Saving output in: {WRITE_PATH} as {FNAME}')
         logging.info(config)
@@ -51,8 +74,6 @@ if __name__ == "__main__":
         t1 = time()
         fake = generate_data(n=config["n"])
         data = fake["df"]
-
-        # try:
 
         est = FHHPSEstimator(shock_const=config["shock_const"],
                              shock_alpha=config["shock_alpha"],
@@ -74,16 +95,7 @@ if __name__ == "__main__":
         est.fit_coefficient_second_moments()
 
         t2 = time()
-        results = {**config,
-                   **flatten(est.shock_means),
-                   **est.coefficient_means,
-                   **flatten(est.shock_cov),
-                   **est.coefficient_cov}
-        results["time"] = t2 - t1
-        output = pd.DataFrame(results, index=[0])
-        print(output["Var[U2]"])
-        output.to_csv(os.path.join(WRITE_PATH, FNAME + ".csv.bz2"))
 
-        # except Exception as e:
-        #     logging.info("Found some error")
-        #     logging.error(e)
+        if on_sherlock():
+            output = make_chunk(config, est)
+            output.to_csv(os.path.join(WRITE_PATH, FNAME + ".csv.bz2"))

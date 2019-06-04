@@ -119,16 +119,26 @@ def calibrate_coeff_mean_params(n, num_sims=40,
     # Predict the argmin parameter
     reg = KernelRidge(kernel="poly", degree=4).fit(train_random_params[valid], mse[valid])
     test_random_params = np.column_stack([
-        np.random.uniform(10, 50, size=10000),
-        np.random.uniform(0.01, 3, size=10000)])
+        np.random.uniform(1, 50, size=10000),
+        np.random.uniform(0.01, 5, size=10000)])
     best_idx = reg.predict(test_random_params).argmin()
     coef_const, censor1_const = test_random_params[best_idx]
-    return coef_const, censor1_const
-
-
+    results = dict(train_random_params=train_random_params,
+                   mse=mse,
+                   valid=valid,
+                   coef_const=coef_const,
+                   censor1_const=censor1_const)
+    return results
 
 
 if __name__ == "__main__":
     # shock_const2000 = calibrate_shock_means_const(n=2000)
     # shock_const5000 = calibrate_shock_means_const(n=5000)
-    coef_const = calibrate_coeff_mean_params(500)
+    import matplotlib.pyplot as plt
+
+    res = calibrate_coeff_mean_params(2000, num_sims=30)
+
+    fig, axs = plt.subplots(1, 2, figsize=(15, 4))
+    axs[0].scatter(res["train_random_params"][:, 0], res['mse'])
+    axs[1].scatter(res["train_random_params"][:, 1], res['mse'])
+    plt.show()
