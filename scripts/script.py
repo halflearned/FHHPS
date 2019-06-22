@@ -1,8 +1,27 @@
 import os
+import subprocess
 from collections import OrderedDict as ODict
 
 from fhhps.estimator import *
 from fhhps.utils import *
+
+
+def get_unique_filename(prefix="results", rnd=None, commit=True):
+    if rnd is None:
+        rnd = clock_seed()
+    if commit:
+        out = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
+        hash = out.strip().decode('ascii')
+    else:
+        hash = ''
+    if on_sherlock():
+        sid = os.environ['SLURM_JOB_ID']
+        tid = os.environ['SLURM_LOCALID']
+        fname = f'{prefix}_{hash}_{sid}_{tid}_{rnd}.csv.bz2'
+    else:
+        rnd = clock_seed()
+        fname = f'{prefix}_{hash}_{rnd}.csv.bz2'
+    return fname
 
 
 def flatten(table):
@@ -50,23 +69,32 @@ if __name__ == "__main__":
             sid = os.environ['SLURM_JOB_ID']
             tid = os.environ['SLURM_LOCALID']
             WRITE_PATH = os.path.join(out_dir, 'bandits', 'scripts', OUT_DIRNAME)
-            FNAME = f'{sid}_{tid}_{clock_seed()}'
         else:
             out_dir = os.path.abspath(os.path.dirname(__file__))
             WRITE_PATH = os.path.join(out_dir, OUT_DIRNAME)
-            FNAME = f'{clock_seed()}'
+        FNAME = get_unique_filename()
 
         if not os.path.exists(WRITE_PATH):
             os.makedirs(WRITE_PATH)
 
-        config = ODict()
-        config["n"] = np.random.choice([1000, 2000, 10000])
-        config["shock_const"] = 5.0
-        config["shock_alpha"] = 0.2
-        config["coef_const"] = np.random.choice([5., 10., 25, 50])
-        config["coef_alpha"] = 0.5
-        config["censor1_const"] = 3.0
-        config["censor2_const"] = 3.0
+        if on_sherlock():
+            config = ODict()
+            config["n"] = np.random.choice([1000, 2000, 10000])
+            config["shock_const"] = 5.0
+            config["shock_alpha"] = 0.2
+            config["coef_const"] = np.random.choice([5., 10., 25, 50])
+            config["coef_alpha"] = 0.5
+            config["censor1_const"] = 3.0
+            config["censor2_const"] = 3.0
+        else:
+            config = ODict()
+            config["n"] = 2500
+            config["shock_const"] = 5.0
+            config["shock_alpha"] = 0.2
+            config["coef_const"] = 5
+            config["coef_alpha"] = 0.5
+            config["censor1_const"] = 3.0
+            config["censor2_const"] = 3.0
 
         logging.info(f'Saving output in: {WRITE_PATH} as {FNAME}')
         logging.info(config)
