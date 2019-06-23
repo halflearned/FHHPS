@@ -3,24 +3,15 @@ import logging
 import numpy as np
 from scipy.stats import multivariate_normal
 from sklearn.linear_model import Ridge
-from sklearn.neighbors import NearestNeighbors
 
 
 class KernelRegression(Ridge):
 
     def __init__(self, alpha=1e-6, fit_intercept=True, normalize=True,
                  copy_X=True, max_iter=None, tol=0.001, solver="auto",
-                 random_state=None, kernel="gaussian",
-                 num_neighbors=None):
+                 random_state=None, kernel="gaussian"):
 
         self.kernel = kernel
-
-        if kernel == "knn":
-            self._nn = NearestNeighbors(num_neighbors + 1)
-            self.num_neighbors = num_neighbors
-        else:
-            assert num_neighbors is None
-            self._nn = None
 
         super().__init__(
             alpha=alpha,
@@ -49,16 +40,6 @@ class KernelRegression(Ridge):
         elif self.kernel == "uniform":
             wts = uniform_kernel(x_in - x_out, bw=param)
 
-        elif self.kernel == "knn":
-            wts = np.zeros(shape=len(x_in))
-            j, *idx = self._nn.kneighbors(x_out, return_distance=False)[0]
-            for i in idx:
-                if i < j:
-                    wts[i] = 1
-                else:
-                    wts[i - 1] = 1
-            return wts
-
         else:
             raise ValueError(f"Unknown kernel {self.kernel}")
 
@@ -67,47 +48,27 @@ class KernelRegression(Ridge):
 
     def fit_predict_local(self, X, y, bw=None):
 
-        # X, y = check_X_y(X, y,
-        #                  ensure_2d=True,
-        #                  multi_output=True,
-        #                  ensure_min_samples=10,
-        #                  y_numeric=True,
-        #                  force_all_finite=)
-
-        if self.kernel == "knn":
-            if bw is not None:
-                raise TypeError("When kernel is knn, bw must be None")
-            self._nn.fit(X)
-
         n, p = X.shape
-        invalid_pts = 0
+        # invalid_pts = 0
         yhat = np.full_like(y, fill_value=np.nan, dtype=np.float64)
         for i in range(n):
-            if np.any(np.isnan(y[i])):
-                continue
 
             if i % (n // 10) == 0:
                 logging.info("KernelRegression.fit_predict_local[{i}]".format(i=i))
-            X_in = np.vstack([X[:i], X[i + 1:]])
-            y_in = np.vstack([y[:i], y[i + 1:]])
+            X_train = np.vstack([X[:i], X[i + 1:]])
+            y_train = np.vstack([y[:i], y[i + 1:]])
+            X_eval = X[[i]]
 
-            valid = np.isfinite(X_in).all(1) & np.isfinite(y_in).all(1)
-            X_in = X_in[valid]
-            y_in = y_in[valid]
-
-            X_out = X[[i]]
-            wts = self.get_weights(x_in=X_in, x_out=X_out, param=bw)
-            import pdb;
-            pdb.set_trace()
+            wts = self.get_weights(x_in=X_train, x_out=X_eval, param=bw)
             valid = ~np.isclose(wts, 0)
-            if np.sum(valid) > p:
-                model = super().fit(X_in[valid] - X_out, y_in[valid], sample_weight=wts[valid])
-                yhat[i] = model.intercept_
-            else:
-                invalid_pts += 1
+            # if np.sum(valid) > p:
+            model = super().fit(X_train[valid] - X_eval, y_train[valid], sample_weight=wts[valid])
+            yhat[i] = model.intercept_
+            # else:
+            #    invalid_pts += 1
 
-        if invalid_pts > 0:
-            logging.warning("Number of invalid points: {}".format(invalid_pts))
+        # if invalid_pts > 0:
+        #     logging.warning("Number of invalid points: {}".format(invalid_pts))
 
         return yhat
 

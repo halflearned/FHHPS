@@ -108,11 +108,6 @@ class FHHPSEstimator:
 
     """ Output moments """
 
-    def fit_output_cond_means(self):
-        logging.info("--Fitting output conditional means--")
-        self.output_cond_mean = KernelRegression().fit_predict_local(
-            self.XZ, self.Y, bw=self.coef_bw)
-
     def fit_output_cond_cov(self):
         """
         Estimates
@@ -163,6 +158,13 @@ class FHHPSEstimator:
 """ Utils """
 
 
+def fit_output_cond_means(X, Z, Y, bw, kernel="gaussian"):
+    logging.info("--Fitting output conditional means--")
+    XZ = np.column_stack([X, Z])
+    cond_means = KernelRegression(kernel=kernel).fit_predict_local(XZ, Y, bw=bw)
+    return cond_means
+
+
 def fit_output_cond_cov(X, Z, Y, output_cond_means, bw, poly=2, kernel="gaussian"):
     n = len(X)
     XZ = np.column_stack([X, Z])
@@ -174,10 +176,9 @@ def fit_output_cond_cov(X, Z, Y, output_cond_means, bw, poly=2, kernel="gaussian
         resid[:, 0] * resid[:, 2],  # Cov[Y1, Y3|I]
         resid[:, 1] * resid[:, 2],  # Cov[Y2, Y3|I]
     ])
-    XZ_poly = PolynomialFeatures(degree=poly, include_bias=False).fit_transform(XZ)
-    output_cond_cov = KernelRegression(fit_intercept=True, kernel=kernel) \
-        .fit_predict_local(XZ_poly, Yt, bw=bw)
-    return output_cond_cov
+    XZp = PolynomialFeatures(degree=poly, include_bias=False).fit_transform(XZ)
+    cond_cov = KernelRegression(kernel=kernel).fit_predict_local(XZp, Yt, bw=bw)
+    return cond_cov
 
 
 @njit()
