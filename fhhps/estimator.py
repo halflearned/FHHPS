@@ -35,8 +35,8 @@ class FHHPSEstimator:
         self.XZ = np.hstack([X, Z])
         self.shock_bw = self.shock_const * self.n ** (-self.shock_alpha)
         self.coef_bw = self.coef_const * self.n ** (-self.coef_alpha)
-        self.censor1_bw = self.censor1_const * self.n ** (-self.censor1_alpha)
-        self.censor2_bw = self.censor2_const * self.n ** (-self.censor2_alpha)
+        self.censor1_thres = self.censor1_const * self.n ** (-self.censor1_alpha)
+        self.censor2_thres = self.censor2_const * self.n ** (-self.censor2_alpha)
 
     def fit(self, X, Z, Y):
         self.add_data(X, Z, Y)
@@ -81,8 +81,7 @@ class FHHPSEstimator:
         logging.info("--Fitting shock means--")
         self._shock_means = np.zeros(shape=(self.T, self.num_coef))
         for t in range(1, self.T):
-            self._shock_means[:, t] = \
-                get_shock_means(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
+            self._shock_means[:, t] = get_shock_means(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
 
     def fit_shock_second_moments(self):
         """
@@ -157,7 +156,7 @@ class FHHPSEstimator:
         for i in range(self.n):
             if not np.all(np.isfinite(output_cond_mean_clean[i])):
                 continue
-            self.valid1[i] = np.abs(det(gamma1(self.X[i], self.Z[i]))) > self.censor1_bw
+            self.valid1[i] = np.abs(det(gamma1(self.X[i], self.Z[i]))) > self.censor1_thres
             self.coefficient_cond_means[i] = \
                 gamma_inv(self.X[i], self.Z[i]) @ output_cond_mean_clean[i]
 
@@ -177,7 +176,7 @@ class FHHPSEstimator:
         for i in range(self.n):
             if not np.all(np.isfinite(output_cond_var_clean[i])):
                 continue
-            self.valid2[i] = np.abs(det(gamma2(self.X[i], self.Z[i]))) > self.censor2_bw
+            self.valid2[i] = np.abs(det(gamma2(self.X[i], self.Z[i]))) > self.censor2_thres
             self.coefficient_cond_var[i] = \
                 gamma2_inv(self.X[i], self.Z[i]) @ output_cond_var_clean[i]
 
@@ -195,23 +194,59 @@ class FHHPSEstimator:
 """ Utils """
 
 
-def fit_coefficient_cond_means(X, Z, output_cond_means, shock_means, censor_threshold):
-    logging.info("--Fitting coefficient means--")
-
+def fit_coefficient_cond_means(X, Z, output_cond_means, shock_means):
+    """
+    Fit random coefficient conditional means
+    """
+    # Construct conditional output minus excess terms:
+    # E[Y|I] - E
     n, T = X.shape
-    coefficient_cond_means = np.empty(shape=(n, T))
-
-    # Construct E[Y|X,Z] minus excess terms
     excess_terms = get_mean_excess_terms(X, Z, shock_means)
     output_cond_mean_clean = output_cond_means - excess_terms
 
-    # Compute conditional first moments
+    # Compute conditional first moments of random coefficients:
+    # E[A,B|I] = Gamma^{-1} * (E[Y|I] - E)
+    coefficient_cond_means = np.empty(shape=(n, T))
     for i in range(n):
-        # if not np.all(np.isfinite(output_cond_mean_clean[i])):
-        #     continue
         coefficient_cond_means[i] = gamma_inv(X[i], Z[i]) @ output_cond_mean_clean[i]
 
     return coefficient_cond_means
+
+
+def fit_coefficient_cond_cov(X, Z, output_cond_var, shock_cov):
+    """
+    Fit random coefficient conditional variances and covariances
+    """
+    coefficient_cond_var = np.empty(shape=(n, 6))
+
+    # Construct Var[Y|X,Z] minus excess terms
+    excess_terms = get_cov_excess_terms(X, Z, shock_cov)
+    output_cond_var_clean = output_cond_var - excess_terms
+
+    # Compute conditional second moments of random coefficients
+    for i in range(n):
+        coefficient_cond_var[i] = gamma2_inv(X[i], Z[i]) @ output_cond_var_clean[i]
+
+    return coefficient_cond_var
+
+
+def get_unconditional_second_moments(coef_cond_means, coef_cond_cov, valid=None):
+    """
+    Use ANOVA-type formulas to get unconditional variances and covariances
+    """
+    if valid is None:
+        valid = np.ones(len(coef_cond_means), dtype=bool)
+
+    ev = coef_cond_cov[valid, :3].mean(0)
+    ve = coef_cond_means[valid].var(0)
+    variances = ev + ve
+
+    ec = coef_cond_cov[valid, 3:].mean(0)
+    ce = np.cov(coef_cond_means[valid].T)[[0, 0, 1], [1, 2, 2]]
+    covariances = ec + ce
+
+    coefficient_cov = np.hstack([variances, covariances])
+    return coefficient_cov
 
 
 def get_valid_cond_means(X, Z, censor_threshold):
@@ -219,6 +254,14 @@ def get_valid_cond_means(X, Z, censor_threshold):
     valid = np.zeros(n, dtype=bool)
     for i in range(n):
         valid[i] = np.abs(det(gamma1(X[i], Z[i]))) > censor_threshold
+    return valid
+
+
+def get_valid_cond_cov(X, Z, censor_threshold):
+    n = len(X)
+    valid = np.zeros(n, dtype=bool)
+    for i in range(n):
+        valid[i] = np.abs(det(gamma2(X[i], Z[i]))) > censor_threshold
     return valid
 
 
