@@ -239,7 +239,7 @@ def get_true_coef_cond_cov(fake):
     sigma_cond = sigmaAB - sigmaABXZ @ sigmaXZinv @ sigmaABXZ.T
     cov_idx = np.array([(0, 0), (1, 1), (2, 2), (0, 1), (0, 2), (1, 2)])
     cond_cov = sigma_cond[cov_idx[:, 0], cov_idx[:, 1]]
-    out = np.tile(cond_cov, (n, 1))
+    out = np.tile(cond_cov, (n, 1))  # homoskedasticity => all rows equal
     return out
 
 

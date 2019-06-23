@@ -43,13 +43,14 @@ class KernelRegression(Ridge):
         else:
             raise ValueError(f"Unknown kernel {self.kernel}")
 
-        wts = wts / wts.sum()
+        wts_sum = wts.sum()
+        wts /= wts_sum
         return wts
 
     def fit_predict_local(self, X, y, bw=None):
 
         n, p = X.shape
-        # invalid_pts = 0
+        small_bw_pts = 0
         yhat = np.full_like(y, fill_value=np.nan, dtype=np.float64)
         for i in range(n):
 
@@ -60,15 +61,20 @@ class KernelRegression(Ridge):
             X_eval = X[[i]]
 
             wts = self.get_weights(x_in=X_train, x_out=X_eval, param=bw)
-            valid = ~np.isclose(wts, 0)
-            # if np.sum(valid) > p:
-            model = super().fit(X_train[valid] - X_eval, y_train[valid], sample_weight=wts[valid])
-            yhat[i] = model.intercept_
-            # else:
-            #    invalid_pts += 1
+            valid = wts > 1e-16
+            if np.any(valid):
+                model = super().fit(X_train[valid] - X_eval, y_train[valid],
+                                    sample_weight=wts[valid])
+                yhat[i] = model.intercept_
+            else:
+                logging.warning("Could not predict for observation {}.".format(i))
+                yhat[i] = np.nan
 
-        # if invalid_pts > 0:
-        #     logging.warning("Number of invalid points: {}".format(invalid_pts))
+            if np.sum(valid) < p:
+                small_bw_pts += 1
+
+        if small_bw_pts > 0:
+            logging.warning("The bandwidth was too small for {} points.".format(small_bw_pts))
 
         return yhat
 

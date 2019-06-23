@@ -51,8 +51,36 @@ def test_shock_second_moments():
 def test_fit_output_cond_means():
     """
     Checks that we are able to estimate first conditional
-    moments of the output at a reasonable level.
+    moments of the output at a reasonable level: avg error is not
+    statistically different from zero at alpha=0.01
     """
+    np.random.seed(1234)
+    coef_bw = .05
+    errors = []
+    for i in range(40):
+        fake = generate_data(1000)
+        X = fake["df"][["X1", "X2", "X3"]].values
+        Z = fake["df"][["Z1", "Z2", "Z3"]].values
+        Y = fake["df"][["Y1", "Y2", "Y3"]].values
+
+        truth = get_true_output_cond_means(fake)
+        estimate = fit_output_cond_means(X, Z, Y, bw=coef_bw)
+        error = estimate - truth
+        errors.append(error.mean(0))
+
+    stats = pd.DataFrame(errors).agg(["mean", "sem"])
+    unbiased = np.abs(stats.loc["mean"]) / stats.loc["sem"] < 2.326
+    assert np.all(unbiased)
+
+
+def test_fit_output_cond_cov_with_oracle_means():
+    """
+    Checks that if we pass it the **true** conditional means, then
+    we are able to estimate second conditional
+    moments of the output at a reasonable level: avg error is not
+    statistically different from zero at alpha=0.01
+    """
+    np.random.seed(1234)
     coef_bw = .75
     errors = []
     for i in range(40):
@@ -72,12 +100,14 @@ def test_fit_output_cond_means():
     assert np.all(unbiased)
 
 
-def test_fit_output_cond_cov():
+def test_fit_output_cond_cov_with_estimated_means():
     """
-    Checks that we are able to estimate second conditional
-    moments of the output at a reasonable level.
+    Checks that if we pass it the **estimated** conditional means, then
+    we are able to estimate second conditional
+    moments of the output at a reasonable level: avg error is not
+    statistically different from zero at alpha=0.01
     """
-    coef_bw = .75
+    np.random.seed(1234)
     errors = []
     for i in range(40):
         fake = generate_data(1000)
@@ -85,11 +115,12 @@ def test_fit_output_cond_cov():
         Z = fake["df"][["Z1", "Z2", "Z3"]].values
         Y = fake["df"][["Y1", "Y2", "Y3"]].values
 
-        output_cond_means = get_true_output_cond_means(fake)
-        estimate = fit_output_cond_cov(X, Z, Y, output_cond_means, bw=coef_bw)
+        output_cond_means = fit_output_cond_means(X, Z, Y, bw=.75)
+        estimate = fit_output_cond_cov(X, Z, Y, output_cond_means, bw=.5)
         truth = get_true_output_cond_cov(fake)
         error = estimate - truth
         errors.append(error.mean(0))
+        print(error.mean(0))
 
     stats = pd.DataFrame(errors).agg(["mean", "sem"])
     unbiased = np.abs(stats.loc["mean"]) / stats.loc["sem"] < 2.326
