@@ -87,11 +87,14 @@ def generate_data(n,
                       columns=names)
 
     df["A2"] = df["A1"] + df["U2"]
+    df["A3"] = df["A1"] + df["U2"] + df["U3"]
+
     df["B2"] = df["B1"] + df["V2"]
+    df["B3"] = df["B1"] + df["V2"] + df["V3"]
+
     df["C2"] = df["C1"] + df["W2"]
-    df["A3"] = df["A2"] + df["U3"]
-    df["B3"] = df["B2"] + df["V3"]
-    df["C3"] = df["C2"] + df["W3"]
+    df["C3"] = df["C1"] + df["W2"] + df["W3"]
+
     df["Y1"] = df["A1"] + df["B1"] * df["X1"] + df["C1"] * df["Z1"]
     df["Y2"] = df["A2"] + df["B2"] * df["X2"] + df["C2"] * df["Z2"]
     df["Y3"] = df["A3"] + df["B3"] * df["X3"] + df["C3"] * df["Z3"]
@@ -139,11 +142,7 @@ def bandwidth_selector(X, method="scott"):
     return bw
 
 
-def true_conditional_mean(muA, muB, sigmaAB, sigmaBinv, value):
-    return muA + sigmaAB @ sigmaBinv @ (value - muB)
-
-
-def true_output_cond_mean(fake):
+def true_output_cond_means(fake):
     df = fake["df"]
     xz_idx = ["X1", "X2", "X3", "Z1", "Z2", "Z3"]
     y_idx = ["Y1", "Y2", "Y3"]
@@ -151,13 +150,33 @@ def true_output_cond_mean(fake):
     XZ = df[xz_idx].values
     Y = df[y_idx].values
 
-    muA = Y.mean(0).reshape(-1, 1)
-    muB = fake["means"][xz_idx].values.reshape(-1, 1)
+    muY = Y.mean(0).reshape(-1, 1)
+    muXZ = fake["means"][xz_idx].values.reshape(-1, 1)
 
     sigma = df[xz_idx + y_idx].cov()
-    sigmaB = sigma.loc[xz_idx, xz_idx].values
-    sigmaBinv = np.linalg.inv(sigmaB)
-    sigmaAB = sigma.loc[y_idx, xz_idx].values
+    sigmaXZ = sigma.loc[xz_idx, xz_idx].values
+    sigmaXZinv = np.linalg.inv(sigmaXZ)
+    sigmaYXZ = sigma.loc[y_idx, xz_idx].values
 
-    cond_means = (muA + sigmaAB @ sigmaBinv @ (XZ.T - muB)).T
+    cond_means = (muY + sigmaYXZ @ sigmaXZinv @ (XZ.T - muXZ)).T
+    return cond_means
+
+
+def true_coef_cond_means(fake):
+    df = fake["df"]
+    xz_idx = ["X1", "X2", "X3", "Z1", "Z2", "Z3"]
+    ab_idx = ["A1", "B1", "C1"]
+
+    XZ = df[xz_idx].values
+    AB = df[ab_idx].values
+
+    muY = AB.mean(0).reshape(-1, 1)
+    muXZ = fake["means"][xz_idx].values.reshape(-1, 1)
+
+    sigma = df[xz_idx + ab_idx].cov()
+    sigmaXZ = sigma.loc[xz_idx, xz_idx].values
+    sigmaXZinv = np.linalg.inv(sigmaXZ)
+    sigmaABXZ = sigma.loc[ab_idx, xz_idx].values
+
+    cond_means = (muY + sigmaABXZ @ sigmaXZinv @ (XZ.T - muXZ)).T
     return cond_means
