@@ -156,9 +156,9 @@ class FHHPSEstimator:
         for i in range(self.n):
             if not np.all(np.isfinite(output_cond_mean_clean[i])):
                 continue
-            self.valid1[i] = np.abs(det(gamma1(self.X[i], self.Z[i]))) > self.censor1_thres
+            self.valid1[i] = np.abs(det(m3(self.X[i], self.Z[i]))) > self.censor1_thres
             self.coefficient_cond_means[i] = \
-                gamma_inv(self.X[i], self.Z[i]) @ output_cond_mean_clean[i]
+                m3_inv(self.X[i], self.Z[i]) @ output_cond_mean_clean[i]
 
         # Average out to get unconditional moments
         self._coefficient_means = self.coefficient_cond_means[self.valid1].mean(0)
@@ -176,9 +176,9 @@ class FHHPSEstimator:
         for i in range(self.n):
             if not np.all(np.isfinite(output_cond_var_clean[i])):
                 continue
-            self.valid2[i] = np.abs(det(gamma2(self.X[i], self.Z[i]))) > self.censor2_thres
+            self.valid2[i] = np.abs(det(m6(self.X[i], self.Z[i]))) > self.censor2_thres
             self.coefficient_cond_var[i] = \
-                gamma2_inv(self.X[i], self.Z[i]) @ output_cond_var_clean[i]
+                m6_inv(self.X[i], self.Z[i]) @ output_cond_var_clean[i]
 
         # Use EVVE and ECCE formulas to get unconditional moments
         ev = self.coefficient_cond_var[self.valid2, :3].mean(0)
@@ -194,6 +194,7 @@ class FHHPSEstimator:
 """ Utils """
 
 
+@njit()
 def get_coefficient_cond_means(X, Z, output_cond_means, shock_means):
     """
     Fit random coefficient conditional means
@@ -208,11 +209,12 @@ def get_coefficient_cond_means(X, Z, output_cond_means, shock_means):
     # E[A,B|I] = Gamma^{-1} * (E[Y|I] - E)
     coefficient_cond_means = np.empty(shape=(n, T))
     for i in range(n):
-        coefficient_cond_means[i] = gamma_inv(X[i], Z[i]) @ output_cond_mean_clean[i]
+        coefficient_cond_means[i] = m3_inv(X[i], Z[i]) @ output_cond_mean_clean[i]
 
     return coefficient_cond_means
 
 
+@njit()
 def get_coefficient_cond_cov(X, Z, output_cond_var, shock_cov):
     """
     Fit random coefficient conditional variances and covariances
@@ -225,7 +227,7 @@ def get_coefficient_cond_cov(X, Z, output_cond_var, shock_cov):
 
     # Compute conditional second moments of random coefficients
     for i in range(n):
-        coefficient_cond_var[i] = gamma2_inv(X[i], Z[i]) @ output_cond_var_clean[i]
+        coefficient_cond_var[i] = m6_inv(X[i], Z[i]) @ output_cond_var_clean[i]
 
     return coefficient_cond_var
 
@@ -258,7 +260,7 @@ def get_valid_cond_means(X, Z, censor_threshold):
     n = len(X)
     valid = np.zeros(n, np.bool_)
     for i in range(n):
-        valid[i] = np.abs(det(gamma1(X[i], Z[i]))) > censor_threshold
+        valid[i] = np.abs(det(m3(X[i], Z[i]))) > censor_threshold
     return valid
 
 
@@ -267,7 +269,7 @@ def get_valid_cond_cov(X, Z, censor_threshold):
     n = len(X)
     valid = np.zeros(n, dtype=bool)
     for i in range(n):
-        valid[i] = np.abs(det(gamma2(X[i], Z[i]))) > censor_threshold
+        valid[i] = np.abs(det(m6(X[i], Z[i]))) > censor_threshold
     return valid
 
 
@@ -331,7 +333,7 @@ def get_cov_excess_terms(X, Z, shock_cov):
 
 
 @njit()
-def gamma1(x, z):
+def m3(x, z):
     """
     This is now called matrix M3 in the paper
     """
@@ -339,12 +341,12 @@ def gamma1(x, z):
 
 
 @njit()
-def gamma_inv(x, z):
-    return np.linalg.inv(gamma1(x, z))
+def m3_inv(x, z):
+    return np.linalg.inv(m3(x, z))
 
 
 @njit()
-def gamma2(x, z):
+def m6(x, z):
     """
     This is now called matrix M6 in the paper
     """
@@ -358,8 +360,8 @@ def gamma2(x, z):
     return g
 
 
-def gamma2_inv(x, z):
-    return np.linalg.inv(gamma2(x, z))
+def m6_inv(x, z):
+    return np.linalg.inv(m6(x, z))
 
 
 def get_shock_means(X, Z, Y, t: int, bw: float):
