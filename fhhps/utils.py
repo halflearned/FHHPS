@@ -139,20 +139,25 @@ def bandwidth_selector(X, method="scott"):
     return bw
 
 
-def true_conditional_mean(muA, muB, sigmaAB, sigmaB, value):
-    return muA + sigmaAB @ np.linalg.inv(sigmaB) @ (value - muB)
+def true_conditional_mean(muA, muB, sigmaAB, sigmaBinv, value):
+    return muA + sigmaAB @ sigmaBinv @ (value - muB)
 
 
 def true_output_cond_mean(fake):
-    xz = ["X1", "X2", "X3", "Z1", "Z2", "Z3"]
-    y = ["Y1", "Y2", "Y3"]
-    muA = np.array(fake["df"][y].mean()).reshape(-1, 1)
-    muB = np.array(fake["means"][xz]).reshape(-1, 1)
-    sigmaB = np.array(fake["cov"].loc[xz, xz])
-    sigmaAB = np.array(fake["df"].cov().loc[y, xz])
-    n = len(fake["df"])
-    cond_means = np.empty((n, 3))
-    for i in range(n):
-        xz_val = np.array(fake["df"][xz].iloc[i]).reshape(-1, 1)
-        cond_means[i] = true_conditional_mean(muA, muB, sigmaAB, sigmaB, xz_val).flatten()
+    df = fake["df"]
+    xz_idx = ["X1", "X2", "X3", "Z1", "Z2", "Z3"]
+    y_idx = ["Y1", "Y2", "Y3"]
+
+    XZ = df[xz_idx].values
+    Y = df[y_idx].values
+
+    muA = Y.mean(0).reshape(-1, 1)
+    muB = fake["means"][xz_idx].values.reshape(-1, 1)
+
+    sigma = df[xz_idx + y_idx].cov()
+    sigmaB = sigma.loc[xz_idx, xz_idx].values
+    sigmaBinv = np.linalg.inv(sigmaB)
+    sigmaAB = sigma.loc[y_idx, xz_idx].values
+
+    cond_means = (muA + sigmaAB @ sigmaBinv @ (XZ.T - muB)).T
     return cond_means

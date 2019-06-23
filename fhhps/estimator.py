@@ -194,7 +194,7 @@ class FHHPSEstimator:
 """ Utils """
 
 
-def fit_coefficient_cond_means(X, Z, output_cond_means, shock_means):
+def get_coefficient_cond_means(X, Z, output_cond_means, shock_means):
     """
     Fit random coefficient conditional means
     """
@@ -213,7 +213,7 @@ def fit_coefficient_cond_means(X, Z, output_cond_means, shock_means):
     return coefficient_cond_means
 
 
-def fit_coefficient_cond_cov(X, Z, output_cond_var, shock_cov):
+def get_coefficient_cond_cov(X, Z, output_cond_var, shock_cov):
     """
     Fit random coefficient conditional variances and covariances
     """
@@ -228,6 +228,10 @@ def fit_coefficient_cond_cov(X, Z, output_cond_var, shock_cov):
         coefficient_cond_var[i] = gamma2_inv(X[i], Z[i]) @ output_cond_var_clean[i]
 
     return coefficient_cond_var
+
+
+def get_unconditional_first_moments(coef_cond_means, valid=None):
+    return coef_cond_means[valid].mean(0)
 
 
 def get_unconditional_second_moments(coef_cond_means, coef_cond_cov, valid=None):
@@ -249,14 +253,16 @@ def get_unconditional_second_moments(coef_cond_means, coef_cond_cov, valid=None)
     return coefficient_cov
 
 
+@njit()
 def get_valid_cond_means(X, Z, censor_threshold):
     n = len(X)
-    valid = np.zeros(n, dtype=bool)
+    valid = np.zeros(n, np.bool_)
     for i in range(n):
         valid[i] = np.abs(det(gamma1(X[i], Z[i]))) > censor_threshold
     return valid
 
 
+@njit()
 def get_valid_cond_cov(X, Z, censor_threshold):
     n = len(X)
     valid = np.zeros(n, dtype=bool)
@@ -265,15 +271,16 @@ def get_valid_cond_cov(X, Z, censor_threshold):
     return valid
 
 
+@njit()
 def get_mean_excess_terms(X, Z, shock_means):
     """
     The 'excess' terms are those that need to be subtracted from E[Y|X]
         right before computing the random coefficients.
     For the first moments, the 'excess' terms are:
 
-    E1 = 0,
-    E2 = E[U2] + E[V2]*X2 + E[W2]*Z2,
-    E3 = (E[U2] + E[U3]) + (E[V2] + E[V3])*X3 + (E[W2] + E[W3])*Z3]
+    E1 = 0
+    E2 = E[U2] + E[V2]*X2 + E[W2]*Z2
+    E3 = (E[U2] + E[U3]) + (E[V2] + E[V3])*X3 + (E[W2] + E[W3])*Z3
     """
     n = len(X)
     EU2, EV2, EW2 = shock_means[:, 1]
@@ -285,10 +292,11 @@ def get_mean_excess_terms(X, Z, shock_means):
     E2 = EU2 + EV2 * X2 + EW2 * Z2
     E3 = (EU2 + EU3) + (EV2 + EV3) * X3 + (EW2 + EW3) * Z3
 
-    excess_terms = np.column_stack([E1, E2, E3])
+    excess_terms = np.column_stack((E1, E2, E3))
     return excess_terms
 
 
+@njit()
 def get_cov_excess_terms(X, Z, shock_cov):
     """
     Creates a matrix of excess terms for the second moments.
@@ -318,21 +326,24 @@ def get_cov_excess_terms(X, Z, shock_cov):
          + CovU2V2 * (X2 + X3) + CovU2W2 * (Z2 + Z3) \
          + CovV2W2 * (X2 * Z3 + Z2 * X3)
 
-    excess_terms = np.column_stack([E1, E2, E3, E4, E5, E6])
+    excess_terms = np.column_stack((E1, E2, E3, E4, E5, E6))
     return excess_terms
 
 
+@njit()
 def gamma1(x, z):
     """
     This is now called matrix M3 in the paper
     """
-    return np.column_stack([np.ones_like(x), x, z])
+    return np.column_stack((np.ones_like(x), x, z))
 
 
+@njit()
 def gamma_inv(x, z):
     return np.linalg.inv(gamma1(x, z))
 
 
+@njit()
 def gamma2(x, z):
     """
     This is now called matrix M6 in the paper
@@ -425,7 +436,7 @@ if __name__ == "__main__":
     est.fit_output_cond_cov()
     est.fit_coefficient_second_moments()
     t2 = time()
-    print(f"Fiitting took {t2 - t1} seconds")
+    print(f"Fitting took {t2 - t1} seconds")
 
     print("SHOCKS")
     print("Means:")
