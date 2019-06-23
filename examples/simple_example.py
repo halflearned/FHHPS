@@ -1,8 +1,7 @@
 import logging
-from time import time
 
 from fhhps.estimator import FHHPSEstimator
-from fhhps.utils import generate_data
+from fhhps.utils import *
 
 logging.basicConfig(level=logging.INFO)
 
@@ -25,22 +24,22 @@ est.add_data(X=data[["X1", "X2", "X3"]],
 # Computing all objects
 t1 = time()
 est.fit_shock_means()
-est.fit_shock_second_moments()
+# est.fit_shock_second_moments()
 est.fit_output_cond_means()
 est.fit_coefficient_means()
-est.fit_output_cond_cov()
-est.fit_coefficient_second_moments()
+# est.fit_output_cond_cov()
+# est.fit_coefficient_second_moments()
 t2 = time()
-print(f"Fiitting took {t2 - t1} seconds")
+print(f"Fitting took {t2 - t1} seconds")
 
 print("SHOCKS")
 print("Means:")
 print(est.shock_means)
 print("Covariances:")
-print(est.shock_cov)
+# print(est.shock_cov)
 
 print("RANDOM COEFFICIENTS")
 print("Means:")
 print(est.coefficient_means)
 print("Covariances:")
-print(est.coefficient_cov)
+# print(est.coefficient_cov)

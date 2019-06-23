@@ -1,6 +1,7 @@
 import logging
 
 from numpy.linalg import det as det
+from sklearn.preprocessing import PolynomialFeatures
 
 from fhhps.kernel_regression import KernelRegression, uniform_kernel
 from fhhps.utils import *
@@ -60,12 +61,12 @@ class FHHPSEstimator:
 
     @property
     def coefficient_means(self):
-        return pd.Series(self._coefficient_means,
+        return pd.Series(self._coef_means,
                          index=["E[A1]", "E[B1]", "E[C1]"])
 
     @property
     def coefficient_cov(self):
-        return pd.Series(self._coefficient_cov,
+        return pd.Series(self._coef_cov,
                          index=["Var[A1]", "Var[B1]", "Var[C1]",
                                 "Cov[A1, B1]", "Cov[A1, C1]", "Cov[B1, C1]"])
 
@@ -81,7 +82,7 @@ class FHHPSEstimator:
         logging.info("--Fitting shock means--")
         self._shock_means = np.zeros(shape=(self.T, self.num_coef))
         for t in range(1, self.T):
-            self._shock_means[:, t] = get_shock_means(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
+            self._shock_means[:, t] = fit_shock_means(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
 
     def fit_shock_second_moments(self):
         """
@@ -97,11 +98,11 @@ class FHHPSEstimator:
         self._shock_second_moments = np.zeros(shape=(6, 3))
         for t in range(1, self.T):
             self._shock_second_moments[:, t] = \
-                get_shock_second_moments(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
+                fit_shock_second_moments(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
 
         self._shock_cov = np.zeros((6, 3))
         for t in range(self.T):
-            self._shock_cov[:, t] = center_shock_second_moments(
+            self._shock_cov[:, t] = get_centered_shock_second_moments(
                 self._shock_means[:, t],
                 self._shock_second_moments[:, t])
 
@@ -145,53 +146,38 @@ class FHHPSEstimator:
 
     def fit_coefficient_means(self):
         logging.info("--Fitting coefficient means--")
-        self.coefficient_cond_means = np.empty(shape=(self.n, self.T))
-        self.valid1 = np.zeros(self.n, dtype=bool)
 
-        # Construct E[Y|X,Z] minus excess terms
-        excess_terms = self.get_mean_excess_terms(self.X, self.Z, self._shock_means)
-        output_cond_mean_clean = self.output_cond_mean - excess_terms
-
-        # Compute conditional first moments
-        for i in range(self.n):
-            if not np.all(np.isfinite(output_cond_mean_clean[i])):
-                continue
-            self.valid1[i] = np.abs(det(m3(self.X[i], self.Z[i]))) > self.censor1_thres
-            self.coefficient_cond_means[i] = \
-                m3_inv(self.X[i], self.Z[i]) @ output_cond_mean_clean[i]
-
-        # Average out to get unconditional moments
-        self._coefficient_means = self.coefficient_cond_means[self.valid1].mean(0)
+        self._coef_cond_means = get_coefficient_cond_means(
+            self.X, self.Z, self.output_cond_mean, self._shock_means)
+        self._valid1 = get_valid_cond_means(self.X, self.Z, self.censor1_thres)
+        self._coef_means = get_coef_means(self._coef_cond_means, self._valid1)
 
     def fit_coefficient_second_moments(self):
         logging.info("--Fitting coefficient second moments--")
-        self.coefficient_cond_var = np.empty(shape=(self.n, 6))
-        self.valid2 = np.zeros(self.n, dtype=bool)
 
-        # Construct Var[Y|X,Z] minus excess terms
-        excess_terms = get_cov_excess_terms(self.X, self.Z, self._shock_cov)
-        output_cond_var_clean = self.output_cond_var - excess_terms
-
-        # Compute conditional second moments of random coefficients
-        for i in range(self.n):
-            if not np.all(np.isfinite(output_cond_var_clean[i])):
-                continue
-            self.valid2[i] = np.abs(det(m6(self.X[i], self.Z[i]))) > self.censor2_thres
-            self.coefficient_cond_var[i] = \
-                m6_inv(self.X[i], self.Z[i]) @ output_cond_var_clean[i]
-
-        # Use EVVE and ECCE formulas to get unconditional moments
-        ev = self.coefficient_cond_var[self.valid2, :3].mean(0)
-        ve = self.coefficient_cond_means[self.valid2].var(0)
-        variances = ev + ve
-
-        ec = self.coefficient_cond_var[self.valid2, 3:].mean(0)
-        ce = np.cov(self.coefficient_cond_means[self.valid2].T)[[0, 0, 1], [1, 2, 2]]
-        covariances = ec + ce
-        self._coefficient_cov = np.hstack([variances, covariances])
+        self._coef_cond_cov = None
+        self._valid2 = None
+        self._coef_cov = None
 
 
 """ Utils """
+
+
+def fit_output_cond_cov(X, Z, Y, output_cond_means, bw, poly=2, kernel="gaussian"):
+    n = len(X)
+    XZ = np.column_stack([X, Z])
+    resid = (Y - output_cond_means)
+    Yt = np.empty((n, 6))
+    Yt[:, :3] = resid ** 2  # Var[Y1|I], Var[Y2|I], Var[Y3|I]
+    Yt[:, 3:] = np.column_stack([
+        resid[:, 0] * resid[:, 1],  # Cov[Y1, Y2|I]
+        resid[:, 0] * resid[:, 2],  # Cov[Y1, Y3|I]
+        resid[:, 1] * resid[:, 2],  # Cov[Y2, Y3|I]
+    ])
+    XZ_poly = PolynomialFeatures(degree=poly, include_bias=False).fit_transform(XZ)
+    output_cond_cov = KernelRegression(fit_intercept=True, kernel=kernel) \
+        .fit_predict_local(XZ_poly, Yt, bw=bw)
+    return output_cond_cov
 
 
 @njit()
@@ -206,7 +192,7 @@ def get_coefficient_cond_means(X, Z, output_cond_means, shock_means):
     output_cond_mean_clean = output_cond_means - excess_terms
 
     # Compute conditional first moments of random coefficients:
-    # E[A,B|I] = Gamma^{-1} * (E[Y|I] - E)
+    # E[A,B|I] = M_{3}^{-1} * (E[Y|I] - E)
     coefficient_cond_means = np.empty(shape=(n, T))
     for i in range(n):
         coefficient_cond_means[i] = m3_inv(X[i], Z[i]) @ output_cond_mean_clean[i]
@@ -215,44 +201,21 @@ def get_coefficient_cond_means(X, Z, output_cond_means, shock_means):
 
 
 @njit()
-def get_coefficient_cond_cov(X, Z, output_cond_var, shock_cov):
+def get_coefficient_cond_cov(X, Z, output_cond_cov, shock_cov):
     """
     Fit random coefficient conditional variances and covariances
     """
-    coefficient_cond_var = np.empty(shape=(n, 6))
+    coefficient_cond_cov = np.empty(shape=(len(X), 6))
 
     # Construct Var[Y|X,Z] minus excess terms
     excess_terms = get_cov_excess_terms(X, Z, shock_cov)
-    output_cond_var_clean = output_cond_var - excess_terms
+    output_cond_cov_clean = output_cond_cov - excess_terms
 
     # Compute conditional second moments of random coefficients
-    for i in range(n):
-        coefficient_cond_var[i] = m6_inv(X[i], Z[i]) @ output_cond_var_clean[i]
+    for i in range(len(X)):
+        coefficient_cond_cov[i] = m6_inv(X[i], Z[i]) @ output_cond_cov_clean[i]
 
-    return coefficient_cond_var
-
-
-def get_unconditional_first_moments(coef_cond_means, valid=None):
-    return coef_cond_means[valid].mean(0)
-
-
-def get_unconditional_second_moments(coef_cond_means, coef_cond_cov, valid=None):
-    """
-    Use ANOVA-type formulas to get unconditional variances and covariances
-    """
-    if valid is None:
-        valid = np.ones(len(coef_cond_means), dtype=bool)
-
-    ev = coef_cond_cov[valid, :3].mean(0)
-    ve = coef_cond_means[valid].var(0)
-    variances = ev + ve
-
-    ec = coef_cond_cov[valid, 3:].mean(0)
-    ce = np.cov(coef_cond_means[valid].T)[[0, 0, 1], [1, 2, 2]]
-    covariances = ec + ce
-
-    coefficient_cov = np.hstack([variances, covariances])
-    return coefficient_cov
+    return coefficient_cond_cov
 
 
 @njit()
@@ -337,7 +300,7 @@ def m3(x, z):
     """
     This is now called matrix M3 in the paper
     """
-    return np.column_stack((np.ones_like(x), x, z))
+    return np.column_stack((np.ones_like(x, dtype=np.float64), x, z))
 
 
 @njit()
@@ -360,11 +323,38 @@ def m6(x, z):
     return g
 
 
+@njit()
 def m6_inv(x, z):
     return np.linalg.inv(m6(x, z))
 
 
-def get_shock_means(X, Z, Y, t: int, bw: float):
+def get_coef_means(coef_cond_means, valid=None):
+    if valid is None:
+        valid = np.ones(len(coef_cond_means), dtype=np.bool_)
+    return coef_cond_means[valid].mean(0)
+
+
+@njit()
+def get_unconditional_second_moments(coef_cond_means, coef_cond_cov, valid=None):
+    """
+    Use ANOVA-type formulas to get unconditional variances and covariances
+    """
+    if valid is None:
+        valid = np.ones(len(coef_cond_means), dtype=np.bool_)
+
+    ev = coef_cond_cov[valid, :3].mean(0)
+    ve = coef_cond_means[valid].var(0)
+    variances = ev + ve
+
+    ec = coef_cond_cov[valid, 3:].mean(0)
+    ce = np.cov(coef_cond_means[valid].T)[[0, 0, 1], [1, 2, 2]]
+    covariances = ec + ce
+
+    coefficient_cov = np.hstack([variances, covariances])
+    return coefficient_cov
+
+
+def fit_shock_means(X, Z, Y, t: int, bw: float):
     """
     Creates a 3-vector of shock means
     [E[Ut], E[Vt], E[Wt]]
@@ -380,7 +370,7 @@ def get_shock_means(X, Z, Y, t: int, bw: float):
     return moments
 
 
-def get_shock_second_moments(X, Z, Y, t: int, bw: float):
+def fit_shock_second_moments(X, Z, Y, t: int, bw: float):
     """
     Creates 6-vector of shock second moments
     [E[Ut^2], E[Vt^2], E[Wt^2], E[Ut*Vt], E[Ut*Wt], E[Vt*Wt]]
@@ -396,7 +386,7 @@ def get_shock_second_moments(X, Z, Y, t: int, bw: float):
     return moments
 
 
-def center_shock_second_moments(m1, m2):
+def get_centered_shock_second_moments(m1, m2):
     """
     Creates 6-vector of shock variances and covariances
     [Var[Ut], Var[Vt], Var[Wt], Cov[Ut, Vt], Cov[Ut, Wt], Cov[Vt, Wt]]
@@ -408,46 +398,3 @@ def center_shock_second_moments(m1, m2):
     CovUWt = m2[4] - m1[0] * m1[1]
     CovVWt = m2[5] - m1[1] * m1[2]
     return np.array([VarUt, VarVt, VarWt, CovUVt, CovUWt, CovVWt])
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-
-    # Simulation config
-    n = 2000
-    fake = generate_data(n=n)
-    data = fake["df"]
-
-    # Algorithm configuration
-    est = FHHPSEstimator(shock_const=5.0,
-                         shock_alpha=0.2,
-                         coef_const=20.,
-                         coef_alpha=0.5,
-                         censor1_const=3.0,
-                         censor2_const=3.0)
-    est.add_data(X=data[["X1", "X2", "X3"]],
-                 Z=data[["Z1", "Z2", "Z3"]],
-                 Y=data[["Y1", "Y2", "Y3"]])
-
-    # Computing all objects
-    t1 = time()
-    est.fit_shock_means()
-    est.fit_shock_second_moments()
-    est.fit_output_cond_means()
-    est.fit_coefficient_means()
-    est.fit_output_cond_cov()
-    est.fit_coefficient_second_moments()
-    t2 = time()
-    print(f"Fitting took {t2 - t1} seconds")
-
-    print("SHOCKS")
-    print("Means:")
-    print(est.shock_means)
-    print("Covariances:")
-    print(est.shock_cov)
-
-    print("RANDOM COEFFICIENTS")
-    print("Means:")
-    print(est.coefficient_means)
-    print("Covariances:")
-    print(est.coefficient_cov)

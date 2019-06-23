@@ -1,20 +1,19 @@
-from itertools import product
-
-import numpy as np
-
-from fhhps.estimator import cov_excess_matrix
+from fhhps.estimator import *
 
 
-def test_cov_excess_matrix():
-    X = np.array([[1, 2, 3],
-                  [4, 5, 6]])
-    Z = np.array([[7, 8, 9],
-                  [10, 11, 12]])
-    for s, t in product(range(3), range(3)):
-        out = cov_excess_matrix(X, Z, t, s)
-        assert np.all(out[:, 0] == 1)
-        assert np.all(out[:, 1] == X[:, t] * X[:, s])
-        assert np.all(out[:, 2] == Z[:, t] * Z[:, s])
-        assert np.all(out[:, 3] == X[:, t] + X[:, s])
-        assert np.all(out[:, 4] == Z[:, t] + Z[:, s])
-        assert np.all(out[:, 5] == X[:, t] * Z[:, s] + X[:, s] * Z[:, t])
+def test_get_coefficient_cond_means():
+    """
+    Checks if function get_coefficient_cond_means is able to retrieve the
+    correct conditional moments when we pass it the *oracle* shock and output
+    conditional moments. Note nothing is being estimated in this test.
+    """
+    fake = generate_data(10000)
+    X = fake["df"][["X1", "X2", "X3"]].values
+    Z = fake["df"][["Z1", "Z2", "Z3"]].values
+    output_cond_means = get_true_output_cond_means(fake)
+    shock_means = true_shock_means(fake)
+
+    estimate = get_coefficient_cond_means(X, Z, output_cond_means, shock_means)
+    truth = get_true_coef_cond_means(fake)
+    error = np.abs(estimate - truth)
+    assert np.max(error) < 1e-6

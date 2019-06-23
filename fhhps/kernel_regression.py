@@ -1,7 +1,7 @@
 import logging
 
 import numpy as np
-from scipy.stats import norm
+from scipy.stats import multivariate_normal
 from sklearn.linear_model import Ridge
 from sklearn.neighbors import NearestNeighbors
 
@@ -44,10 +44,10 @@ class KernelRegression(Ridge):
     def get_weights(self, x_in, x_out, param=None):
 
         if self.kernel == "gaussian":
-            return gaussian_kernel(x_in - x_out, bw=param)
+            wts = gaussian_kernel(x_in - x_out, bw=param)
 
         elif self.kernel == "uniform":
-            return uniform_kernel(x_in - x_out, bw=param)
+            wts = uniform_kernel(x_in - x_out, bw=param)
 
         elif self.kernel == "knn":
             wts = np.zeros(shape=len(x_in))
@@ -61,6 +61,9 @@ class KernelRegression(Ridge):
 
         else:
             raise ValueError(f"Unknown kernel {self.kernel}")
+
+        wts = wts / wts.sum()
+        return wts
 
     def fit_predict_local(self, X, y, bw=None):
 
@@ -94,6 +97,8 @@ class KernelRegression(Ridge):
 
             X_out = X[[i]]
             wts = self.get_weights(x_in=X_in, x_out=X_out, param=bw)
+            import pdb;
+            pdb.set_trace()
             valid = ~np.isclose(wts, 0)
             if np.sum(valid) > p:
                 model = super().fit(X_in[valid] - X_out, y_in[valid], sample_weight=wts[valid])
@@ -108,11 +113,15 @@ class KernelRegression(Ridge):
 
 
 def gaussian_kernel(a: np.ndarray, bw: float):
-    return norm(scale=bw).pdf(a).prod(axis=1)
+    H = np.diag(bw * np.var(a, 0))
+    k = multivariate_normal(cov=H).pdf(a)
+    return k
 
 
 def uniform_kernel(a: np.ndarray, bw: float):
-    return np.all(np.abs(a) < bw, axis=1).astype(float)
+    H = bw * np.std(a, 0)
+    k = np.all(np.abs(a) < H, axis=1).astype(float)
+    return k
 
 
 if __name__ == "__main__":
