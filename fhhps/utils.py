@@ -150,7 +150,7 @@ def get_true_output_cond_means(fake):
 
     EA1, EB1, EC1 = get_true_coef_cond_means(fake).T
 
-    shock_means = true_shock_means(fake)
+    shock_means = get_true_shock_means(fake)
     EU2, EV2, EW2 = shock_means[:, 1]
     EU3, EV3, EW3 = shock_means[:, 2]
 
@@ -165,7 +165,7 @@ def get_true_output_cond_cov(fake):
     X = fake["df"][["X1", "X2", "X3"]].values
     Z = fake["df"][["Z1", "Z2", "Z3"]].values
 
-    shock_cov = true_shock_cov(fake)
+    shock_cov = get_true_shock_cov(fake)
     VarU2, VarV2, VarW2, CovU2V2, CovU2W2, CovV2W2 = shock_cov[:, 1]
     VarU3, VarV3, VarW3, CovU3V3, CovU3W3, CovV3W3 = shock_cov[:, 2]
 
@@ -176,7 +176,7 @@ def get_true_output_cond_cov(fake):
     VarA2 = VarA1 + VarU2
     VarA3 = VarA1 + VarU2 + VarU3
     VarB2 = VarB1 + VarV2
-    VarB3 = VarB1 + VarV2 + VarW3
+    VarB3 = VarB1 + VarV2 + VarV3
     VarC2 = VarB1 + VarW2
     VarC3 = VarB1 + VarW2 + VarW3
     CovA2B2 = CovA1B1 + CovU2V2
@@ -202,6 +202,10 @@ def get_true_output_cond_cov(fake):
               CovU2V2 * (X2 + X3) + CovU2W2 * (Z2 + Z3) + CovV2W2 * (Z2 * X3 + Z3 * X2)
     cond_cov = np.column_stack([VarY1, VarY2, VarY3, CovY1Y2, CovY1Y3, CovY2Y3])
     return cond_cov
+
+    VarY2b = VarA1 + VarB1 * X2 ** 2 + VarC1 * Z2 ** 2 + \
+             2 * CovA1B1 * X2 + 2 * CovA1C1 * Z2 + 2 * CovB1C1 * X2 * Z2
+
 
 
 def get_true_coef_cond_means(fake):
@@ -243,7 +247,7 @@ def get_true_coef_cond_cov(fake):
     return out
 
 
-def true_shock_means(fake):
+def get_true_shock_means(fake):
     shock_means = np.column_stack([
         np.zeros(3),
         fake["means"][["U2", "V2", "W2"]],
@@ -252,7 +256,7 @@ def true_shock_means(fake):
     return shock_means
 
 
-def true_shock_cov(fake):
+def get_true_shock_cov(fake):
     s2_idx = ["U2", "V2", "W2"]
     s3_idx = ["U3", "V3", "W3"]
     cov_idx = np.array([(0, 0), (1, 1), (2, 2), (0, 1), (0, 2), (1, 2)])

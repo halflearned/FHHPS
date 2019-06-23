@@ -3,7 +3,7 @@ import numpy.testing as nt
 from fhhps.estimator import *
 
 
-def test_shock_means():
+def test_fit_shock_means():
     n = 5000000
     fake = generate_data(n)
     data = fake["df"]
@@ -20,7 +20,7 @@ def test_shock_means():
     nt.assert_array_almost_equal(m2, truth2, decimal=2)
 
 
-def test_shock_second_moments():
+def test_fit_shock_second_cov():
     n = 5000000
     fake = generate_data(n)
     data = fake["df"]
@@ -121,6 +121,42 @@ def test_fit_output_cond_cov_with_estimated_means():
         error = estimate - truth
         errors.append(error.mean(0))
         print(error.mean(0))
+
+    stats = pd.DataFrame(errors).agg(["mean", "sem"])
+    unbiased = np.abs(stats.loc["mean"]) / stats.loc["sem"] < 2.326
+    assert np.all(unbiased)
+
+
+# TODO: calibrate bandwidths
+def test_fit_coefficient_cond_means():
+    n = 1000
+    np.random.seed(123)
+    shock_bw = 1 * n ** (-1 / 4)
+    output_bw = 1 * n ** (-1 / 2)
+    censor_const = 1.
+
+    errors = []
+    for i in range(20):
+        fake = generate_data(n)
+        X = fake["df"][["X1", "X2", "X3"]].values
+        Z = fake["df"][["Z1", "Z2", "Z3"]].values
+        Y = fake["df"][["Y1", "Y2", "Y3"]].values
+
+        # fit shocks
+        shock_means = fit_shock_means(X, Z, Y, shock_bw)
+
+        # fit output
+        output_cond_means = fit_output_cond_means(X, Z, Y, bw=output_bw)
+
+        # inversion step
+        coef_cond_means = get_coefficient_cond_means(X, Z, output_cond_means, shock_means)
+
+        # comparison
+        truth = get_true_coef_cond_means(fake)
+        valid = get_valid_cond_means(X, Z, censor_const)
+
+        coef_error = coef_cond_means[valid] - truth[valid]
+        errors.append(coef_error.mean(0))
 
     stats = pd.DataFrame(errors).agg(["mean", "sem"])
     unbiased = np.abs(stats.loc["mean"]) / stats.loc["sem"] < 2.326

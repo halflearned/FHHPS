@@ -11,7 +11,7 @@ def test_get_coefficient_cond_means():
     X = fake["df"][["X1", "X2", "X3"]].values
     Z = fake["df"][["Z1", "Z2", "Z3"]].values
     output_cond_means = get_true_output_cond_means(fake)
-    shock_means = true_shock_means(fake)
+    shock_means = get_true_shock_means(fake)
 
     estimate = get_coefficient_cond_means(X, Z, output_cond_means, shock_means)
     truth = get_true_coef_cond_means(fake)

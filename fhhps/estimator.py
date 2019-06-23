@@ -3,7 +3,7 @@ import logging
 from numpy.linalg import det as det
 from sklearn.preprocessing import PolynomialFeatures
 
-from fhhps.kernel_regression import KernelRegression, uniform_kernel
+from fhhps.kernel_regression import KernelRegression, uniform_kernel, gaussian_kernel
 from fhhps.utils import *
 
 
@@ -206,13 +206,12 @@ def get_coefficient_cond_cov(X, Z, output_cond_cov, shock_cov):
     """
     Fit random coefficient conditional variances and covariances
     """
-    coefficient_cond_cov = np.empty(shape=(len(X), 6))
-
     # Construct Var[Y|X,Z] minus excess terms
     excess_terms = get_cov_excess_terms(X, Z, shock_cov)
     output_cond_cov_clean = output_cond_cov - excess_terms
 
     # Compute conditional second moments of random coefficients
+    coefficient_cond_cov = np.empty(shape=(len(X), 6))
     for i in range(len(X)):
         coefficient_cond_cov[i] = m6_inv(X[i], Z[i]) @ output_cond_cov_clean[i]
 
@@ -220,20 +219,32 @@ def get_coefficient_cond_cov(X, Z, output_cond_cov, shock_cov):
 
 
 @njit()
-def get_valid_cond_means(X, Z, censor_threshold):
+def get_means_censor_threshold(n, const):
+    return const * n ** (-1 / 4)
+
+
+@njit()
+def get_cov_censor_threshold(n, const):
+    return const * n ** (-1 / 8)
+
+
+@njit()
+def get_valid_cond_means(X, Z, const):
     n = len(X)
+    thres = get_means_censor_threshold(n, const)
     valid = np.zeros(n, np.bool_)
     for i in range(n):
-        valid[i] = np.abs(det(m3(X[i], Z[i]))) > censor_threshold
+        valid[i] = np.abs(det(m3(X[i], Z[i]))) > thres
     return valid
 
 
 @njit()
-def get_valid_cond_cov(X, Z, censor_threshold):
+def get_valid_cond_cov(X, Z, const):
     n = len(X)
-    valid = np.zeros(n, dtype=bool)
+    thres = get_means_censor_threshold(n, const)
+    valid = np.zeros(n, dtype=np.bool_)
     for i in range(n):
-        valid[i] = np.abs(det(m6(X[i], Z[i]))) > censor_threshold
+        valid[i] = np.abs(det(m6(X[i], Z[i]))) > thres
     return valid
 
 
@@ -279,8 +290,8 @@ def get_cov_excess_terms(X, Z, shock_cov):
     E2 = VarU2 + VarV2 * X2 ** 2 + VarW2 * Z2 ** 2 + \
          2 * CovU2V2 * X2 + 2 * CovU2W2 * Z2 + 2 * CovV2W2 * X2 * Z2
 
-    E3 = VarU2 + VarV2 * X2 ** 2 + VarW2 * Z2 ** 2 \
-         + 2 * CovU2V2 * X2 + 2 * CovU2W2 * Z2 + 2 * CovV2W2 * X2 * Z2 \
+    E3 = VarU2 + VarV2 * X3 ** 2 + VarW2 * Z3 ** 2 \
+         + 2 * CovU2V2 * X3 + 2 * CovU2W2 * Z3 + 2 * CovV2W2 * X3 * Z3 \
          + VarU3 + VarV3 * X3 ** 2 + VarW3 * Z3 ** 2 \
          + 2 * CovU3V3 * X3 + 2 * CovU3W3 * Z3 + 2 * CovV3W3 * X3 * Z3
 
@@ -336,7 +347,7 @@ def get_coef_means(coef_cond_means, valid=None):
 
 
 @njit()
-def get_unconditional_second_moments(coef_cond_means, coef_cond_cov, valid=None):
+def get_centered_coef_second_moments(coef_cond_means, coef_cond_cov, valid=None):
     """
     Use ANOVA-type formulas to get unconditional variances and covariances
     """
@@ -355,20 +366,20 @@ def get_unconditional_second_moments(coef_cond_means, coef_cond_cov, valid=None)
     return coefficient_cov
 
 
-def fit_shock_means(X, Z, Y, t: int, bw: float):
+def fit_shock_means(X, Z, Y, bw: float):
     """
     Creates a 3-vector of shock means
     [E[Ut], E[Vt], E[Wt]]
     """
+    shock_means = np.zeros((3, 3))
     n, _ = X.shape
-    DYt = difference(Y, t=t)
-    DXZt = np.hstack(difference(X, Z, t=t))
-    XZt = np.hstack(extract(X, Z, t=t))
-    kern = KernelRegression()
-    # wts = kern.get_weights(DXZt, param=bw)
-    wts = uniform_kernel(DXZt, bw)
-    moments = kern.fit(XZt, DYt, sample_weight=wts).coefficients
-    return moments
+    for t in [1, 2]:
+        DYt = difference(Y, t=t)
+        DXZt = np.hstack(difference(X, Z, t=t))
+        XZt = np.hstack(extract(X, Z, t=t))
+        wts = gaussian_kernel(DXZt, bw)
+        shock_means[:, t] = KernelRegression().fit(XZt, DYt, sample_weight=wts).coefficients
+    return shock_means
 
 
 def fit_shock_second_moments(X, Z, Y, t: int, bw: float):
