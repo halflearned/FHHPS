@@ -183,8 +183,8 @@ def get_true_output_cond_cov(fake):
     CovA3B3 = CovA1B1 + CovU2V2 + CovU3V3
     CovA2C2 = CovA1C1 + CovU2W2
     CovA3C3 = CovA1C1 + CovU2W2 + CovU3W3
-    CovB2C2 = CovA1B1 + CovV2W2
-    CovB3C3 = CovA1B1 + CovV2W2 + CovV3W3
+    CovB2C2 = CovB1C1 + CovV2W2
+    CovB3C3 = CovB1C1 + CovV2W2 + CovV3W3
 
     VarY1 = VarA1 + VarB1 * X1 ** 2 + VarC1 * Z1 ** 2 + \
             2 * CovA1B1 * X1 + 2 * CovA1C1 * Z1 + 2 * CovB1C1 * X1 * Z1
@@ -202,10 +202,6 @@ def get_true_output_cond_cov(fake):
               CovU2V2 * (X2 + X3) + CovU2W2 * (Z2 + Z3) + CovV2W2 * (Z2 * X3 + Z3 * X2)
     cond_cov = np.column_stack([VarY1, VarY2, VarY3, CovY1Y2, CovY1Y3, CovY2Y3])
     return cond_cov
-
-    VarY2b = VarA1 + VarB1 * X2 ** 2 + VarC1 * Z2 ** 2 + \
-             2 * CovA1B1 * X2 + 2 * CovA1C1 * Z2 + 2 * CovB1C1 * X2 * Z2
-
 
 
 def get_true_coef_cond_means(fake):
@@ -245,6 +241,14 @@ def get_true_coef_cond_cov(fake):
     cond_cov = sigma_cond[cov_idx[:, 0], cov_idx[:, 1]]
     out = np.tile(cond_cov, (n, 1))  # homoskedasticity => all rows equal
     return out
+
+
+def get_true_coef_cov(fake):
+    ab_idx = ["A1", "B1", "C1"]
+    sigmaAB = fake["cov"].loc[ab_idx, ab_idx].values
+    cov_idx = np.array([(0, 0), (1, 1), (2, 2), (0, 1), (0, 2), (1, 2)])
+    coef_cov = sigmaAB[cov_idx[:, 0], cov_idx[:, 1]]
+    return coef_cov
 
 
 def get_true_shock_means(fake):

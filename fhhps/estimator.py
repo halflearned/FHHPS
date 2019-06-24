@@ -3,7 +3,7 @@ import logging
 from numpy.linalg import det as det
 from sklearn.preprocessing import PolynomialFeatures
 
-from fhhps.kernel_regression import KernelRegression, uniform_kernel, gaussian_kernel
+from fhhps.kernel_regression import KernelRegression, gaussian_kernel
 from fhhps.utils import *
 
 
@@ -142,7 +142,7 @@ class FHHPSEstimator:
     def fit_coefficient_means(self):
         logging.info("--Fitting coefficient means--")
 
-        self._coef_cond_means = get_coefficient_cond_means(
+        self._coef_cond_means = get_coef_cond_means(
             self.X, self.Z, self.output_cond_mean, self._shock_means)
         self._valid1 = get_valid_cond_means(self.X, self.Z, self.censor1_thres)
         self._coef_means = get_coef_means(self._coef_cond_means, self._valid1)
@@ -182,7 +182,7 @@ def fit_output_cond_cov(X, Z, Y, output_cond_means, bw, poly=2, kernel="gaussian
 
 
 @njit()
-def get_coefficient_cond_means(X, Z, output_cond_means, shock_means):
+def get_coef_cond_means(X, Z, output_cond_means, shock_means):
     """
     Fit random coefficient conditional means
     """
@@ -202,7 +202,7 @@ def get_coefficient_cond_means(X, Z, output_cond_means, shock_means):
 
 
 @njit()
-def get_coefficient_cond_cov(X, Z, output_cond_cov, shock_cov):
+def get_coef_cond_cov(X, Z, output_cond_cov, shock_cov):
     """
     Fit random coefficient conditional variances and covariances
     """
@@ -340,20 +340,14 @@ def m6_inv(x, z):
     return np.linalg.inv(m6(x, z))
 
 
-def get_coef_means(coef_cond_means, valid=None):
-    if valid is None:
-        valid = np.ones(len(coef_cond_means), dtype=np.bool_)
+def get_coef_means(coef_cond_means, valid):
     return coef_cond_means[valid].mean(0)
 
 
-@njit()
-def get_centered_coef_second_moments(coef_cond_means, coef_cond_cov, valid=None):
+def get_coef_cov(coef_cond_means, coef_cond_cov, valid):
     """
     Use ANOVA-type formulas to get unconditional variances and covariances
     """
-    if valid is None:
-        valid = np.ones(len(coef_cond_means), dtype=np.bool_)
-
     ev = coef_cond_cov[valid, :3].mean(0)
     ve = coef_cond_means[valid].var(0)
     variances = ev + ve
@@ -382,20 +376,26 @@ def fit_shock_means(X, Z, Y, bw: float):
     return shock_means
 
 
-def fit_shock_second_moments(X, Z, Y, t: int, bw: float):
+def fit_shock_cov(X, Z, Y, shock_means, bw):
+    shock_sec_mom = fit_shock_second_moments(X, Z, Y, bw)
+    shock_cov = get_centered_shock_second_moments(shock_means, shock_sec_mom)
+    return shock_cov
+
+
+def fit_shock_second_moments(X, Z, Y, bw: float):
     """
     Creates 6-vector of shock second moments
     [E[Ut^2], E[Vt^2], E[Wt^2], E[Ut*Vt], E[Ut*Wt], E[Vt*Wt]]
     """
     n, _ = X.shape
-    DYt = difference(Y, t=t)
-    DXZt = np.hstack(difference(X, Z, t=t))
-    XZt = np.hstack(extract(X ** 2, Z ** 2, 2 * X, 2 * Z, 2 * X * Z, t=t))
-    kern = KernelRegression()
-    # wts = kern.get_weights(DXZt, bw)
-    wts = uniform_kernel(DXZt, bw)
-    moments = kern.fit(XZt, DYt ** 2, sample_weight=wts).coefficients
-    return moments
+    shock_sec_mom = np.zeros((6, 3))
+    for t in [1, 2]:
+        DYt = difference(Y, t=t)
+        DXZt = np.hstack(difference(X, Z, t=t))
+        XZt = np.hstack(extract(X ** 2, Z ** 2, 2 * X, 2 * Z, 2 * X * Z, t=t))
+        wts = gaussian_kernel(DXZt, bw)
+        shock_sec_mom[:, t] = KernelRegression().fit(XZt, DYt ** 2, sample_weight=wts).coefficients
+    return shock_sec_mom
 
 
 def get_centered_shock_second_moments(m1, m2):
