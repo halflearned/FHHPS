@@ -1,8 +1,5 @@
 import os
 import subprocess
-from random import choice
-
-import pandas as pd
 
 from fhhps.estimator import *
 from fhhps.utils import *
@@ -29,20 +26,22 @@ def get_unique_filename(prefix="results", rnd=None, commit=True):
         fname = f'{prefix}_{hash}_{rnd}.csv.bz2'
     return fname
 
+
 filename = get_unique_filename()
 names = ["VarA", "VarB", "VarC", "CovAB", "CovAC", "CovBC"]
 for s in range(1000):
-    output_bw1_const = choice([5, 10, 50])
-    output_bw2_const = choice([5, 10, 50])
-    output_bw1_alpha = choice([1 / 5, 1 / 2])
-    output_bw2_alpha = choice([1 / 5, 1 / 2])
+    output_bw1_const = 5  # choice([5, 10, 50])
+    output_bw2_const = 5  # choice([5, 10, 50])
+    output_bw1_alpha = 1 / 5  # choice([1 / 5, 1 / 2])
+    output_bw2_alpha = 1 / 5  # choice([1 / 5, 1 / 2])
 
-    shock_bw1_const = choice([1, 10])
-    shock_bw2_const = choice([1, 10])
-    shock_bw1_alpha = choice([1 / 2, 1 / 5])
-    shock_bw2_alpha = choice([1 / 2, 1 / 5])
+    shock_bw1_const = 1  # choice([1, 10])
+    shock_bw2_const = 1  # choice([1, 10])
+    shock_bw1_alpha = 1 / 5  # choice([1 / 2, 1 / 5])
+    shock_bw2_alpha = 1 / 5  # choice([1 / 2, 1 / 5])
 
-    n = choice([1000, 5000, 20000])
+    n = 1000  # choice([1000, 5000, 20000])
+
     fake = generate_data(n)
     X = fake["df"][["X1", "X2", "X3"]].values
     Z = fake["df"][["Z1", "Z2", "Z3"]].values
@@ -80,3 +79,4 @@ for s in range(1000):
                               "error": e}
                              for name, e in zip(names, error)])
     res.to_csv(filename, header=s == 0, index=False, mode="a")
+    print(res)
