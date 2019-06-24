@@ -2,6 +2,8 @@ import os
 import subprocess
 from random import choice
 
+import pandas as pd
+
 from fhhps.estimator import *
 from fhhps.utils import *
 
@@ -27,10 +29,9 @@ def get_unique_filename(prefix="results", rnd=None, commit=True):
         fname = f'{prefix}_{hash}_{rnd}.csv.bz2'
     return fname
 
-
 filename = get_unique_filename()
-
-while True:
+names = ["VarA", "VarB", "VarC", "CovAB", "CovAC", "CovBC"]
+for s in range(1000):
     output_bw1_const = choice([5, 10, 50])
     output_bw2_const = choice([5, 10, 50])
     output_bw1_alpha = choice([1 / 5, 1 / 2])
@@ -66,12 +67,16 @@ while True:
     truth = get_true_coef_cov(fake)
 
     error = estimate - truth
-    for k, name in enumerate(["VarA", "VarB", "VarC", "CovAB", "CovAC", "CovBC"]):
-        res = [n,
-               output_bw1_const, output_bw1_alpha,
-               output_bw2_const, output_bw2_alpha,
-               shock_bw1_const, shock_bw1_alpha,
-               shock_bw2_const, shock_bw2_alpha,
-               name,
-               error[k]]
-        print(res, filename)
+    res = pd.DataFrame(data=[{"n": n,
+                              "output_bw1_const": output_bw1_const,
+                              "output_bw2_const": output_bw2_const,
+                              "output_bw1_alpha": output_bw1_alpha,
+                              "output_bw2_alpha": output_bw2_alpha,
+                              "shock_bw1_const": shock_bw1_const,
+                              "shock_bw2_const": shock_bw2_const,
+                              "shock_bw1_alpha": shock_bw1_alpha,
+                              "shock_bw2_alpha": shock_bw2_alpha,
+                              "name": name,
+                              "error": e}
+                             for name, e in zip(names, error)])
+    res.to_csv(filename, header=s == 0, index=False, mode="a")
