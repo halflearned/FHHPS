@@ -1,5 +1,6 @@
 import os
 import subprocess
+from random import choice
 
 from fhhps.estimator import *
 from fhhps.utils import *
@@ -30,17 +31,17 @@ def get_unique_filename(prefix="results", rnd=None, commit=True):
 filename = get_unique_filename()
 names = ["VarA", "VarB", "VarC", "CovAB", "CovAC", "CovBC"]
 for s in range(1000):
-    output_bw1_const = 5  # choice([5, 10, 50])
-    output_bw2_const = 5  # choice([5, 10, 50])
-    output_bw1_alpha = 1 / 5  # choice([1 / 5, 1 / 2])
-    output_bw2_alpha = 1 / 5  # choice([1 / 5, 1 / 2])
+    output_bw1_const = choice([1, 3, 5])
+    output_bw2_const = output_bw1_const
+    output_bw1_alpha = choice([0.2, 0.3])
+    output_bw2_alpha = output_bw1_alpha
 
-    shock_bw1_const = 1  # choice([1, 10])
-    shock_bw2_const = 1  # choice([1, 10])
-    shock_bw1_alpha = 1 / 5  # choice([1 / 2, 1 / 5])
-    shock_bw2_alpha = 1 / 5  # choice([1 / 2, 1 / 5])
+    shock_bw1_const = choice([.5, 1, 2, 5])
+    shock_bw2_const = shock_bw1_const
+    shock_bw1_alpha = choice([0.2, 0.3])
+    shock_bw2_alpha = shock_bw1_alpha
 
-    n = 1000  # choice([1000, 5000, 20000])
+    n = choice([1000, 5000, 20000])
 
     fake = generate_data(n)
     X = fake["df"][["X1", "X2", "X3"]].values
