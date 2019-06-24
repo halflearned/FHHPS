@@ -14,8 +14,8 @@ df_grp = df.query(
     "(shock_bw2_const == 1) & "
     "(output_bw1_alpha == 0.2) &"
     "(output_bw2_alpha == 0.2) &"
-    "(shock_bw1_alpha == 0.2) &"
-    "(shock_bw2_alpha == 0.2)"
+    "(shock_bw1_alpha == 0.3) &"
+    "(shock_bw2_alpha == 0.3)"
 )
 
 g = sns.FacetGrid(data=df_grp, hue="n", col="name",
@@ -23,5 +23,6 @@ g = sns.FacetGrid(data=df_grp, hue="n", col="name",
                   aspect=1, height=3, col_wrap=3)
 g.map(sns.kdeplot, "error", shade=True)
 g.map(sns.rugplot, "error")
-[ax.axvline(0, color="black") for ax in g.axes.flatten()]
+g.map(lambda **kwargs: plt.axvline(0, **kwargs), color="black")
+g.savefig("/Users/vitorh/Desktop/test.pdf")
 plt.show()
