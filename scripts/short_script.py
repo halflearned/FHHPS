@@ -54,10 +54,8 @@ while True:
     shock_means = fit_shock_means(X, Z, Y, shock_bw1)
     shock_cov = fit_shock_cov(X, Z, Y, shock_means, shock_bw2)
 
-    output_cond_means = fit_output_cond_means(X, Z, Y,
-                                              output_bw1)  # get_true_output_cond_means(fake)
-    output_cond_cov = fit_output_cond_cov(X, Z, Y, output_cond_means,
-                                          output_bw2)  # get_true_output_cond_cov(fake)
+    output_cond_means = fit_output_cond_means(X, Z, Y, output_bw1)
+    output_cond_cov = fit_output_cond_cov(X, Z, Y, output_cond_means, output_bw2)
 
     coef_cond_means = get_coef_cond_means(X, Z, output_cond_means, shock_means)
     coef_cond_cov = get_coef_cond_cov(X, Z, output_cond_cov, shock_cov)
