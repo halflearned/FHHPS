@@ -8,22 +8,42 @@ from fhhps.utils import *
 
 
 class FHHPSEstimator:
+    """
+    All the notation refers to the preliminary draft, June 2019 version.
+
+    Parameters
+    ----------
+
+    shock_{const, alpha}: float
+        The shock bandwidth is h_n = shock_const * n ^ (-shock_alpha).
+
+    output_{const, alpha}: float
+        The bandwidth used to estimate output conditional means and variances is
+        denoted by gamma_n = output_const * n ^ (-output_alpha).
+
+    censor_{1,2}_{const, alpha}: float
+        The bandwidth used to censor observations close to the diagonal,
+        denoted by delta1 = censor1_const * n ^ (-censor1_alpha).
+
+    """
 
     def __init__(self,
-                 shock_const: float = 5.0,
-                 shock_alpha: float = 0.2,
-                 coef_const: float = 0.1,
-                 coef_alpha: float = 0.5,
+                 shock_const: float = 1.,
+                 output_const: float = 1.,
                  censor1_const: float = 1.,
                  censor2_const: float = 1.,
-                 censor1_alpha: float = 0.25,
-                 censor2_alpha: float = 0.125):
+
+                 shock_alpha: float = 1 / 6,
+                 output_alpha: float = 1 / 10,
+                 censor1_alpha: float = 1 / 5,
+                 censor2_alpha: float = 1 / 5):
         self.shock_const = shock_const
-        self.shock_alpha = shock_alpha
-        self.coef_const = coef_const
-        self.coef_alpha = coef_alpha
+        self.coef_const = output_const
         self.censor1_const = censor1_const
         self.censor2_const = censor2_const
+
+        self.shock_alpha = shock_alpha
+        self.coef_alpha = output_alpha
         self.censor1_alpha = censor1_alpha
         self.censor2_alpha = censor2_alpha
 

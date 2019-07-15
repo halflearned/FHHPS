@@ -19,8 +19,9 @@ df_grp = df.query(
 )
 
 g = sns.FacetGrid(data=df_grp, hue="n", col="name",
-                  sharey=False, sharex=False,
+                  sharey=False, sharex=False, legend_out=True,
                   aspect=1, height=3, col_wrap=3)
+g.add_legend()
 g.map(sns.kdeplot, "error", shade=True)
 g.map(sns.rugplot, "error")
 g.map(lambda **kwargs: plt.axvline(0, **kwargs), color="black")

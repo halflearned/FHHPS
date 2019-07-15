@@ -92,9 +92,9 @@ def calibrate_coeff_mean_params(n, num_sims=40,
 
             est = FHHPSEstimator(shock_const=shock_const,
                                  shock_alpha=shock_alpha,
-                                 coef_const=coef_const,
+                                 output_const=coef_const,
                                  censor1_const=censor1_const,
-                                 coef_alpha=coef_alpha)
+                                 output_alpha=coef_alpha)
             est.add_data(X=data[["X1", "X2", "X3"]],
                          Y=data[["Y1", "Y2", "Y3"]],
                          Z=data[["Z1", "Z2", "Z3"]])
@@ -147,8 +147,8 @@ def calibrate_coeff_cov_params(n, num_sims=40,
 
             est = FHHPSEstimator(shock_const=shock_const,
                                  shock_alpha=shock_alpha,
-                                 coef_const=coef_const,
-                                 coef_alpha=coef_alpha,
+                                 output_const=coef_const,
+                                 output_alpha=coef_alpha,
                                  censor1_const=censor1_const,
                                  censor2_const=censor2_const)
             est.fit(X=data[["X1", "X2", "X3"]],

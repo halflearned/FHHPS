@@ -31,26 +31,43 @@ def get_unique_filename(prefix="results", rnd=None, commit=True):
 filename = get_unique_filename()
 names = ["VarA", "VarB", "VarC", "CovAB", "CovAC", "CovBC"]
 for s in range(1000):
-    output_bw1_const = choice([1, 3, 5])
+
+    if on_sherlock():
+        n = choice([1000, 5000, 20000])
+    else:
+        n = 2000
+
+    output_bw1_const = choice([0.5, 1, 3, 5, 10, 20])
     output_bw2_const = output_bw1_const
-    output_bw1_alpha = choice([0.2, 0.3])
-    output_bw2_alpha = output_bw1_alpha
 
-    shock_bw1_const = choice([.5, 1, 2, 5])
+    shock_bw1_const = choice([.1, .5, 1, 2, 5, 10, 20])
     shock_bw2_const = shock_bw1_const
-    shock_bw1_alpha = choice([0.2, 0.3])
-    shock_bw2_alpha = shock_bw1_alpha
 
-    n = choice([1000, 5000, 20000])
+    shock_bw1_alpha = 1 / 6
+    shock_bw2_alpha = 1 / 6
+
+    output_bw1_alpha = 1 / 10
+    output_bw2_alpha = 1 / 10
+
+    censor1_const = 1.
+    censor2_const = 1.
+
+    censor1_alpha = 1 / 5
+    censor2_alpha = 1 / 5
+
+    output_bw1 = output_bw1_const * n ** (-output_bw1_alpha)
+    output_bw2 = output_bw2_const * n ** (-output_bw2_alpha)
+
+    shock_bw1 = shock_bw1_const * n ** (-shock_bw1_alpha)
+    shock_bw2 = shock_bw2_const * n ** (-shock_bw2_alpha)
+
+    censor1_bw = censor1_const * n ** (-censor1_alpha)
+    censor2_bw = censor2_const * n ** (-censor2_alpha)
 
     fake = generate_data(n)
     X = fake["df"][["X1", "X2", "X3"]].values
     Z = fake["df"][["Z1", "Z2", "Z3"]].values
     Y = fake["df"][["Y1", "Y2", "Y3"]].values
-    output_bw1 = output_bw1_const * n ** (-output_bw1_alpha)
-    output_bw2 = output_bw2_const * n ** (-output_bw2_alpha)
-    shock_bw1 = shock_bw1_const * n ** (-shock_bw1_alpha)
-    shock_bw2 = shock_bw2_const * n ** (-shock_bw2_alpha)
 
     shock_means = fit_shock_means(X, Z, Y, shock_bw1)
     shock_cov = fit_shock_cov(X, Z, Y, shock_means, shock_bw2)
@@ -66,7 +83,6 @@ for s in range(1000):
     estimate = get_coef_cov(coef_cond_means, coef_cond_cov, valid)
     truth = get_true_coef_cov(fake)
 
-    error = estimate - truth
     res = pd.DataFrame(data=[{"n": n,
                               "output_bw1_const": output_bw1_const,
                               "output_bw2_const": output_bw2_const,
@@ -77,7 +93,7 @@ for s in range(1000):
                               "shock_bw1_alpha": shock_bw1_alpha,
                               "shock_bw2_alpha": shock_bw2_alpha,
                               "name": name,
-                              "error": e}
-                             for name, e in zip(names, error)])
+                              "value": est}
+                             for name, est in zip(names, estimate)])
     res.to_csv(filename, header=s == 0, index=False, mode="a")
     print(res)

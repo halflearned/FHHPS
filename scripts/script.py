@@ -105,8 +105,8 @@ if __name__ == "__main__":
 
         est = FHHPSEstimator(shock_const=config["shock_const"],
                              shock_alpha=config["shock_alpha"],
-                             coef_const=config["coef_const"],
-                             coef_alpha=config["coef_alpha"],
+                             output_const=config["coef_const"],
+                             output_alpha=config["coef_alpha"],
                              censor1_const=config["censor1_const"],
                              censor2_const=config["censor2_const"])
         est.add_data(X=data[["X1", "X2", "X3"]],
