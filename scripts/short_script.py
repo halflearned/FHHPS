@@ -37,10 +37,10 @@ for s in range(1000):
     else:
         n = 2000
 
-    output_bw1_const = choice([0.5, 1, 3, 5, 10, 20])
+    output_bw1_const = choice([.1, .5, 1, 3, 5, 10, 20])
     output_bw2_const = output_bw1_const
 
-    shock_bw1_const = choice([.1, .5, 1, 2, 5, 10, 20])
+    shock_bw1_const = choice([.1, .5, 1, 3, 5, 10, 20])
     shock_bw2_const = shock_bw1_const
 
     shock_bw1_alpha = 1 / 6
