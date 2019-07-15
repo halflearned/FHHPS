@@ -243,6 +243,12 @@ def get_true_coef_cond_cov(fake):
     return out
 
 
+def get_true_coef_means(fake):
+    ab_idx = ["A1", "B1", "C1"]
+    means = fake["means"].loc[ab_idx].values
+    return means
+
+
 def get_true_coef_cov(fake):
     ab_idx = ["A1", "B1", "C1"]
     sigmaAB = fake["cov"].loc[ab_idx, ab_idx].values

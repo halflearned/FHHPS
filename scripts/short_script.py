@@ -117,4 +117,3 @@ for s in range(1000):
 
     print(mean_res)
     print(cov_res)
-    sdsd
