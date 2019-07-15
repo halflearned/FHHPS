@@ -28,7 +28,7 @@ def get_unique_filename(prefix="results", rnd=None, commit=True):
     return fname
 
 
-filename = get_unique_filename()
+filename = os.path.join("script_out", get_unique_filename())
 names = ["VarA", "VarB", "VarC", "CovAB", "CovAC", "CovBC"]
 for s in range(1000):
 
