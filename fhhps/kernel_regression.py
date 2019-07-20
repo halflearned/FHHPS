@@ -8,9 +8,10 @@ from sklearn.neighbors import NearestNeighbors
 
 class KernelRegression(Ridge):
 
-    def __init__(self, alpha=1e-6, fit_intercept=True, normalize=True,
+    def __init__(self, kernel,
+                 alpha=1e-6, fit_intercept=True, normalize=True,
                  copy_X=True, max_iter=None, tol=0.001, solver="auto",
-                 random_state=None, kernel="gaussian"):
+                 random_state=None):
 
         self.kernel = kernel
 

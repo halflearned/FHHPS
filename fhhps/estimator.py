@@ -39,7 +39,9 @@ class FHHPSEstimator:
                  shock_alpha: float = 1 / 6,
                  output_alpha: float = 1 / 10,
                  censor1_alpha: float = 1 / 5,
-                 censor2_alpha: float = 1 / 5):
+                 censor2_alpha: float = 1 / 5,
+
+                 kernel: str = "gaussian"):
         self.shock_const = shock_const
         self.coef_const = output_const
         self.censor1_const = censor1_const
@@ -49,6 +51,8 @@ class FHHPSEstimator:
         self.coef_alpha = output_alpha
         self.censor1_alpha = censor1_alpha
         self.censor2_alpha = censor2_alpha
+
+        self.kernel = kernel
 
     def add_data(self, X, Z, Y):
         self.n, self.T = X.shape
@@ -157,8 +161,8 @@ class FHHPSEstimator:
             resid[:, 0] * resid[:, 2],  # Cov[Y1, Y3|I]
             resid[:, 1] * resid[:, 2],  # Cov[Y2, Y3|I]
         ])
-        self.output_cond_var = KernelRegression().fit_predict_local(
-            self.XZ, Y_centered, bw=self.coef_bw)
+        kreg = KernelRegression(kernel=self.kernel)
+        self.output_cond_var = kreg.fit_predict_local(self.XZ, Y_centered, bw=self.coef_bw)
 
     """ Random coefficients """
 
@@ -181,14 +185,14 @@ class FHHPSEstimator:
 """ Utils """
 
 
-def fit_output_cond_means(X, Z, Y, bw, kernel="gaussian"):
+def fit_output_cond_means(X, Z, Y, bw, kernel):
     logging.info("--Fitting output conditional means--")
     XZ = np.column_stack([X, Z])
     cond_means = KernelRegression(kernel=kernel).fit_predict_local(XZ, Y, bw=bw)
     return cond_means
 
 
-def fit_output_cond_cov(X, Z, Y, output_cond_means, bw, poly=2, kernel="gaussian"):
+def fit_output_cond_cov(X, Z, Y, output_cond_means, bw, kernel, poly=2):
     n = len(X)
     XZ = np.column_stack([X, Z])
     resid = (Y - output_cond_means)
@@ -202,6 +206,46 @@ def fit_output_cond_cov(X, Z, Y, output_cond_means, bw, poly=2, kernel="gaussian
     XZp = PolynomialFeatures(degree=poly, include_bias=False).fit_transform(XZ)
     cond_cov = KernelRegression(kernel=kernel).fit_predict_local(XZp, Yt, bw=bw)
     return cond_cov
+
+
+def fit_shock_means(X, Z, Y, bw: float, kernel: str):
+    """
+    Creates a 3-vector of shock means
+    [E[Ut], E[Vt], E[Wt]]
+    """
+    shock_means = np.zeros((3, 3))
+    n, _ = X.shape
+    kreg = KernelRegression(kernel=kernel)
+    for t in [1, 2]:
+        DYt = difference(Y, t=t)
+        DXZt = np.hstack(difference(X, Z, t=t))
+        XZt = np.hstack(extract(X, Z, t=t))
+        wts = gaussian_kernel(DXZt, bw)
+        shock_means[:, t] = kreg.fit(XZt, DYt, sample_weight=wts).coefficients
+    return shock_means
+
+
+def fit_shock_cov(X, Z, Y, shock_means, bw, kernel: str):
+    shock_sec_mom = fit_shock_second_moments(X, Z, Y, bw, kernel)
+    shock_cov = get_centered_shock_second_moments(shock_means, shock_sec_mom)
+    return shock_cov
+
+
+def fit_shock_second_moments(X, Z, Y, bw: float, kernel: str):
+    """
+    Creates 6-vector of shock second moments
+    [E[Ut^2], E[Vt^2], E[Wt^2], E[Ut*Vt], E[Ut*Wt], E[Vt*Wt]]
+    """
+    n, _ = X.shape
+    shock_sec_mom = np.zeros((6, 3))
+    kreg = KernelRegression(kernel=kernel)
+    for t in [1, 2]:
+        DYt = difference(Y, t=t)
+        DXZt = np.hstack(difference(X, Z, t=t))
+        XZt = np.hstack(extract(X ** 2, Z ** 2, 2 * X, 2 * Z, 2 * X * Z, t=t))
+        wts = gaussian_kernel(DXZt, bw)
+        shock_sec_mom[:, t] = kreg.fit(XZt, DYt ** 2, sample_weight=wts).coefficients
+    return shock_sec_mom
 
 
 @njit()
@@ -382,44 +426,6 @@ def get_coef_cov(coef_cond_means, coef_cond_cov, valid):
 
     coefficient_cov = np.hstack([variances, covariances])
     return coefficient_cov
-
-
-def fit_shock_means(X, Z, Y, bw: float):
-    """
-    Creates a 3-vector of shock means
-    [E[Ut], E[Vt], E[Wt]]
-    """
-    shock_means = np.zeros((3, 3))
-    n, _ = X.shape
-    for t in [1, 2]:
-        DYt = difference(Y, t=t)
-        DXZt = np.hstack(difference(X, Z, t=t))
-        XZt = np.hstack(extract(X, Z, t=t))
-        wts = gaussian_kernel(DXZt, bw)
-        shock_means[:, t] = KernelRegression().fit(XZt, DYt, sample_weight=wts).coefficients
-    return shock_means
-
-
-def fit_shock_cov(X, Z, Y, shock_means, bw):
-    shock_sec_mom = fit_shock_second_moments(X, Z, Y, bw)
-    shock_cov = get_centered_shock_second_moments(shock_means, shock_sec_mom)
-    return shock_cov
-
-
-def fit_shock_second_moments(X, Z, Y, bw: float, kernel="gaussian"):
-    """
-    Creates 6-vector of shock second moments
-    [E[Ut^2], E[Vt^2], E[Wt^2], E[Ut*Vt], E[Ut*Wt], E[Vt*Wt]]
-    """
-    n, _ = X.shape
-    shock_sec_mom = np.zeros((6, 3))
-    for t in [1, 2]:
-        DYt = difference(Y, t=t)
-        DXZt = np.hstack(difference(X, Z, t=t))
-        XZt = np.hstack(extract(X ** 2, Z ** 2, 2 * X, 2 * Z, 2 * X * Z, t=t))
-        wts = gaussian_kernel(DXZt, bw)
-        shock_sec_mom[:, t] = KernelRegression().fit(XZt, DYt ** 2, sample_weight=wts).coefficients
-    return shock_sec_mom
 
 
 def get_centered_shock_second_moments(m1, m2):
