@@ -100,7 +100,7 @@ def knn_kernel(a, b, bw):
     # The 'bandwidth' for a knn problem is
     # the usual kernel bandwidth times the number of obs
     n = len(a)
-    knn_bw = int(n * bw)
+    knn_bw = max(int(n * bw), n - 1)
     knn = NearestNeighbors(n_neighbors=knn_bw).fit(a)
     _, idx = knn.kneighbors(b)
     k = np.zeros(n, dtype=float)
