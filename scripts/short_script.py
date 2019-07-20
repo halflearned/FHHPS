@@ -49,10 +49,12 @@ for s in range(num_sims):
         n = choice([1000, 5000, 20000])
         output_bw1_const = choice([.1, .25, .5, 1, 2, 3, 5, 10])
         shock_bw1_const = choice([.1, .25, .5, 1, 2, 3, 5, 10])
+        kernel = choice(["gaussian", "neighbor"])
     else:
         output_bw1_const = 1
         shock_bw1_const = 1
         n = 2000
+        kernel = "neighbor"
 
     output_bw2_const = output_bw1_const
     shock_bw2_const = shock_bw1_const
@@ -68,8 +70,6 @@ for s in range(num_sims):
 
     censor1_alpha = 1 / 5
     censor2_alpha = 1 / 5
-
-    kernel = "neighbor"
 
     output_bw1 = output_bw1_const * n ** (-output_bw1_alpha)
     output_bw2 = output_bw2_const * n ** (-output_bw2_alpha)
@@ -102,6 +102,7 @@ for s in range(num_sims):
     truth = get_true_coef_cov(fake)
 
     config = ODict(**{"n": n,
+                      "kernel": kernel,
                       "output_bw1_const": as_frac(output_bw1_const),
                       "output_bw2_const": as_frac(output_bw2_const),
                       "output_bw1_alpha": as_frac(output_bw1_alpha),
