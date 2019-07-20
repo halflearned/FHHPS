@@ -7,6 +7,8 @@ from random import choice
 from fhhps.estimator import *
 from fhhps.utils import *
 
+import numpy as np
+
 
 def as_frac(x):
     frac = Fraction(x).limit_denominator(10000)
@@ -94,8 +96,8 @@ for s in range(num_sims):
     coef_cond_means = get_coef_cond_means(X, Z, output_cond_means, shock_means)
     coef_cond_cov = get_coef_cond_cov(X, Z, output_cond_cov, shock_cov)
 
-    mean_valid = get_valid_cond_means(X, Z, 1.)
-    cov_valid = get_valid_cond_cov(X, Z, 1.)
+    mean_valid = get_valid_cond_means(X, Z, censor1_bw)
+    cov_valid = get_valid_cond_cov(X, Z, censor2_bw)
 
     mean_estimate = get_coef_means(coef_cond_means, mean_valid)
     cov_estimate = get_coef_cov(coef_cond_means, coef_cond_cov, cov_valid)
@@ -110,7 +112,10 @@ for s in range(num_sims):
                       "shock_bw1_const": as_frac(shock_bw1_const),
                       "shock_bw2_const": as_frac(shock_bw2_const),
                       "shock_bw1_alpha": as_frac(shock_bw1_alpha),
-                      "shock_bw2_alpha": as_frac(shock_bw2_alpha)})
+                      "shock_bw2_alpha": as_frac(shock_bw2_alpha),
+                      "mean_valid": np.mean(mean_valid),
+                      "cov_valid": np.mean(cov_valid)
+                      })
 
     mean_res = pd.DataFrame(data=[ODict({**config, "name": name, "value": est})
                                   for name, est in zip(mean_names, mean_estimate)])
