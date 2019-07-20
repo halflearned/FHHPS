@@ -8,6 +8,7 @@ from fhhps.utils import *
 
 import pandas as pd
 import numpy as np
+from numba import njit
 
 
 class FHHPSEstimator:
@@ -347,12 +348,13 @@ def m6(x, z):
     """
     This is now called matrix M6 in the paper
     """
-    def f(i, j): return [1,
-                         x[i] * x[j],
-                         z[i] * z[j],
-                         x[i] + x[j],
-                         z[i] + z[j],
-                         x[i] * z[j] + x[j] * z[i]]
+    def f(i, j):
+        return [1,
+                x[i] * x[j],
+                z[i] * z[j],
+                x[i] + x[j],
+                z[i] + z[j],
+                x[i] * z[j] + x[j] * z[i]]
     g = np.array([f(0, 0), f(1, 1), f(2, 2), f(0, 1), f(0, 2), f(1, 2)])
     return g
 
@@ -404,7 +406,7 @@ def fit_shock_cov(X, Z, Y, shock_means, bw):
     return shock_cov
 
 
-def fit_shock_second_moments(X, Z, Y, bw: float):
+def fit_shock_second_moments(X, Z, Y, bw: float, kernel="gaussian"):
     """
     Creates 6-vector of shock second moments
     [E[Ut^2], E[Vt^2], E[Wt^2], E[Ut*Vt], E[Ut*Wt], E[Vt*Wt]]

@@ -3,6 +3,7 @@ import logging
 import numpy as np
 from scipy.stats import multivariate_normal
 from sklearn.linear_model import Ridge
+from sklearn.neighbors import NearestNeighbors
 
 
 class KernelRegression(Ridge):
@@ -39,6 +40,9 @@ class KernelRegression(Ridge):
 
         elif self.kernel == "uniform":
             wts = uniform_kernel(x_in - x_out, bw=param)
+
+        elif self.kernel == "neighbor":
+            wts = knn_kernel(x_in, x_out, bw=param)
 
         else:
             raise ValueError(f"Unknown kernel {self.kernel}")
@@ -91,17 +95,13 @@ def uniform_kernel(a: np.ndarray, bw: float):
     return k
 
 
-if __name__ == "__main__":
-    n, p = 1000, 4
-    X = np.random.normal(np.pi, np.pi, size=(n, p))
-    mu = np.sin(X[:, 0:1])
-    y = mu + 0.001 * np.random.normal(size=(n, 1))
-    y[50] = np.nan
-    reg = KernelRegression(kernel="uniform")
-    yhat = reg.fit_predict_local(X, y, bw=1 * np.std(X))
-
-    # # reg = KernelRegression(kernel="knn", num_neighbors=10)
-    # # yhat = reg.fit_predict_local(X, y, bw=None)
-    # plt.scatter(X[:, 0], mu.flatten())
-    # plt.scatter(X[:, 0], yhat.flatten())
-    # plt.show()
+def knn_kernel(a, b, bw):
+    # The 'bandwidth' for a knn problem is
+    # the usual kernel bandwidth times the number of obs
+    n = len(a)
+    knn_bw = int(n * bw)
+    knn = NearestNeighbors(n_neighbors=knn_bw).fit(a)
+    _, idx = knn.kneighbors(b)
+    k = np.zeros(n, dtype=float)
+    k[idx.flatten()] = 1.
+    return k

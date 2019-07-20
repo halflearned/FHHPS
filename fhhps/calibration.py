@@ -188,18 +188,3 @@ def calibrate_coeff_cov_params(n, num_sims=40,
                    censor1_const=censor1_const,
                    censor2_const=censor2_const)
     return results
-
-
-if __name__ == "__main__":
-    # shock_const2000 = calibrate_shock_means_const(n=2000)
-    # shock_const5000 = calibrate_shock_means_const(n=5000)
-    import matplotlib.pyplot as plt
-
-    res = calibrate_coeff_cov_params(1000, num_sims=10)
-
-    fig, axs = plt.subplots(1, 3, figsize=(15, 4))
-    valid = res['mse'] < 3
-    axs[0].scatter(res["train_random_params"][valid, 0], res['mse'][valid])
-    axs[1].scatter(res["train_random_params"][valid, 1], res['mse'][valid])
-    axs[2].scatter(res["train_random_params"][valid, 2], res['mse'][valid])
-    plt.show()
