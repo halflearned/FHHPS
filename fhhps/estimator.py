@@ -6,6 +6,9 @@ from sklearn.preprocessing import PolynomialFeatures
 from fhhps.kernel_regression import KernelRegression, gaussian_kernel
 from fhhps.utils import *
 
+import pandas as pd
+import numpy as np
+
 
 class FHHPSEstimator:
     """
@@ -13,7 +16,6 @@ class FHHPSEstimator:
 
     Parameters
     ----------
-
     shock_{const, alpha}: float
         The shock bandwidth is h_n = shock_const * n ^ (-shock_alpha).
 
@@ -308,20 +310,20 @@ def get_cov_excess_terms(X, Z, shock_cov):
     E1 = np.zeros(n)
 
     E2 = VarU2 + VarV2 * X2 ** 2 + VarW2 * Z2 ** 2 + \
-         2 * CovU2V2 * X2 + 2 * CovU2W2 * Z2 + 2 * CovV2W2 * X2 * Z2
+        2 * CovU2V2 * X2 + 2 * CovU2W2 * Z2 + 2 * CovV2W2 * X2 * Z2
 
     E3 = VarU2 + VarV2 * X3 ** 2 + VarW2 * Z3 ** 2 \
-         + 2 * CovU2V2 * X3 + 2 * CovU2W2 * Z3 + 2 * CovV2W2 * X3 * Z3 \
-         + VarU3 + VarV3 * X3 ** 2 + VarW3 * Z3 ** 2 \
-         + 2 * CovU3V3 * X3 + 2 * CovU3W3 * Z3 + 2 * CovV3W3 * X3 * Z3
+        + 2 * CovU2V2 * X3 + 2 * CovU2W2 * Z3 + 2 * CovV2W2 * X3 * Z3 \
+        + VarU3 + VarV3 * X3 ** 2 + VarW3 * Z3 ** 2 \
+        + 2 * CovU3V3 * X3 + 2 * CovU3W3 * Z3 + 2 * CovV3W3 * X3 * Z3
 
     E4 = np.zeros(n)
 
     E5 = np.zeros(n)
 
     E6 = VarU2 + VarV2 * X2 * X3 + VarW2 * Z2 * Z3 \
-         + CovU2V2 * (X2 + X3) + CovU2W2 * (Z2 + Z3) \
-         + CovV2W2 * (X2 * Z3 + Z2 * X3)
+        + CovU2V2 * (X2 + X3) + CovU2W2 * (Z2 + Z3) \
+        + CovV2W2 * (X2 * Z3 + Z2 * X3)
 
     excess_terms = np.column_stack((E1, E2, E3, E4, E5, E6))
     return excess_terms
@@ -345,12 +347,12 @@ def m6(x, z):
     """
     This is now called matrix M6 in the paper
     """
-    f = lambda i, j: [1,
-                      x[i] * x[j],
-                      z[i] * z[j],
-                      x[i] + x[j],
-                      z[i] + z[j],
-                      x[i] * z[j] + x[j] * z[i]]
+    def f(i, j): return [1,
+                         x[i] * x[j],
+                         z[i] * z[j],
+                         x[i] + x[j],
+                         z[i] + z[j],
+                         x[i] * z[j] + x[j] * z[i]]
     g = np.array([f(0, 0), f(1, 1), f(2, 2), f(0, 1), f(0, 2), f(1, 2)])
     return g
 

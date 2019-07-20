@@ -5,6 +5,19 @@ import pandas as pd
 from numba import njit
 from scipy.linalg import toeplitz, block_diag
 
+__all__ = ["difference", "clock_seed", "extract",
+           "generate_data", "bandwidth_selector",
+           "get_true_output_cond_means",
+           "get_true_output_cond_cov",
+           "get_true_shock_cov",
+           "get_true_coef_cond_cov",
+           "get_true_coef_cond_means",
+           "get_true_coef_cond_cov",
+           "get_true_coef_means",
+           "get_true_coef_cov",
+           "get_true_shock_means",
+           "get_true_shock_cov"]
+
 
 def difference(*args, t):
     output = []
@@ -20,19 +33,6 @@ def difference(*args, t):
 def clock_seed():
     """ Simple utility to generate random file_hash based on time """
     return int(time() * 1e8 % 1e8)
-
-
-def read_pickle(path):
-    import pickle  # Package dill fails here!
-    with open(path, "rb") as f:
-        obj = pickle.load(file=f)
-    return obj
-
-
-def save_pickle(obj, path):
-    import pickle  # Package dill fails here!
-    with open(path, "wb") as f:
-        pickle.dump(obj=obj, file=f)
 
 
 def extract(*args, t):
@@ -187,19 +187,19 @@ def get_true_output_cond_cov(fake):
     CovB3C3 = CovB1C1 + CovV2W2 + CovV3W3
 
     VarY1 = VarA1 + VarB1 * X1 ** 2 + VarC1 * Z1 ** 2 + \
-            2 * CovA1B1 * X1 + 2 * CovA1C1 * Z1 + 2 * CovB1C1 * X1 * Z1
+        2 * CovA1B1 * X1 + 2 * CovA1C1 * Z1 + 2 * CovB1C1 * X1 * Z1
     VarY2 = VarA2 + VarB2 * X2 ** 2 + VarC2 * Z2 ** 2 + \
-            2 * CovA2B2 * X2 + 2 * CovA2C2 * Z2 + 2 * CovB2C2 * X2 * Z2
+        2 * CovA2B2 * X2 + 2 * CovA2C2 * Z2 + 2 * CovB2C2 * X2 * Z2
     VarY3 = VarA3 + VarB3 * X3 ** 2 + VarC3 * Z3 ** 2 + \
-            2 * CovA3B3 * X3 + 2 * CovA3C3 * Z3 + 2 * CovB3C3 * X3 * Z3
+        2 * CovA3B3 * X3 + 2 * CovA3C3 * Z3 + 2 * CovB3C3 * X3 * Z3
     CovY1Y2 = VarA1 + VarB1 * X1 * X2 + VarC1 * Z1 * Z2 + \
-              CovA1B1 * (X1 + X2) + CovA1C1 * (Z1 + Z2) + CovB1C1 * (Z2 * X1 + Z1 * X2)
+        CovA1B1 * (X1 + X2) + CovA1C1 * (Z1 + Z2) + CovB1C1 * (Z2 * X1 + Z1 * X2)
     CovY1Y3 = VarA1 + VarB1 * X1 * X3 + VarC1 * Z1 * Z3 + \
-              CovA1B1 * (X1 + X3) + CovA1C1 * (Z1 + Z3) + CovB1C1 * (Z3 * X1 + Z1 * X3)
+        CovA1B1 * (X1 + X3) + CovA1C1 * (Z1 + Z3) + CovB1C1 * (Z3 * X1 + Z1 * X3)
     CovY2Y3 = VarA1 + VarB1 * X2 * X3 + VarC1 * Z2 * Z3 + \
-              CovA1B1 * (X2 + X3) + CovA1C1 * (Z2 + Z3) + CovB1C1 * (Z2 * X3 + Z3 * X2) \
-              + VarU2 + VarV2 * X2 * X3 + VarW2 * Z2 * Z3 + \
-              CovU2V2 * (X2 + X3) + CovU2W2 * (Z2 + Z3) + CovV2W2 * (Z2 * X3 + Z3 * X2)
+        CovA1B1 * (X2 + X3) + CovA1C1 * (Z2 + Z3) + CovB1C1 * (Z2 * X3 + Z3 * X2) \
+        + VarU2 + VarV2 * X2 * X3 + VarW2 * Z2 * Z3 + \
+        CovU2V2 * (X2 + X3) + CovU2W2 * (Z2 + Z3) + CovV2W2 * (Z2 * X3 + Z3 * X2)
     cond_cov = np.column_stack([VarY1, VarY2, VarY3, CovY1Y2, CovY1Y3, CovY2Y3])
     return cond_cov
 
