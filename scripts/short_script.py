@@ -49,13 +49,13 @@ for s in range(num_sims):
 
     if on_sherlock():
         n = choice([1000, 5000, 20000])
-        output_bw1_const = choice([.1, .25, .5, 1, 2, 3, 5, 10])
-        shock_bw1_const = choice([.1, .25, .5, 1, 2, 3, 5, 10])
-        kernel = choice(["gaussian", "neighbor"])
+        output_bw1_const = choice([0.05, .1, .25, .5, 1])
+        shock_bw1_const = choice([0.05, .1, .25, .5, 1])
+        kernel = "neighbor"  # choice(["gaussian", "neighbor"])
     else:
-        output_bw1_const = 1
-        shock_bw1_const = 1
-        n = 2000
+        output_bw1_const = 0.25
+        shock_bw1_const = .1
+        n = 5000
         kernel = "neighbor"
 
     output_bw2_const = output_bw1_const

@@ -28,6 +28,8 @@ class FHHPSEstimator:
         The bandwidth used to censor observations close to the diagonal,
         denoted by delta1 = censor1_const * n ^ (-censor1_alpha).
 
+    kernel: str
+        Argument kernel from KernelRegression
     """
 
     def __init__(self,
