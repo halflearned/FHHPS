@@ -51,15 +51,15 @@ if __name__ == "__main__":
 
         if on_sherlock():
             n = choice([1000, 5000, 20000])
-            output_bw1_const = choice([0.005, .01, .1, .25])
-            output_bw2_const = choice([0.005, .01, .1, .25])
-            shock_bw1_const = choice([0.05, .1, .5, 1])
+            output_bw1_const = choice([.001, .01, .05, .1])
+            output_bw2_const = choice([.01, .05, .1, .25])
+            shock_bw1_const = choice([.05, .1, .5, 1.])
             kernel = "neighbor"  # choice(["gaussian", "neighbor"])
         else:
             output_bw1_const = 1
             shock_bw1_const = 5
             output_bw2_const = output_bw1_const
-            n = 5000
+            n = 20000
             kernel = "neighbor"
 
         shock_bw2_const = shock_bw1_const
