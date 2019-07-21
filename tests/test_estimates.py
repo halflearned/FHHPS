@@ -37,21 +37,23 @@ def test_fit_output_cond_means():
     """
     np.random.seed(1234)
     coef_bw = .05
-    errors = []
-    for i in range(40):
-        fake = generate_data(1000)
-        X = fake["df"][["X1", "X2", "X3"]].values
-        Z = fake["df"][["Z1", "Z2", "Z3"]].values
-        Y = fake["df"][["Y1", "Y2", "Y3"]].values
+    for kernel in ["neighbor", "gaussian"]:
+        errors = []
+        for i in range(40):
+            fake = generate_data(1000)
+            X = fake["df"][["X1", "X2", "X3"]].values
+            Z = fake["df"][["Z1", "Z2", "Z3"]].values
+            Y = fake["df"][["Y1", "Y2", "Y3"]].values
 
-        truth = get_true_output_cond_means(fake)
-        estimate = fit_output_cond_means(X, Z, Y, bw=coef_bw)
-        error = estimate - truth
-        errors.append(error.mean(0))
+            truth = get_true_output_cond_means(fake)
+            estimate = fit_output_cond_means(X, Z, Y, bw=coef_bw, kernel=kernel)
+            error = estimate - truth
+            print(error.mean())
+            errors.append(error.mean(0))
 
-    stats = pd.DataFrame(errors).agg(["mean", "sem"])
-    unbiased = np.abs(stats.loc["mean"]) / stats.loc["sem"] < 2.326
-    assert np.all(unbiased)
+        stats = pd.DataFrame(errors).agg(["mean", "sem"])
+        unbiased = np.abs(stats.loc["mean"]) / stats.loc["sem"] < 2.326
+        assert np.all(unbiased)
 
 
 def test_fit_output_cond_cov_with_oracle_means():
@@ -63,22 +65,23 @@ def test_fit_output_cond_cov_with_oracle_means():
     """
     np.random.seed(1234)
     coef_bw = .75
-    errors = []
-    for i in range(40):
-        fake = generate_data(1000)
-        X = fake["df"][["X1", "X2", "X3"]].values
-        Z = fake["df"][["Z1", "Z2", "Z3"]].values
-        Y = fake["df"][["Y1", "Y2", "Y3"]].values
+    for kernel in ["neighbor", "gaussian"]:
+        errors = []
+        for i in range(40):
+            fake = generate_data(1000)
+            X = fake["df"][["X1", "X2", "X3"]].values
+            Z = fake["df"][["Z1", "Z2", "Z3"]].values
+            Y = fake["df"][["Y1", "Y2", "Y3"]].values
 
-        output_cond_means = get_true_output_cond_means(fake)
-        estimate = fit_output_cond_cov(X, Z, Y, output_cond_means, bw=coef_bw)
-        truth = get_true_output_cond_cov(fake)
-        error = estimate - truth
-        errors.append(error.mean(0))
+            output_cond_means = get_true_output_cond_means(fake)
+            estimate = fit_output_cond_cov(X, Z, Y, output_cond_means, bw=coef_bw, kernel=kernel)
+            truth = get_true_output_cond_cov(fake)
+            error = estimate - truth
+            errors.append(error.mean(0))
 
-    stats = pd.DataFrame(errors).agg(["mean", "sem"])
-    unbiased = np.abs(stats.loc["mean"]) / stats.loc["sem"] < 2.326
-    assert np.all(unbiased)
+        stats = pd.DataFrame(errors).agg(["mean", "sem"])
+        unbiased = np.abs(stats.loc["mean"]) / stats.loc["sem"] < 2.326
+        assert np.all(unbiased)
 
 
 def test_fit_output_cond_cov_with_estimated_means():
@@ -89,23 +92,26 @@ def test_fit_output_cond_cov_with_estimated_means():
     statistically different from zero at alpha=0.01
     """
     np.random.seed(1234)
-    errors = []
-    for i in range(40):
-        fake = generate_data(1000)
-        X = fake["df"][["X1", "X2", "X3"]].values
-        Z = fake["df"][["Z1", "Z2", "Z3"]].values
-        Y = fake["df"][["Y1", "Y2", "Y3"]].values
+    bws = {"neighbor": (1e-8, 1e-7), "gaussian": (.75, .5)}
+    for kernel in ["neighbor"]:
+        errors = []
+        for i in range(10):
+            fake = generate_data(1000)
+            X = fake["df"][["X1", "X2", "X3"]].values
+            Z = fake["df"][["Z1", "Z2", "Z3"]].values
+            Y = fake["df"][["Y1", "Y2", "Y3"]].values
+            bw1, bw2 = bws[kernel]
+            output_cond_means = fit_output_cond_means(X, Z, Y, bw=bw1, kernel=kernel)
+            estimate = fit_output_cond_cov(X, Z, Y, output_cond_means,
+                                           bw=bw2, kernel=kernel, poly=1)
+            truth = get_true_output_cond_cov(fake)
+            error = estimate - truth
+            errors.append(error.mean(0))
+            print(error.mean(0))
 
-        output_cond_means = fit_output_cond_means(X, Z, Y, bw=.75)
-        estimate = fit_output_cond_cov(X, Z, Y, output_cond_means, bw=.5)
-        truth = get_true_output_cond_cov(fake)
-        error = estimate - truth
-        errors.append(error.mean(0))
-        print(error.mean(0))
-
-    stats = pd.DataFrame(errors).agg(["mean", "sem"])
-    unbiased = np.abs(stats.loc["mean"]) / stats.loc["sem"] < 2.326
-    assert np.all(unbiased)
+        stats = pd.DataFrame(errors).agg(["mean", "sem"])
+        unbiased = np.abs(stats.loc["mean"]) / stats.loc["sem"] < 2.326
+        assert np.all(unbiased)
 
 
 # TODO: calibrate bandwidths

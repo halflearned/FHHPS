@@ -187,14 +187,14 @@ class FHHPSEstimator:
 """ Utils """
 
 
-def fit_output_cond_means(X, Z, Y, bw, kernel):
+def fit_output_cond_means(X, Z, Y, bw: float, kernel: str):
     logging.info("--Fitting output conditional means--")
     XZ = np.column_stack([X, Z])
     cond_means = KernelRegression(kernel=kernel).fit_predict_local(XZ, Y, bw=bw)
     return cond_means
 
 
-def fit_output_cond_cov(X, Z, Y, output_cond_means, bw, kernel, poly=2):
+def fit_output_cond_cov(X, Z, Y, output_cond_means, bw: float, kernel: str, poly=1):
     n = len(X)
     XZ = np.column_stack([X, Z])
     resid = (Y - output_cond_means)
@@ -227,7 +227,7 @@ def fit_shock_means(X, Z, Y, bw: float, kernel: str):
     return shock_means
 
 
-def fit_shock_cov(X, Z, Y, shock_means, bw, kernel: str):
+def fit_shock_cov(X, Z, Y, shock_means, bw: float, kernel: str):
     shock_sec_mom = fit_shock_second_moments(X, Z, Y, bw, kernel)
     shock_cov = get_centered_shock_second_moments(shock_means, shock_sec_mom)
     return shock_cov
