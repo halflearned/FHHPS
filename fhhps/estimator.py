@@ -251,7 +251,13 @@ def fit_shock_second_moments(X, Z, Y, bw: float, kernel: str):
         DYt = difference(Y, t=t)
         DXZt = np.hstack(difference(X, Z, t=t))
         XZt = np.hstack(extract(X ** 2, Z ** 2, 2 * X, 2 * Z, 2 * X * Z, t=t))
-        wts = gaussian_kernel(DXZt, bw)
+        if kernel == "gaussian":
+            wts = gaussian_kernel(DXZt, bw)
+        elif kernel == "neighbor":
+            wts = knn_kernel(DXZt, np.zeros_like(DXZt[[0]]), bw)
+            wts /= wts.sum()
+        else:
+            raise ValueError(f"Cannot understand kernel {kernel}")
         shock_sec_mom[:, t] = kreg.fit(XZt, DYt ** 2, sample_weight=wts).coefficients
     return shock_sec_mom
 

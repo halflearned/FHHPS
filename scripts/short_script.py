@@ -50,16 +50,16 @@ if __name__ == "__main__":
     for s in range(num_sims):
 
         if on_sherlock():
-            n = choice([1000, 5000, 20000], p=[0.1, 0.2, 0.7])
-            output_bw1_const = choice([.001, .01, .05, .1])
+            n = choice([1000, 5000, 20000], p=[0.05, 0.15, 0.8])
+            output_bw1_const = choice([.01, .05, .1, .25])
             output_bw2_const = choice([.01, .05, .1, .25])
-            shock_bw1_const = choice([.05, .1, .5, 1.])
+            shock_bw1_const = choice([.1, .5, 1., 2])
             kernel = choice(["neighbor"])
         else:
-            output_bw1_const = 0.01
-            shock_bw1_const = 0.1
-            output_bw2_const = 0.1
-            n = 2000
+            output_bw1_const = 0.005
+            output_bw2_const = 1
+            shock_bw1_const = 1
+            n = 5000
             kernel = "neighbor"
 
         shock_bw2_const = shock_bw1_const
@@ -90,6 +90,7 @@ if __name__ == "__main__":
         Z = fake["df"][["Z1", "Z2", "Z3"]].values
         Y = fake["df"][["Y1", "Y2", "Y3"]].values
 
+        # For the shocks, we do not use the neighbor kernel
         shock_means = fit_shock_means(X, Z, Y, bw=shock_bw1, kernel=kernel)
         shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel=kernel)
 
@@ -125,8 +126,9 @@ if __name__ == "__main__":
         cov_res = pd.DataFrame(data=[ODict({**config, "name": name, "value": est})
                                      for name, est in zip(cov_names, cov_estimate)])
 
-        mean_res.to_csv(filename, header=s == 0, index=False, mode="a")
-        cov_res.to_csv(filename, header=s == 0, index=False, mode="a")
-
         print(mean_res)
         print(cov_res)
+
+        if on_sherlock():
+            mean_res.to_csv(filename, header=s == 0, index=False, mode="a")
+            cov_res.to_csv(filename, header=s == 0, index=False, mode="a")
