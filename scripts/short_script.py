@@ -54,7 +54,7 @@ if __name__ == "__main__":
             output_bw1_const = choice([.001, .01, .05, .1])
             output_bw2_const = choice([.01, .05, .1, .25])
             shock_bw1_const = choice([.05, .1, .5, 1.])
-            kernel = choice(["gaussian", "neighbor"])
+            kernel = choice(["neighbor"])
         else:
             output_bw1_const = 0.01
             shock_bw1_const = 0.1
