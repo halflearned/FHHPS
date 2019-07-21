@@ -3,7 +3,7 @@ import logging
 from numpy.linalg import det as det
 from sklearn.preprocessing import PolynomialFeatures
 
-from fhhps.kernel_regression import KernelRegression, gaussian_kernel
+from fhhps.kernel_regression import KernelRegression, gaussian_kernel, knn_kernel
 from fhhps.utils import *
 
 import pandas as pd
@@ -222,7 +222,13 @@ def fit_shock_means(X, Z, Y, bw: float, kernel: str):
         DYt = difference(Y, t=t)
         DXZt = np.hstack(difference(X, Z, t=t))
         XZt = np.hstack(extract(X, Z, t=t))
-        wts = gaussian_kernel(DXZt, bw)
+        if kernel == "gaussian":
+            wts = gaussian_kernel(DXZt, bw)
+        elif kernel == "neighbor":
+            wts = knn_kernel(DXZt, np.zeros_like(DXZt[[0]]), bw)
+            wts /= wts.sum()
+        else:
+            raise ValueError(f"Cannot understand kernel {kernel}")
         shock_means[:, t] = kreg.fit(XZt, DYt, sample_weight=wts).coefficients
     return shock_means
 
