@@ -2,7 +2,7 @@ import os
 import subprocess
 from collections import OrderedDict as ODict
 from fractions import Fraction
-from random import choice
+from numpy.random import choice
 
 from fhhps.estimator import *
 from fhhps.utils import *
@@ -50,16 +50,16 @@ if __name__ == "__main__":
     for s in range(num_sims):
 
         if on_sherlock():
-            n = choice([1000, 5000, 20000])
+            n = choice([1000, 5000, 20000], p=[0.1, 0.2, 0.7])
             output_bw1_const = choice([.001, .01, .05, .1])
             output_bw2_const = choice([.01, .05, .1, .25])
             shock_bw1_const = choice([.05, .1, .5, 1.])
-            kernel = "neighbor"  # choice(["gaussian", "neighbor"])
+            kernel = choice(["gaussian", "neighbor"])
         else:
-            output_bw1_const = 1
-            shock_bw1_const = 5
-            output_bw2_const = output_bw1_const
-            n = 20000
+            output_bw1_const = 0.01
+            shock_bw1_const = 0.1
+            output_bw2_const = 0.1
+            n = 2000
             kernel = "neighbor"
 
         shock_bw2_const = shock_bw1_const
