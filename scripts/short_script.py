@@ -77,7 +77,8 @@ if __name__ == "__main__":
         censor1_alpha = 1 / 5
         censor2_alpha = 1 / 5
 
-        output_bw1 = output_bw1_const * n ** (-output_bw1_alpha)
+        output_bw1_step1 = 0.1 * output_bw1_const * n ** (-output_bw1_alpha)
+        output_bw1_step2 = output_bw1_const * n ** (-output_bw1_alpha)
         output_bw2 = output_bw2_const * n ** (-output_bw2_alpha)
 
         shock_bw1 = shock_bw1_const * n ** (-shock_bw1_alpha)
@@ -95,18 +96,20 @@ if __name__ == "__main__":
         shock_means = fit_shock_means(X, Z, Y, bw=shock_bw1, kernel="gaussian")
         shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel="gaussian")
 
-        output_cond_means = fit_output_cond_means(X, Z, Y, bw=output_bw1, kernel=kernel)
-        output_cond_cov = fit_output_cond_cov(X, Z, Y, output_cond_means, bw=output_bw2,
-                                              kernel=kernel, poly=2)
+        output_cond_means_step1 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step1, kernel=kernel)
+        output_cond_means_step2 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step2, kernel=kernel)
+        output_cond_cov = fit_output_cond_cov(X, Z, Y, output_cond_means_step2,
+                                              bw=output_bw2, kernel=kernel, poly=2)
 
-        coef_cond_means = get_coef_cond_means(X, Z, output_cond_means, shock_means)
+        coef_cond_means_step1 = get_coef_cond_means(X, Z, output_cond_means_step1, shock_means)
+        coef_cond_means_step2 = get_coef_cond_means(X, Z, output_cond_means_step2, shock_means)
         coef_cond_cov = get_coef_cond_cov(X, Z, output_cond_cov, shock_cov)
 
         mean_valid = get_valid_cond_means(X, Z, censor1_bw)
         cov_valid = get_valid_cond_cov(X, Z, censor2_bw)
 
-        mean_estimate = get_coef_means(coef_cond_means, mean_valid)
-        cov_estimate = get_coef_cov(coef_cond_means, coef_cond_cov, cov_valid)
+        mean_estimate = get_coef_means(coef_cond_means_step1, mean_valid)
+        cov_estimate = get_coef_cov(coef_cond_means_step2, coef_cond_cov, cov_valid)
         truth = get_true_coef_cov(fake)
 
         config = ODict(**{"n": n,
