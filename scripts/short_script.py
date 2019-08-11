@@ -2,12 +2,13 @@ import os
 import subprocess
 from collections import OrderedDict as ODict
 from fractions import Fraction
+
 from numpy.random import choice
 
 from fhhps.estimator import *
 from fhhps.utils import *
 
-import numpy as np
+pd.options.display.max_columns = 99
 
 
 def as_frac(x):
@@ -50,15 +51,15 @@ if __name__ == "__main__":
     for s in range(num_sims):
 
         if on_sherlock():
-            n = choice([1000, 5000, 20000], p=[0.05, 0.15, 0.8])
+            n = choice([1000, 5000, 20000], p=[0.1, 0.2, 0.7])
             output_bw1_const = choice([.01, .05, .1, .25])
             output_bw2_const = choice([.01, .05, .1, .25])
-            shock_bw1_const = choice([.1, .5, 1., 2])
+            shock_bw1_const = choice([.01, .05, .1, .25])
             kernel = choice(["neighbor"])
         else:
-            output_bw1_const = 0.005
-            output_bw2_const = 1
-            shock_bw1_const = 1
+            output_bw1_const = .2
+            output_bw2_const = .1
+            shock_bw1_const = .001
             n = 5000
             kernel = "neighbor"
 
@@ -91,11 +92,12 @@ if __name__ == "__main__":
         Y = fake["df"][["Y1", "Y2", "Y3"]].values
 
         # For the shocks, we do not use the neighbor kernel
-        shock_means = fit_shock_means(X, Z, Y, bw=shock_bw1, kernel=kernel)
-        shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel=kernel)
+        shock_means = fit_shock_means(X, Z, Y, bw=shock_bw1, kernel="gaussian")
+        shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel="gaussian")
 
         output_cond_means = fit_output_cond_means(X, Z, Y, bw=output_bw1, kernel=kernel)
-        output_cond_cov = fit_output_cond_cov(X, Z, Y, output_cond_means, bw=output_bw2, kernel=kernel, poly=2)
+        output_cond_cov = fit_output_cond_cov(X, Z, Y, output_cond_means, bw=output_bw2,
+                                              kernel=kernel, poly=2)
 
         coef_cond_means = get_coef_cond_means(X, Z, output_cond_means, shock_means)
         coef_cond_cov = get_coef_cond_cov(X, Z, output_cond_cov, shock_cov)
@@ -130,5 +132,5 @@ if __name__ == "__main__":
         print(cov_res)
 
         if on_sherlock():
-            mean_res.to_csv(filename, header=s == 0, index=False, mode="a")
-            cov_res.to_csv(filename, header=s == 0, index=False, mode="a")
+            mean_res.to_csv(filename, header=False, index=False, mode="a")
+            cov_res.to_csv(filename, header=False, index=False, mode="a")

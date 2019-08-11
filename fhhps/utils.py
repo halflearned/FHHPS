@@ -47,10 +47,10 @@ def extract(*args, t):
 
 
 def generate_data(n,
-                  EA=2, EB=.4, EC=0.3,
+                  EA=2, EB=.4, EC=0.4,
                   EX=0, EZ=0,
                   EU=.3, EV=.1, EW=0.1,
-                  VA=1.5, VB=.4, VC=.4,
+                  VA=9, VB=.4, VC=.4,
                   VU=1, VV=.1, VW=.1,
                   rho=.5,
                   seed=None):
