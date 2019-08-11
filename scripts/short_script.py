@@ -2,6 +2,7 @@ import os
 import subprocess
 from collections import OrderedDict as ODict
 from fractions import Fraction
+from time import time
 
 from numpy.random import choice
 
@@ -51,17 +52,21 @@ if __name__ == "__main__":
     for s in range(num_sims):
 
         if on_sherlock():
-            n = choice([1000, 5000, 20000], p=[0.1, 0.2, 0.7])
-            output_bw1_const = choice([.01, .05, .1, .25])
-            output_bw2_const = choice([.01, .05, .1, .25])
-            shock_bw1_const = choice([.01, .05, .1, .25])
+            n = choice([1000, 5000, 20000, 50000], p=[0.1, 0.2, 0.3, 0.4])
+            output_bw1_const_step1 = choice([.01, .1])
+            output_bw1_const_step2 = choice([.01, .1])
+            output_bw2_const = choice([.01, .05, .1])
+            shock_bw1_const = choice([.01, .05, .1])
             kernel = choice(["neighbor"])
         else:
-            output_bw1_const = .2
+            output_bw1_const_step1 = .1
+            output_bw1_const_step2 = .01
             output_bw2_const = .1
-            shock_bw1_const = .001
-            n = 5000
+            shock_bw1_const = .1
+            n = 50000
             kernel = "neighbor"
+
+        t1 = time()
 
         shock_bw2_const = shock_bw1_const
 
@@ -77,8 +82,8 @@ if __name__ == "__main__":
         censor1_alpha = 1 / 5
         censor2_alpha = 1 / 5
 
-        output_bw1_step1 = 0.1 * output_bw1_const * n ** (-output_bw1_alpha)
-        output_bw1_step2 = output_bw1_const * n ** (-output_bw1_alpha)
+        output_bw1_step1 = output_bw1_const_step1 * n ** (-output_bw1_alpha)
+        output_bw1_step2 = output_bw1_const_step2 * n ** (-output_bw1_alpha)
         output_bw2 = output_bw2_const * n ** (-output_bw2_alpha)
 
         shock_bw1 = shock_bw1_const * n ** (-shock_bw1_alpha)
@@ -97,24 +102,25 @@ if __name__ == "__main__":
         shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel="gaussian")
 
         output_cond_means_step1 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step1, kernel=kernel)
-        output_cond_means_step2 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step2, kernel=kernel)
-        output_cond_cov = fit_output_cond_cov(X, Z, Y, output_cond_means_step2,
-                                              bw=output_bw2, kernel=kernel, poly=2)
-
+        mean_valid = get_valid_cond_means(X, Z, censor1_bw)
         coef_cond_means_step1 = get_coef_cond_means(X, Z, output_cond_means_step1, shock_means)
+        mean_estimate = get_coef_means(coef_cond_means_step1, mean_valid)
+
+        output_cond_means_step2 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step2, kernel=kernel)
         coef_cond_means_step2 = get_coef_cond_means(X, Z, output_cond_means_step2, shock_means)
+        output_cond_cov = fit_output_cond_cov(
+            X, Z, Y, output_cond_means_step2, bw=output_bw2, kernel=kernel, poly=2)
         coef_cond_cov = get_coef_cond_cov(X, Z, output_cond_cov, shock_cov)
 
-        mean_valid = get_valid_cond_means(X, Z, censor1_bw)
         cov_valid = get_valid_cond_cov(X, Z, censor2_bw)
-
-        mean_estimate = get_coef_means(coef_cond_means_step1, mean_valid)
         cov_estimate = get_coef_cov(coef_cond_means_step2, coef_cond_cov, cov_valid)
         truth = get_true_coef_cov(fake)
 
+        t2 = time()
         config = ODict(**{"n": n,
                           "kernel": kernel,
-                          "output_bw1_const": as_frac(output_bw1_const),
+                          "output_bw1_const_step1": as_frac(output_bw1_const_step1),
+                          "output_bw1_const_step2": as_frac(output_bw1_const_step2),
                           "output_bw2_const": as_frac(output_bw2_const),
                           "output_bw1_alpha": as_frac(output_bw1_alpha),
                           "output_bw2_alpha": as_frac(output_bw2_alpha),
@@ -123,7 +129,8 @@ if __name__ == "__main__":
                           "shock_bw1_alpha": as_frac(shock_bw1_alpha),
                           "shock_bw2_alpha": as_frac(shock_bw2_alpha),
                           "mean_valid": np.mean(mean_valid),
-                          "cov_valid": np.mean(cov_valid)
+                          "cov_valid": np.mean(cov_valid),
+                          "time": t2 - t1
                           })
 
         mean_res = pd.DataFrame(data=[ODict({**config, "name": name, "value": est})
