@@ -52,7 +52,7 @@ if __name__ == "__main__":
     for s in range(num_sims):
 
         if on_sherlock():
-            n = choice([1000, 5000, 20000, 50000], p=[0.1, 0.2, 0.3, 0.4])
+            n = choice([2500, 5000, 10000, 20000], p=[0.2, 0.2, .3, .3])
             output_bw1_const_step1 = choice([.01, .1])
             output_bw1_const_step2 = choice([.01, .1])
             output_bw2_const = choice([.01, .05, .1])
