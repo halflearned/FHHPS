@@ -13,8 +13,6 @@ from fhhps.utils import *
 pd.options.display.max_columns = 999
 sns.set_style("white")
 
-pd.options.display.max_columns = 99
-
 
 def on_sherlock():
     return 'GROUP_SCRATCH' in os.environ
@@ -49,12 +47,12 @@ if __name__ == "__main__":
 
     for _ in range(50):
 
-        output_bw1_const_step1 = choice([.1, 1, 5, 10, 20])
-        output_bw1_const_step2 = choice([.1, 1, 5, 10, 20])
-        output_bw2_const = choice([.1, 1, 5, 10, 20])
-        shock_bw1_const = choice([.1, 1, 5, 10, 20])
-        censor1_const = choice([0.1, 0.5, 1, 2])
-        censor2_const = choice([0.1, 0.5, 1, 2])
+        output_bw1_const_step1 = choice([.1, 1, 5, 10, 20, 50])
+        output_bw1_const_step2 = choice([.1, 1, 5, 10, 20, 50])
+        output_bw2_const = choice([.1, 1, 5, 10, 20, 50])
+        shock_bw1_const = choice([.1, 1, 5, 10, 20, 50])
+        censor1_const = choice([0.01, 0.1, 0.5, 1, 2])
+        censor2_const = choice([0.01, 0.1, 0.5, 1, 2])
         kernel = choice(["neighbor", "gaussian"])
         shock_bw2_const = choice([.1, 1, 5, 10, 20])
 
@@ -113,6 +111,8 @@ if __name__ == "__main__":
                           "shock_bw2_const": shock_bw2_const,
                           "shock_bw1_alpha": shock_bw1_alpha,
                           "shock_bw2_alpha": shock_bw2_alpha,
+                          "censor1_const": censor1_const,
+                          "censor2_const": censor2_const,
                           "mean_valid": np.mean(mean_valid),
                           "cov_valid": np.mean(cov_valid),
                           "time": t2 - t1
@@ -120,14 +120,10 @@ if __name__ == "__main__":
 
         mean_names = ["EA", "EB", "EC"]
         cov_names = ["VarA", "VarB", "VarC", "CovAB", "CovAC", "CovBC"]
-        mean_res = pd.DataFrame(data=[ODict({**config, "name": name, "value": est})
-                                      for name, est in zip(mean_names, mean_estimate)])
-        cov_res = pd.DataFrame(data=[ODict({**config, "name": name, "value": est})
-                                     for name, est in zip(cov_names, cov_estimate)])
 
-        print(mean_res)
-        print(cov_res)
+        config.update(zip(mean_names, mean_estimate))
+        config.update(zip(cov_names, cov_estimate))
 
         if on_sherlock():
-            mean_res.to_csv(filename, header=False, index=False, mode="a")
-            cov_res.to_csv(filename, header=False, index=False, mode="a")
+            pd.DataFrame(config, index=[abs(hash(str(config)))]) \
+                .to_csv(filename, header=False, index=False, mode="a")
