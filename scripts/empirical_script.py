@@ -1,30 +1,19 @@
 import os
 import subprocess
 from collections import OrderedDict as ODict
-from fractions import Fraction
+from os.path import join
 from time import time
 
-import numpy as np
-import pandas as pd
 import seaborn as sns
 from numpy.random import choice
 
 from fhhps.estimator import *
 from fhhps.utils import *
-from os.path import join
 
 pd.options.display.max_columns = 999
 sns.set_style("white")
 
 pd.options.display.max_columns = 99
-
-
-def as_frac(x):
-    frac = Fraction(x).limit_denominator(10000)
-    if frac.denominator != 1:
-        return f"{frac.numerator}/{frac.denominator}"
-    else:
-        return f"{frac.numerator}"
 
 
 def on_sherlock():
@@ -58,33 +47,24 @@ if __name__ == "__main__":
 
     n = len(df)
 
-    for _ in range(10):
+    for _ in range(50):
 
-        if on_sherlock():
-            output_bw1_const_step1 = choice([.1, 1, 5, 10, 20])
-            output_bw1_const_step2 = choice([.1, 1, 5, 10, 20])
-            output_bw2_const = choice([.1, 1, 5, 10, 20])
-            shock_bw1_const = choice([.1, 1, 5, 10, 20])
-            kernel = choice(["neighbor", "gaussian"])
-        else:
-            output_bw1_const_step1 = 1
-            output_bw1_const_step2 = 1
-            output_bw2_const = 1
-            shock_bw1_const = 1
-            kernel = "neighbor"
+        output_bw1_const_step1 = choice([.1, 1, 5, 10, 20])
+        output_bw1_const_step2 = choice([.1, 1, 5, 10, 20])
+        output_bw2_const = choice([.1, 1, 5, 10, 20])
+        shock_bw1_const = choice([.1, 1, 5, 10, 20])
+        censor1_const = choice([0.1, 0.5, 1, 2])
+        censor2_const = choice([0.1, 0.5, 1, 2])
+        kernel = choice(["neighbor", "gaussian"])
+        shock_bw2_const = choice([.1, 1, 5, 10, 20])
 
         t1 = time()
-
-        shock_bw2_const = shock_bw1_const
 
         shock_bw1_alpha = 1 / 6
         shock_bw2_alpha = 1 / 6
 
         output_bw1_alpha = 1 / 10
         output_bw2_alpha = 1 / 10
-
-        censor1_const = 1.
-        censor2_const = 1.
 
         censor1_alpha = 1 / 5
         censor2_alpha = 1 / 5
@@ -124,15 +104,15 @@ if __name__ == "__main__":
         t2 = time()
         config = ODict(**{"n": n,
                           "kernel": kernel,
-                          "output_bw1_const_step1": as_frac(output_bw1_const_step1),
-                          "output_bw1_const_step2": as_frac(output_bw1_const_step2),
-                          "output_bw2_const": as_frac(output_bw2_const),
-                          "output_bw1_alpha": as_frac(output_bw1_alpha),
-                          "output_bw2_alpha": as_frac(output_bw2_alpha),
-                          "shock_bw1_const": as_frac(shock_bw1_const),
-                          "shock_bw2_const": as_frac(shock_bw2_const),
-                          "shock_bw1_alpha": as_frac(shock_bw1_alpha),
-                          "shock_bw2_alpha": as_frac(shock_bw2_alpha),
+                          "output_bw1_const_step1": output_bw1_const_step1,
+                          "output_bw1_const_step2": output_bw1_const_step2,
+                          "output_bw2_const": output_bw2_const,
+                          "output_bw1_alpha": output_bw1_alpha,
+                          "output_bw2_alpha": output_bw2_alpha,
+                          "shock_bw1_const": shock_bw1_const,
+                          "shock_bw2_const": shock_bw2_const,
+                          "shock_bw1_alpha": shock_bw1_alpha,
+                          "shock_bw2_alpha": shock_bw2_alpha,
                           "mean_valid": np.mean(mean_valid),
                           "cov_valid": np.mean(cov_valid),
                           "time": t2 - t1
