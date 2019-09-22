@@ -1,14 +1,13 @@
 import logging
 
+import numpy as np
+import pandas as pd
+from numba import njit
 from numpy.linalg import det as det
 from sklearn.preprocessing import PolynomialFeatures
 
 from fhhps.kernel_regression import KernelRegression, gaussian_kernel, knn_kernel
 from fhhps.utils import *
-
-import pandas as pd
-import numpy as np
-from numba import njit
 
 
 class FHHPSEstimator:
@@ -262,7 +261,6 @@ def fit_shock_second_moments(X, Z, Y, bw: float, kernel: str):
     return shock_sec_mom
 
 
-@njit()
 def get_coef_cond_means(X, Z, output_cond_means, shock_means):
     """
     Fit random coefficient conditional means
@@ -275,14 +273,16 @@ def get_coef_cond_means(X, Z, output_cond_means, shock_means):
 
     # Compute conditional first moments of random coefficients:
     # E[A,B|I] = M_{3}^{-1} * (E[Y|I] - E)
-    coefficient_cond_means = np.empty(shape=(n, T))
+    coefficient_cond_means = np.full(shape=(n, T), fill_value=np.nan)
     for i in range(n):
-        coefficient_cond_means[i] = m3_inv(X[i], Z[i]) @ output_cond_mean_clean[i]
+        try:
+            coefficient_cond_means[i] = m3_inv(X[i], Z[i]) @ output_cond_mean_clean[i]
+        except np.linalg.LinAlgError:
+            print(f"When computing conditional means, could not invert observations {i}")
 
     return coefficient_cond_means
 
 
-@njit()
 def get_coef_cond_cov(X, Z, output_cond_cov, shock_cov):
     """
     Fit random coefficient conditional variances and covariances
@@ -294,7 +294,10 @@ def get_coef_cond_cov(X, Z, output_cond_cov, shock_cov):
     # Compute conditional second moments of random coefficients
     coefficient_cond_cov = np.empty(shape=(len(X), 6))
     for i in range(len(X)):
-        coefficient_cond_cov[i] = m6_inv(X[i], Z[i]) @ output_cond_cov_clean[i]
+        try:
+            coefficient_cond_cov[i] = m6_inv(X[i], Z[i]) @ output_cond_cov_clean[i]
+        except np.linalg.LinAlgError:
+            print(f"When computing conditional variances, could not invert observations {i}")
 
     return coefficient_cond_cov
 
@@ -369,20 +372,20 @@ def get_cov_excess_terms(X, Z, shock_cov):
     E1 = np.zeros(n)
 
     E2 = VarU2 + VarV2 * X2 ** 2 + VarW2 * Z2 ** 2 + \
-        2 * CovU2V2 * X2 + 2 * CovU2W2 * Z2 + 2 * CovV2W2 * X2 * Z2
+         2 * CovU2V2 * X2 + 2 * CovU2W2 * Z2 + 2 * CovV2W2 * X2 * Z2
 
     E3 = VarU2 + VarV2 * X3 ** 2 + VarW2 * Z3 ** 2 \
-        + 2 * CovU2V2 * X3 + 2 * CovU2W2 * Z3 + 2 * CovV2W2 * X3 * Z3 \
-        + VarU3 + VarV3 * X3 ** 2 + VarW3 * Z3 ** 2 \
-        + 2 * CovU3V3 * X3 + 2 * CovU3W3 * Z3 + 2 * CovV3W3 * X3 * Z3
+         + 2 * CovU2V2 * X3 + 2 * CovU2W2 * Z3 + 2 * CovV2W2 * X3 * Z3 \
+         + VarU3 + VarV3 * X3 ** 2 + VarW3 * Z3 ** 2 \
+         + 2 * CovU3V3 * X3 + 2 * CovU3W3 * Z3 + 2 * CovV3W3 * X3 * Z3
 
     E4 = np.zeros(n)
 
     E5 = np.zeros(n)
 
     E6 = VarU2 + VarV2 * X2 * X3 + VarW2 * Z2 * Z3 \
-        + CovU2V2 * (X2 + X3) + CovU2W2 * (Z2 + Z3) \
-        + CovV2W2 * (X2 * Z3 + Z2 * X3)
+         + CovU2V2 * (X2 + X3) + CovU2W2 * (Z2 + Z3) \
+         + CovV2W2 * (X2 * Z3 + Z2 * X3)
 
     excess_terms = np.column_stack((E1, E2, E3, E4, E5, E6))
     return excess_terms
@@ -406,6 +409,7 @@ def m6(x, z):
     """
     This is now called matrix M6 in the paper
     """
+
     def f(i, j):
         return [1,
                 x[i] * x[j],
@@ -413,6 +417,7 @@ def m6(x, z):
                 x[i] + x[j],
                 z[i] + z[j],
                 x[i] * z[j] + x[j] * z[i]]
+
     g = np.array([f(0, 0), f(1, 1), f(2, 2), f(0, 1), f(0, 2), f(1, 2)])
     return g
 
