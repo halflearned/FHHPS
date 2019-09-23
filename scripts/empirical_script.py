@@ -47,14 +47,15 @@ if __name__ == "__main__":
 
     for _ in range(50):
 
-        output_bw1_const_step1 = choice([.1, 1, 5, 10, 20, 50])
-        output_bw1_const_step2 = choice([.1, 1, 5, 10, 20, 50])
-        output_bw2_const = choice([.1, 1, 5, 10, 20, 50])
-        shock_bw1_const = choice([.1, 1, 5, 10, 20, 50])
+        shock_bw1_const = choice([0.01, 0.05, .1, .5])
+        shock_bw2_const = choice([0.01, 0.05, .1, .5])
+        output_bw1_const_step1 = choice([0.01, 0.05, .1, .5])
+        output_bw1_const_step2 = choice([0.01, 0.05, .1, .5])
+        output_bw2_const = choice([0.01, 0.05, .1, .5])
         censor1_const = choice([0.01, 0.1, 0.5, 1, 2])
         censor2_const = choice([0.01, 0.1, 0.5, 1, 2])
-        kernel = choice(["neighbor", "gaussian"])
-        shock_bw2_const = choice([.1, 1, 5, 10, 20])
+        kernel1 = choice(["neighbor", "gaussian"])
+        kernel2 = choice(["neighbor", "gaussian"])
 
         t1 = time()
 
@@ -82,18 +83,18 @@ if __name__ == "__main__":
         Y = df[['lnY2008', 'lnY2009', 'lnY2010']].values
 
         # For the shocks, we do not use the neighbor kernel
-        shock_means = fit_shock_means(X, Z, Y, bw=shock_bw1, kernel="gaussian")
-        shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel="gaussian")
+        shock_means = fit_shock_means(X, Z, Y, bw=shock_bw1, kernel=kernel1)
+        shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel=kernel1)
 
-        output_cond_means_step1 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step1, kernel=kernel)
+        output_cond_means_step1 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step1, kernel=kernel2)
         mean_valid = get_valid_cond_means(X, Z, censor1_bw)
         coef_cond_means_step1 = get_coef_cond_means(X, Z, output_cond_means_step1, shock_means)
         mean_estimate = get_coef_means(coef_cond_means_step1, mean_valid)
 
-        output_cond_means_step2 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step2, kernel=kernel)
+        output_cond_means_step2 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step2, kernel=kernel2)
         coef_cond_means_step2 = get_coef_cond_means(X, Z, output_cond_means_step2, shock_means)
         output_cond_cov = fit_output_cond_cov(
-            X, Z, Y, output_cond_means_step2, bw=output_bw2, kernel=kernel, poly=2)
+            X, Z, Y, output_cond_means_step2, bw=output_bw2, kernel=kernel2, poly=2)
         coef_cond_cov = get_coef_cond_cov(X, Z, output_cond_cov, shock_cov)
 
         cov_valid = get_valid_cond_cov(X, Z, censor2_bw)
@@ -101,7 +102,8 @@ if __name__ == "__main__":
 
         t2 = time()
         config = ODict(**{"n": n,
-                          "kernel": kernel,
+                          "kernel1": kernel1,
+                          "kernel2": kernel2,
                           "output_bw1_const_step1": output_bw1_const_step1,
                           "output_bw1_const_step2": output_bw1_const_step2,
                           "output_bw2_const": output_bw2_const,
