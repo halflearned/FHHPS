@@ -38,7 +38,7 @@ def get_unique_filename(prefix="results", rnd=None, commit=True):
 
 if __name__ == "__main__":
 
-    df = pd.read_csv(join("..", "empirical", "allcott_data_wide.csv"))
+    df = pd.read_csv(join("..", "empirical", "allcott_data_wide.csv")).loc[:2500]
 
     filename = os.path.join("empirical_out", get_unique_filename())
     num_sims = 1000 if on_sherlock() else 1
@@ -56,12 +56,12 @@ if __name__ == "__main__":
             kernel1 = "gaussian"
             kernel2 = "neighbor"
 
-            output_bw1_const_step1 = choice([.1, .5, 1, 5])
-            output_bw1_const_step2 = choice([.1, .5, 1, 5])
-            output_bw2_const = choice([.1, .5, 1, 5])
+            output_bw1_const_step1 = choice([.5, .75, 1, 1.25, 1.5])
+            output_bw1_const_step2 = choice([.5, .75, 1, 1.25, 1.5])
+            output_bw2_const = choice([.5, .75, 1, 1.25, 1.5])
 
-            shock_bw1_const = choice([.1, .5, 1, 5])
-            shock_bw2_const = choice([.1, .5, 1, 5])
+            shock_bw1_const = choice([.5, .75, 1, 1.25, 1.5])
+            shock_bw2_const = choice([.5, .75, 1, 1.25, 1.5])
 
             censor1_const = .1
             censor2_const = 1
@@ -71,15 +71,15 @@ if __name__ == "__main__":
             kernel1 = "gaussian"
             kernel2 = "neighbor"
 
-            output_bw1_const_step1 = .5
-            output_bw1_const_step2 = .5
-            output_bw2_const = .5
+            output_bw1_const_step1 = 1
+            output_bw1_const_step2 = 1
+            output_bw2_const = 1.25
 
-            shock_bw1_const = 5
-            shock_bw2_const = 5
+            shock_bw1_const = 1
+            shock_bw2_const = 1
 
-            censor1_const = .1
-            censor2_const = 2
+            censor1_const = 1
+            censor2_const = 1
 
         t1 = time()
 
