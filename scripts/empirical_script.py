@@ -53,18 +53,25 @@ if __name__ == "__main__":
 
         if on_sherlock():
 
-            kernel1 = "gaussian"
-            kernel2 = "neighbor"
+            kernel1 = choice(["gaussian", "neighbor"])
+            kernel2 = choice(["gaussian", "neighbor"])
 
-            output_bw1_const_step1 = choice([.5, .75, 1, 1.25, 1.5])
-            output_bw1_const_step2 = choice([.5, .75, 1, 1.25, 1.5])
-            output_bw2_const = choice([.5, .75, 1, 1.25, 1.5])
+            output_bw1_const_step1 = choice([.5, .625, .75, .875, 1])
+            output_bw1_const_step2 = choice([.5, .625, .75, .875, 1])
+            output_bw2_const = choice([.5, .625, .75, .875, 1])
 
-            shock_bw1_const = choice([.5, .75, 1, 1.25, 1.5])
-            shock_bw2_const = choice([.5, .75, 1, 1.25, 1.5])
+            shock_bw1_const = choice([.01, .05, .1, .25])
+            shock_bw2_const = choice([.01, .05, .1, .25])
 
-            censor1_const = .1
-            censor2_const = 1
+            # output_bw1_const_step1 = choice([.1, .25, .5, .75, 1])
+            # output_bw1_const_step2 = choice([.1, .25, .5, .75, 1])
+            # output_bw2_const = choice([.1, .25, .5, .75, 1])
+            #
+            # shock_bw1_const = choice([.1, .25, .5, .75, 1])
+            # shock_bw2_const = choice([.1, .25, .5, .75, 1])
+
+            censor1_const = choice([.5, 1, 1.5])
+            censor2_const = choice([.5, 1, 1.5])
 
         else:
 
