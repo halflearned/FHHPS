@@ -38,7 +38,7 @@ def get_unique_filename(prefix="results", rnd=None, commit=True):
 
 if __name__ == "__main__":
 
-    df = pd.read_csv(join("..", "empirical", "allcott_data_wide.csv")).loc[:2500]
+    df = pd.read_csv(join("..", "empirical", "allcott_data_wide.csv"))
 
     filename = os.path.join("empirical_out", get_unique_filename())
     num_sims = 1000 if on_sherlock() else 1
