@@ -56,22 +56,22 @@ if __name__ == "__main__":
             kernel1 = choice(["gaussian", "neighbor"])
             kernel2 = choice(["gaussian", "neighbor"])
 
-            output_bw1_const_step1 = choice([.5, .625, .75, .875, 1])
-            output_bw1_const_step2 = choice([.5, .625, .75, .875, 1])
-            output_bw2_const = choice([.5, .625, .75, .875, 1])
-
-            shock_bw1_const = choice([.01, .05, .1, .25])
-            shock_bw2_const = choice([.01, .05, .1, .25])
-
-            # output_bw1_const_step1 = choice([.1, .25, .5, .75, 1])
-            # output_bw1_const_step2 = choice([.1, .25, .5, .75, 1])
-            # output_bw2_const = choice([.1, .25, .5, .75, 1])
+            # output_bw1_const_step1 = choice([.5, .625, .75, .875, 1])
+            # output_bw1_const_step2 = choice([.5, .625, .75, .875, 1])
+            # output_bw2_const = choice([.5, .625, .75, .875, 1])
             #
-            # shock_bw1_const = choice([.1, .25, .5, .75, 1])
-            # shock_bw2_const = choice([.1, .25, .5, .75, 1])
+            # shock_bw1_const = choice([.01, .05, .1, .25])
+            # shock_bw2_const = choice([.01, .05, .1, .25])
 
-            censor1_const = choice([.5, 1, 1.5])
-            censor2_const = choice([.5, 1, 1.5])
+            output_bw1_const_step1 = np.random.uniform(0.01, 5)
+            output_bw1_const_step2 = np.random.uniform(0.01, 5)
+            output_bw2_const = np.random.uniform(0.01, 5)
+
+            shock_bw1_const = np.random.uniform(0.01, 5)
+            shock_bw2_const = np.random.uniform(0.01, 5)
+
+            censor1_const = choice([.5, 1, 2])
+            censor2_const = choice([.5, 1, 2])
 
         else:
 
