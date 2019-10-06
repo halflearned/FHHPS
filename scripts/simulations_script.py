@@ -53,31 +53,38 @@ if __name__ == "__main__":
 
         if on_sherlock():
             n = choice([2500, 5000, 10000, 20000], p=[0.2, 0.2, .3, .3])
-            output_bw1_const_step1 = choice([.01, .1])
-            output_bw1_const_step2 = choice([.01, .1])
-            output_bw2_const = choice([.01, .05, .1])
-            shock_bw1_const = choice([.01, .05, .1])
-            kernel = choice(["neighbor"])
+
+            kernel1 = choice(["gaussian", "neighbor"])
+            kernel2 = choice(["gaussian", "neighbor"])
+
+            output_bw1_const_step1 = np.random.uniform(0.01, .2)
+            output_bw1_const_step2 = np.random.uniform(0.01, .2)
+            output_bw2_const = np.random.uniform(0.01, .2)
+
+            shock_bw1_const = np.random.uniform(0.01, .2)
+            shock_bw2_const = np.random.uniform(0.01, .2)
+
+            censor1_const = choice([.5, 1, 2])
+            censor2_const = choice([.5, 1, 2])
         else:
             output_bw1_const_step1 = .1
             output_bw1_const_step2 = .01
             output_bw2_const = .1
             shock_bw1_const = .1
             n = 50000
-            kernel = "neighbor"
+            kernel1 = "neighbor"
+            kernel2 = "neighbor"
+            shock_bw2_const = 1
+            censor1_const = 1.
+            censor2_const = 1.
 
         t1 = time()
-
-        shock_bw2_const = shock_bw1_const
 
         shock_bw1_alpha = 1 / 6
         shock_bw2_alpha = 1 / 6
 
         output_bw1_alpha = 1 / 10
         output_bw2_alpha = 1 / 10
-
-        censor1_const = 1.
-        censor2_const = 1.
 
         censor1_alpha = 1 / 5
         censor2_alpha = 1 / 5
@@ -97,28 +104,31 @@ if __name__ == "__main__":
         Z = fake["df"][["Z1", "Z2", "Z3"]].values
         Y = fake["df"][["Y1", "Y2", "Y3"]].values
 
-        # For the shocks, we do not use the neighbor kernel
-        shock_means = fit_shock_means(X, Z, Y, bw=shock_bw1, kernel="gaussian")
-        shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel="gaussian")
+        shock_means = fit_shock_means(X, Z, Y, bw=shock_bw1, kernel=kernel1)
+        shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel=kernel1)
 
-        output_cond_means_step1 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step1, kernel=kernel)
+        output_cond_means_step1 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step1,
+                                                        kernel=kernel2)
+        output_cond_means_step2 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step2,
+                                                        kernel=kernel2)
+
+        output_cond_cov = fit_output_cond_cov(
+            X, Z, Y, output_cond_means_step2, bw=output_bw2, kernel=kernel2, poly=1)
+
         mean_valid = get_valid_cond_means(X, Z, censor1_bw)
         coef_cond_means_step1 = get_coef_cond_means(X, Z, output_cond_means_step1, shock_means)
         mean_estimate = get_coef_means(coef_cond_means_step1, mean_valid)
 
-        output_cond_means_step2 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step2, kernel=kernel)
         coef_cond_means_step2 = get_coef_cond_means(X, Z, output_cond_means_step2, shock_means)
-        output_cond_cov = fit_output_cond_cov(
-            X, Z, Y, output_cond_means_step2, bw=output_bw2, kernel=kernel, poly=2)
         coef_cond_cov = get_coef_cond_cov(X, Z, output_cond_cov, shock_cov)
-
         cov_valid = get_valid_cond_cov(X, Z, censor2_bw)
         cov_estimate = get_coef_cov(coef_cond_means_step2, coef_cond_cov, cov_valid)
-        truth = get_true_coef_cov(fake)
 
         t2 = time()
+
         config = ODict(**{"n": n,
-                          "kernel": kernel,
+                          "kernel1": kernel1,
+                          "kernel2": kernel2,
                           "output_bw1_const_step1": as_frac(output_bw1_const_step1),
                           "output_bw1_const_step2": as_frac(output_bw1_const_step2),
                           "output_bw2_const": as_frac(output_bw2_const),
