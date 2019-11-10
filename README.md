@@ -9,17 +9,28 @@ The setup is a **linear panel data** with **two correlated random coefficients**
 
 The application we have in mind is the identification and estimation of first and second moments of Cobb Douglas coefficients of a production function. For more details, please contact Vitor Hadad at vitorh@stanford.edu.
 
-## Installing
+## Installing / Development.
 
-To run `fhhps`, you will need Python 3.5 or newer. If you have no current Python installation, the fastest way to get everything up and running is by copying-and-pasting the following commands to your Terminal.
+To run `fhhps`, you will need Python 3.7 or newer.
 
-**For MAC OSX**
+**For MAC OSX / Linux**
 
+Clone our repo.
 ```bash
-$ git clone https://github.com/halflearned/FHHPS/
-$ cd FHHPS/
-$ source environment.sh
-$ python setup.py develop
+git clone https://github.com/halflearned/FHHPS/
+cd FHHPS/
 ```
 
-After that you should be able to `import` our package like you would any other. For example, try running our examples in the `examples` folder.
+To install in an existing environment.
+```
+python setup.py develop
+```
+
+To create a new environment (recommended).
+```
+conda create --name fhhpsenv
+conda activate fhhpsenv
+python setup.py develop
+```
+
+After that you should be able to `import` our package like you would any other.

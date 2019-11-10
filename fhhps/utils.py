@@ -55,7 +55,8 @@ def generate_data(n,
                   rho=.5,
                   seed=None):
     """
-    Generates jointly Normal data
+    Generates jointly Normal data with chosen parameters.
+    Covariances are determined by input variances as correlation parameter rho.
     """
     names = ["A1", "B1", "C1",
              "X1", "X2", "X3",

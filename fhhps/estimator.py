@@ -3,187 +3,163 @@ import logging
 import numpy as np
 import pandas as pd
 from numba import njit
+from time import time
+from collections import OrderedDict as ODict
 from numpy.linalg import det as det
 from sklearn.preprocessing import PolynomialFeatures
 
 from fhhps.kernel_regression import KernelRegression, gaussian_kernel, knn_kernel
 from fhhps.utils import *
 
+__all__ = ["fhhps"]
 
-class FHHPSEstimator:
+
+def fhhps(X: np.ndarray,
+          Z: np.ndarray,
+          Y: np.ndarray,
+
+          # Parameters
+          kernel1: str,
+          kernel2: str,
+          shock_bw1_const: float,
+          shock_bw2_const: float,
+          output_bw1_const_step1: float,
+          output_bw1_const_step2: float,
+          output_bw2_const: float,
+          censor1_const: float,
+          censor2_const: float,
+          poly: int = 1,
+
+          # Asymptotically optimal exponents
+          shock_bw1_alpha: float = 1 / 6,
+          shock_bw2_alpha: float = 1 / 6,
+          output_bw1_alpha: float = 1 / 10,
+          output_bw2_alpha: float = 1 / 10,
+          censor1_alpha: float = 1 / 5,
+          censor2_alpha: float = 1 / 5):
+
     """
-    All the notation refers to the preliminary draft, June 2019 version.
-
     Parameters
     ----------
-    shock_{const, alpha}: float
-        The shock bandwidth is h_n = shock_const * n ^ (-shock_alpha).
+    X, Z, Y: np.ndarray
+        Data. Each array should be (n, 3).
 
-    output_{const, alpha}: float
-        The bandwidth used to estimate output conditional means and variances is
-        denoted by gamma_n = output_const * n ^ (-output_alpha).
+    kernel1: str ["gaussian", "neighbor"]
+        Kernel to use when estimating shocks.
 
-    censor_{1,2}_{const, alpha}: float
-        The bandwidth used to censor observations close to the diagonal,
-        denoted by delta1 = censor1_const * n ^ (-censor1_alpha).
+    kernel2: str ["gaussian", "neighbor"]
+        Kernel to use when estimating dependent variable conditional means.
 
-    kernel: str
-        Argument kernel from KernelRegression
+    shock_bw{1,2}_const, shock_bw{1,2}_alpha: float
+        Parameters used to compute the bandwidth for shock moment estimation.
+        shock_bw1 = shock_bw1_const * n ^ (-shock_bw1_alpha)  [First moments]
+        shock_bw2 = shock_bw2_const * n ^ (-shock_bw2_alpha)  [Second moments]
+
+    output_bw{1,2}_const, output_bw{1,2}_alpha: float
+        Parameters used to compute bandwidth for Y-conditional moment estimation.
+        Note that conditional *means* are used *twice*.
+        First, during the computation of random coefficient means.
+        In this step we simply need:
+            E[Y|X,Z]
+            -------- (1)
+        Second, during the computation of random coefficient second moments.
+        In the latter step we need to compute:
+            Var[Y|X,Z] = E[(Y - E[Y|X,Z])^2|X,Z]
+                                -------- (2)
+        This inner conditional expectation can use a different bandwidth.
+
+        Parameter (1) is computed using
+        output_bw1_step1 = output_bw1_const_step1 * n ** (-output_bw1_alpha)
+
+        Parameter (2) is computed using
+        output_bw1_step2 = output_bw1_const_step2 * n ** (-output_bw1_alpha)
+
+        Finally the outer expectation is (2) is computed using bandwidth:
+        output_bw2 = output_bw2_const * n ** (-output_bw2_alpha)
+
+    censor{1,2}_const, censor{1,2}_alpha: float
+        Parameters used to compute "bandwidth" for censoring.
+        censor1_bw = censor1_const * n ** (-censor1_alpha)
+        censor2_bw = censor2_const * n ** (-censor2_alpha)
+
+    poly: int
+        Degree of local polynomial regression
+
+    Returns
+    -------
+    results: pd.DataFrame
+        A dataframe in long format with estimates.
     """
 
-    def __init__(self,
-                 shock_const: float = 1.,
-                 output_const: float = 1.,
-                 censor1_const: float = 1.,
-                 censor2_const: float = 1.,
+    t1 = time()
+    n = len(X)
 
-                 shock_alpha: float = 1 / 6,
-                 output_alpha: float = 1 / 10,
-                 censor1_alpha: float = 1 / 5,
-                 censor2_alpha: float = 1 / 5,
+    # Compute parameters
+    output_bw1_step1 = output_bw1_const_step1 * n ** (-output_bw1_alpha)
+    output_bw1_step2 = output_bw1_const_step2 * n ** (-output_bw1_alpha)
+    output_bw2 = output_bw2_const * n ** (-output_bw2_alpha)
 
-                 kernel: str = "gaussian"):
-        self.shock_const = shock_const
-        self.coef_const = output_const
-        self.censor1_const = censor1_const
-        self.censor2_const = censor2_const
+    shock_bw1 = shock_bw1_const * n ** (-shock_bw1_alpha)
+    shock_bw2 = shock_bw2_const * n ** (-shock_bw2_alpha)
 
-        self.shock_alpha = shock_alpha
-        self.coef_alpha = output_alpha
-        self.censor1_alpha = censor1_alpha
-        self.censor2_alpha = censor2_alpha
+    censor1_bw = censor1_const * n ** (-censor1_alpha)
+    censor2_bw = censor2_const * n ** (-censor2_alpha)
 
-        self.kernel = kernel
+    # Fit shock moments
+    shock_means = fit_shock_means(X, Z, Y, bw=shock_bw1, kernel=kernel1)
+    shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel=kernel1)
 
-    def add_data(self, X, Z, Y):
-        self.n, self.T = X.shape
-        self.num_coef = 3
-        self.X = np.array(X)
-        self.Z = np.array(Z)
-        self.Y = np.array(Y)
-        self.XZ = np.hstack([X, Z])
-        self.shock_bw = self.shock_const * self.n ** (-self.shock_alpha)
-        self.coef_bw = self.coef_const * self.n ** (-self.coef_alpha)
-        self.censor1_thres = self.censor1_const * self.n ** (-self.censor1_alpha)
-        self.censor2_thres = self.censor2_const * self.n ** (-self.censor2_alpha)
+    # Estimate conditional means
+    output_cond_means_step1 = fit_output_cond_means(
+        X, Z, Y, bw=output_bw1_step1, kernel=kernel2)
+    output_cond_means_step2 = fit_output_cond_means(
+        X, Z, Y, bw=output_bw1_step2, kernel=kernel2)
 
-    def fit(self, X, Z, Y):
-        self.add_data(X, Z, Y)
-        self.fit_shock_means()
-        self.fit_output_cond_means()
-        self.fit_coefficient_means()
-        self.fit_shock_second_moments()
-        self.fit_output_cond_cov()
-        self.fit_coefficient_second_moments()
+    # Estimate conditional second moments
+    output_cond_cov = fit_output_cond_cov(
+        X, Z, Y, output_cond_means_step2,
+        bw=output_bw2, kernel=kernel2, poly=poly)
 
-    @property
-    def shock_means(self):
-        return pd.DataFrame(data=self._shock_means,
-                            index=["E[Ut]", "E[Vt]", "E[Wt]"])
+    # Valid (non-censored) indices
+    mean_valid = get_valid_cond_means(X, Z, censor1_bw)
+    cov_valid = get_valid_cond_cov(X, Z, censor2_bw)
 
-    @property
-    def shock_cov(self):
-        return pd.DataFrame(data=self._shock_cov,
-                            index=["Var[Ut]", "Var[Vt]", "Var[Wt]",
-                                   "Cov[Ut, Vt]", "Cov[Ut, Wt]", "Cov[Vt, Wt]"])
+    # Average over valid indices
+    coef_cond_means_step1 = get_coef_cond_means(X, Z, output_cond_means_step1, shock_means)
+    mean_estimate = get_coef_means(coef_cond_means_step1, mean_valid)
 
-    @property
-    def coefficient_means(self):
-        return pd.Series(self._coef_means,
-                         index=["E[A1]", "E[B1]", "E[C1]"])
+    coef_cond_means_step2 = get_coef_cond_means(X, Z, output_cond_means_step2, shock_means)
+    coef_cond_cov = get_coef_cond_cov(X, Z, output_cond_cov, shock_cov)
+    cov_estimate = get_coef_cov(coef_cond_means_step2, coef_cond_cov, cov_valid)
 
-    @property
-    def coefficient_cov(self):
-        return pd.Series(self._coef_cov,
-                         index=["Var[A1]", "Var[B1]", "Var[C1]",
-                                "Cov[A1, B1]", "Cov[A1, C1]", "Cov[B1, C1]"])
+    t2 = time()
+    config = ODict(**{"n": n,
+                      "kernel1": kernel1,
+                      "kernel2": kernel2,
+                      "output_bw1_const_step1": output_bw1_const_step1,
+                      "output_bw1_const_step2": output_bw1_const_step2,
+                      "output_bw2_const": output_bw2_const,
+                      "output_bw1_alpha": output_bw1_alpha,
+                      "output_bw2_alpha": output_bw2_alpha,
+                      "shock_bw1_const": shock_bw1_const,
+                      "shock_bw2_const": shock_bw2_const,
+                      "shock_bw1_alpha": shock_bw1_alpha,
+                      "shock_bw2_alpha": shock_bw2_alpha,
+                      "censor1_const": censor1_const,
+                      "censor2_const": censor2_const,
+                      "mean_valid": np.mean(mean_valid),
+                      "cov_valid": np.mean(cov_valid),
+                      "time": t2 - t1
+                      })
 
-    """ Shock moments """
+    mean_names = ["EA", "EB", "EC"]
+    cov_names = ["VarA", "VarB", "VarC", "CovAB", "CovAC", "CovBC"]
 
-    def fit_shock_means(self):
-        """
-        Populates attribute _shock_means with estimates of:
-            0, E[U2], E[U3]
-            0, E[V2], E[V3]
-            0, E[W2], E[W3]
-        """
-        logging.info("--Fitting shock means--")
-        self._shock_means = np.zeros(shape=(self.T, self.num_coef))
-        for t in range(1, self.T):
-            self._shock_means[:, t] = fit_shock_means(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
+    config.update(zip(mean_names, mean_estimate))
+    config.update(zip(cov_names, cov_estimate))
 
-    def fit_shock_second_moments(self):
-        """
-        Populates attribute _shock_cov with estimates of:
-            0,  Var[U2],       Var[U3]
-            0,  Var[V2],       Var[V3]
-            0,  Var[W2],       Var[W3]
-            0,  Cov[U2, V2],   Cov[U3, V3]
-            0,  Cov[U2, W2],   Cov[U3, W3]
-            0,  Cov[V2, W2],   Cov[V3, W3]
-        """
-        logging.info("--Fitting shock second moments--")
-        self._shock_second_moments = np.zeros(shape=(6, 3))
-        for t in range(1, self.T):
-            self._shock_second_moments[:, t] = \
-                fit_shock_second_moments(self.X, self.Z, self.Y, t=t, bw=self.shock_bw)
-
-        self._shock_cov = np.zeros((6, 3))
-        for t in range(self.T):
-            self._shock_cov[:, t] = get_centered_shock_second_moments(
-                self._shock_means[:, t],
-                self._shock_second_moments[:, t])
-
-    """ Output moments """
-
-    def fit_output_cond_cov(self):
-        """
-        Estimates
-
-        Output is a matrix whose ith row is
-
-        Var(Y[0]|I)
-        Var(Y[1]|I)
-        Var(Y[2]|I)
-        Cov(Y[0], Y[1]|I)
-        Cov(Y[0], Y[2]|I)
-        Cov(Y[1], Y[2]|I)
-
-        where I = {X[1],Z[1],X[2],Z[2],X[3],Z[3]}.
-
-        """
-        logging.info("--Fitting output conditional second moments--")
-
-        resid = (self.Y - self.output_cond_mean)
-        Y_centered = np.empty((self.n, 6))
-        Y_centered[:, :3] = resid ** 2  # Var[Yt|I]
-        Y_centered[:, 3:] = np.column_stack([
-            resid[:, 0] * resid[:, 1],  # Cov[Y1, Y2|I]
-            resid[:, 0] * resid[:, 2],  # Cov[Y1, Y3|I]
-            resid[:, 1] * resid[:, 2],  # Cov[Y2, Y3|I]
-        ])
-        kreg = KernelRegression(kernel=self.kernel)
-        self.output_cond_var = kreg.fit_predict_local(self.XZ, Y_centered, bw=self.coef_bw)
-
-    """ Random coefficients """
-
-    def fit_coefficient_means(self):
-        logging.info("--Fitting coefficient means--")
-
-        self._coef_cond_means = get_coef_cond_means(
-            self.X, self.Z, self.output_cond_mean, self._shock_means)
-        self._valid1 = get_valid_cond_means(self.X, self.Z, self.censor1_thres)
-        self._coef_means = get_coef_means(self._coef_cond_means, self._valid1)
-
-    def fit_coefficient_second_moments(self):
-        logging.info("--Fitting coefficient second moments--")
-
-        self._coef_cond_cov = None
-        self._valid2 = None
-        self._coef_cov = None
-
-
-""" Utils """
+    result = pd.DataFrame(config, index=[abs(hash(str(config)))])
+    return result
 
 
 def fit_output_cond_means(X, Z, Y, bw: float, kernel: str):
@@ -278,7 +254,7 @@ def get_coef_cond_means(X, Z, output_cond_means, shock_means):
         try:
             coefficient_cond_means[i] = m3_inv(X[i], Z[i]) @ output_cond_mean_clean[i]
         except np.linalg.LinAlgError:
-            print(f"When computing conditional means, could not invert observations {i}")
+            print(f"When computing conditional means, could not invert observation {i}")
 
     return coefficient_cond_means
 
@@ -297,7 +273,7 @@ def get_coef_cond_cov(X, Z, output_cond_cov, shock_cov):
         try:
             coefficient_cond_cov[i] = m6_inv(X[i], Z[i]) @ output_cond_cov_clean[i]
         except np.linalg.LinAlgError:
-            print(f"When computing conditional variances, could not invert observations {i}")
+            print(f"When computing conditional variances, could not invert observation {i}")
 
     return coefficient_cond_cov
 
@@ -407,7 +383,7 @@ def m3_inv(x, z):
 @njit()
 def m6(x, z):
     """
-    This is now called matrix M6 in the paper
+    Computes matrix M_6 in paper.
     """
 
     def f(i, j):
@@ -424,16 +400,23 @@ def m6(x, z):
 
 @njit()
 def m6_inv(x, z):
+    """
+    Inverse of matrix m6 in paper.
+    """
     return np.linalg.inv(m6(x, z))
 
 
 def get_coef_means(coef_cond_means, valid):
+    """
+    Computes means, removing 'invalid' entries.
+    """
     return coef_cond_means[valid].mean(0)
 
 
 def get_coef_cov(coef_cond_means, coef_cond_cov, valid):
     """
     Use ANOVA-type formulas to get unconditional variances and covariances
+    Var[A] = Var[E[A|X, Z]] + E[V[A|X, Z]]
     """
     ev = coef_cond_cov[valid, :3].mean(0)
     ve = coef_cond_means[valid].var(0)
@@ -449,7 +432,7 @@ def get_coef_cov(coef_cond_means, coef_cond_cov, valid):
 
 def get_centered_shock_second_moments(m1, m2):
     """
-    Creates 6-vector of shock variances and covariances
+    Creates 6-vector of shock variances and covariances from uncentered moments.
     [Var[Ut], Var[Vt], Var[Wt], Cov[Ut, Vt], Cov[Ut, Wt], Cov[Vt, Wt]]
     """
     VarUt = m2[0] - m1[0] ** 2
