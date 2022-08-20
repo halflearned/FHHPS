@@ -6,11 +6,12 @@ from time import time
 
 from numpy.random import choice
 
-from fhhps.estimator import *
-from fhhps.utils import *
-
+from fhhps import *
+import pandas as pd
 pd.options.display.max_columns = 99
 
+import warnings
+warnings.filterwarnings("ignore")
 
 def as_frac(x):
     frac = Fraction(x).limit_denominator(10000)
@@ -50,6 +51,8 @@ if __name__ == "__main__":
     num_sims = 1000 if on_sherlock() else 1
 
     for s in range(num_sims):
+
+        print(f"Simulation {s}")
 
         if on_sherlock():
             n = choice([2500, 5000, 10000, 20000], p=[0.2, 0.2, .3, .3])
@@ -99,26 +102,32 @@ if __name__ == "__main__":
         censor1_bw = censor1_const * n ** (-censor1_alpha)
         censor2_bw = censor2_const * n ** (-censor2_alpha)
 
+        print("Generating data...")
         fake = generate_data(n)
         X = fake["df"][["X1", "X2", "X3"]].values
         Z = fake["df"][["Z1", "Z2", "Z3"]].values
         Y = fake["df"][["Y1", "Y2", "Y3"]].values
 
+        print("Fitting shock means...")
         shock_means = fit_shock_means(X, Z, Y, bw=shock_bw1, kernel=kernel1)
         shock_cov = fit_shock_cov(X, Z, Y, shock_means, bw=shock_bw2, kernel=kernel1)
 
+        print("Fitting output conditional means...")
         output_cond_means_step1 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step1,
                                                         kernel=kernel2)
         output_cond_means_step2 = fit_output_cond_means(X, Z, Y, bw=output_bw1_step2,
                                                         kernel=kernel2)
-
+        
+        print("Fitting output conditional covariances...")
         output_cond_cov = fit_output_cond_cov(
             X, Z, Y, output_cond_means_step2, bw=output_bw2, kernel=kernel2, poly=1)
 
+        print("Censoring...")
         mean_valid = get_valid_cond_means(X, Z, censor1_bw)
         coef_cond_means_step1 = get_coef_cond_means(X, Z, output_cond_means_step1, shock_means)
         mean_estimate = get_coef_means(coef_cond_means_step1, mean_valid)
 
+        print("Getting coefficient covariances...")
         coef_cond_means_step2 = get_coef_cond_means(X, Z, output_cond_means_step2, shock_means)
         coef_cond_cov = get_coef_cond_cov(X, Z, output_cond_cov, shock_cov)
         cov_valid = get_valid_cond_cov(X, Z, censor2_bw)
@@ -126,6 +135,9 @@ if __name__ == "__main__":
 
         t2 = time()
 
+        print(f"Time: {t2 - t1}")            
+
+        print("Output.")
         config = ODict(**{"n": n,
                           "kernel1": kernel1,
                           "kernel2": kernel2,

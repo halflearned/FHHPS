@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 import pandas as pd
-from numba import njit
+#from numba import njit
 from time import time
 from collections import OrderedDict as ODict
 from numpy.linalg import det as det
@@ -11,7 +11,6 @@ from sklearn.preprocessing import PolynomialFeatures
 from fhhps.kernel_regression import KernelRegression, gaussian_kernel, knn_kernel
 from fhhps.utils import *
 
-__all__ = ["fhhps"]
 
 
 def fhhps(X: np.ndarray,
@@ -278,17 +277,17 @@ def get_coef_cond_cov(X, Z, output_cond_cov, shock_cov):
     return coefficient_cond_cov
 
 
-@njit()
+#
 def get_means_censor_threshold(n, const):
     return const * n ** (-1 / 4)
 
 
-@njit()
+#
 def get_cov_censor_threshold(n, const):
     return const * n ** (-1 / 8)
 
 
-@njit()
+#
 def get_valid_cond_means(X, Z, const):
     n = len(X)
     thres = get_means_censor_threshold(n, const)
@@ -298,7 +297,7 @@ def get_valid_cond_means(X, Z, const):
     return valid
 
 
-@njit()
+#
 def get_valid_cond_cov(X, Z, const):
     n = len(X)
     thres = get_means_censor_threshold(n, const)
@@ -308,7 +307,7 @@ def get_valid_cond_cov(X, Z, const):
     return valid
 
 
-@njit()
+#
 def get_mean_excess_terms(X, Z, shock_means):
     """
     The 'excess' terms are those that need to be subtracted from E[Y|X]
@@ -333,7 +332,7 @@ def get_mean_excess_terms(X, Z, shock_means):
     return excess_terms
 
 
-@njit()
+#
 def get_cov_excess_terms(X, Z, shock_cov):
     """
     Creates a matrix of excess terms for the second moments.
@@ -367,7 +366,7 @@ def get_cov_excess_terms(X, Z, shock_cov):
     return excess_terms
 
 
-@njit()
+#
 def m3(x, z):
     """
     This is now called matrix M3 in the paper
@@ -375,12 +374,12 @@ def m3(x, z):
     return np.column_stack((np.ones_like(x, dtype=np.float64), x, z))
 
 
-@njit()
+#
 def m3_inv(x, z):
     return np.linalg.inv(m3(x, z))
 
 
-@njit()
+#
 def m6(x, z):
     """
     Computes matrix M_6 in paper.
@@ -398,7 +397,7 @@ def m6(x, z):
     return g
 
 
-@njit()
+#
 def m6_inv(x, z):
     """
     Inverse of matrix m6 in paper.

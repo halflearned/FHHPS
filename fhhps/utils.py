@@ -2,7 +2,6 @@ from time import time
 
 import numpy as np
 import pandas as pd
-from numba import njit
 from scipy.linalg import toeplitz, block_diag
 
 __all__ = ["difference", "clock_seed", "extract",
@@ -112,7 +111,7 @@ def generate_data(n,
     return data
 
 
-@njit()
+# 
 def bandwidth_selector(X, method="scott"):
     """
     A = minimum of std(X, ddof=1) and normalized IQR(X)

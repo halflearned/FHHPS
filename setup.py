@@ -18,15 +18,11 @@ setup(name='fhhps',
       url='https://github.com/halflearned/FHHPS',
       py_modules=['fhhps'],
       install_requires=[
-          "flake8==3.7.8",
-          "ipykernel>=5.1.2",
-          "jupyterlab>=1.1.4",
           "matplotlib>=3.1.1",
-          "numba==0.46.0",
           "numpy>=1.17.0",
           "pandas>=0.25.0",
           "scipy>=1.3.0",
-          "seaborn==0.9.0",
+          "seaborn>=0.9.0",
           "scikit-learn>=0.20.2"
       ],
       classifiers=[
