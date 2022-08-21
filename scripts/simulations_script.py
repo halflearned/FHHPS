@@ -22,7 +22,7 @@ def as_frac(x):
 
 
 def on_sherlock():
-    return 'GROUP_SCRATCH' in os.environ
+    return 'SCRATCH' in os.environ
 
 
 def get_unique_filename(prefix="results", rnd=None, commit=True):
@@ -45,7 +45,7 @@ def get_unique_filename(prefix="results", rnd=None, commit=True):
 
 if __name__ == "__main__":
 
-    filename = os.path.join("script_out", get_unique_filename())
+
     mean_names = ["EA", "EB", "EC"]
     cov_names = ["VarA", "VarB", "VarC", "CovAB", "CovAC", "CovBC"]
     num_sims = 1000 if on_sherlock() else 1
@@ -57,8 +57,8 @@ if __name__ == "__main__":
         if on_sherlock():
             n = choice([2500, 5000, 10000, 20000], p=[0.2, 0.2, .3, .3])
 
-            kernel1 = choice(["gaussian", "neighbor"])
-            kernel2 = choice(["gaussian", "neighbor"])
+            kernel1 = choice(["neighbor"])
+            kernel2 = choice(["neighbor"])
 
             output_bw1_const_step1 = np.random.uniform(0.01, .2)
             output_bw1_const_step2 = np.random.uniform(0.01, .2)
@@ -164,5 +164,6 @@ if __name__ == "__main__":
         print(cov_res)
 
         if on_sherlock():
+            filename = os.path.join("/scratch/users/dulguun/vitor", get_unique_filename())
             mean_res.to_csv(filename, header=False, index=False, mode="a")
             cov_res.to_csv(filename, header=False, index=False, mode="a")
