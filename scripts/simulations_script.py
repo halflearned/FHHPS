@@ -165,5 +165,6 @@ if __name__ == "__main__":
 
         if on_sherlock():
             filename = os.path.join("/scratch/users/dulguun/vitor", get_unique_filename())
+            print(f"Saving at {filename}.")
             mean_res.to_csv(filename, header=False, index=False, mode="a")
             cov_res.to_csv(filename, header=False, index=False, mode="a")
