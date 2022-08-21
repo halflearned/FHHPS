@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     mean_names = ["EA", "EB", "EC"]
     cov_names = ["VarA", "VarB", "VarC", "CovAB", "CovAC", "CovBC"]
-    num_sims = 1000 if on_sherlock() else 1
+    num_sims = 100 if on_sherlock() else 1
 
     for s in range(num_sims):
 
@@ -57,18 +57,18 @@ if __name__ == "__main__":
         if on_sherlock():
             n = choice([2500, 5000, 10000, 20000], p=[0.2, 0.2, .3, .3])
 
-            kernel1 = choice(["neighbor"])
-            kernel2 = choice(["neighbor"])
+            kernel1 = choice(["neighbor", "gaussian"])
+            kernel2 = choice(["neighbor", "gaussian"])
 
-            output_bw1_const_step1 = np.random.uniform(0.01, .2)
-            output_bw1_const_step2 = np.random.uniform(0.01, .2)
-            output_bw2_const = np.random.uniform(0.01, .2)
+            output_bw1_const_step1 = np.random.choice([.01, .1, 1])
+            output_bw1_const_step2 = output_bw1_const_step1
+            output_bw2_const = output_bw1_const_step1
 
-            shock_bw1_const = np.random.uniform(0.01, .2)
-            shock_bw2_const = np.random.uniform(0.01, .2)
+            shock_bw1_const = np.random.choice([.01, .1, 1])
+            shock_bw2_const = np.random.choice([.01, .1, 1])
 
-            censor1_const = choice([.5, 1, 2])
-            censor2_const = choice([.5, 1, 2])
+            censor1_const = 1#choice([.5, 1, 2])
+            censor2_const = 1#choice([.5, 1, 2])
         else:
             output_bw1_const_step1 = .1
             output_bw1_const_step2 = .01
